@@ -1,10 +1,10 @@
 {
-  "kind": "singleType",
-  "collectionName": "home_pages",
+  "kind": "collectionType",
+  "collectionName": "pages",
   "info": {
-    "singularName": "home-page",
-    "pluralName": "home-pages",
-    "displayName": "Home Page"
+    "singularName": "page",
+    "pluralName": "pages",
+    "displayName": "Page"
   },
   "options": {
     "draftAndPublish": true
@@ -23,6 +23,10 @@
         "blocks.info-block",
         "blocks.hero-section"
       ]
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
     }
   }
 }
