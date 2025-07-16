@@ -1,5 +1,18 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface BlocksFeaturedArticle extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_featured_articles';
+  info: {
+    displayName: 'Featured Article';
+  };
+  attributes: {
+    excerpt: Schema.Attribute.Text;
+    headline: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
+    link: Schema.Attribute.Component<'elements.link', false>;
+  };
+}
+
 export interface BlocksHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_blocks_hero_sections';
   info: {
@@ -9,7 +22,6 @@ export interface BlocksHeroSection extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'elements.link', false>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
-    logo: Schema.Attribute.Component<'elements.logo', false>;
     theme: Schema.Attribute.Enumeration<['turquoise', 'orange']>;
   };
 }
@@ -26,6 +38,29 @@ export interface BlocksInfoBlock extends Struct.ComponentSchema {
     image: Schema.Attribute.Media<'images'>;
     reversed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     theme: Schema.Attribute.Enumeration<['turquoise', 'orange']>;
+  };
+}
+
+export interface BlocksSubscribe extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_subscribes';
+  info: {
+    displayName: 'subscribe';
+  };
+  attributes: {
+    buttonText: Schema.Attribute.String;
+    content: Schema.Attribute.Text;
+    headline: Schema.Attribute.String;
+    placeholder: Schema.Attribute.String;
+  };
+}
+
+export interface BlocksYoutubeLink extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_youtube_links';
+  info: {
+    displayName: 'YoutubeLink';
+  };
+  attributes: {
+    link: Schema.Attribute.String;
   };
 }
 
@@ -67,8 +102,11 @@ export interface LayoutHeader extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'blocks.featured-article': BlocksFeaturedArticle;
       'blocks.hero-section': BlocksHeroSection;
       'blocks.info-block': BlocksInfoBlock;
+      'blocks.subscribe': BlocksSubscribe;
+      'blocks.youtube-link': BlocksYoutubeLink;
       'elements.link': ElementsLink;
       'elements.logo': ElementsLogo;
       'layout.header': LayoutHeader;

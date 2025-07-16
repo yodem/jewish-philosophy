@@ -1,0 +1,4 @@
+get all playlists:  
+https://youtube.googleapis.com/youtube/v3/playlists?key=AIzaSyBs29YdmqhmaiPPwV4jmm2uEvUr5O41mHY&part=snippet&q=שלום צדיק&type=video&channelId=UCCveJN9rRmW22wHRcce68ng&maxResults=20&playlistId=PLTI0N_DfAqBt3BGU0psH_Jt1haMdbL3Fk
+get videos of a playlist:
+https://youtube.googleapis.com/youtube/v3/playlistItems?key=AIzaSyBs29YdmqhmaiPPwV4jmm2uEvUr5O41mHY&part=snippet,contentDetails&playlistId=PLTI0N_DfAqBt3BGU0psH_Jt1haMdbL3Fk&maxResults=20

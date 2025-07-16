@@ -57,13 +57,6 @@ const pageBySlugQuery = (slug: string) =>
               image: {
                 fields: ["url", "alternativeText"],
               },
-              logo: {
-                populate: {
-                  image: {
-                    fields: ["url", "alternativeText"],
-                  },
-                },
-              },
               cta: true,
             },
           },
@@ -75,6 +68,18 @@ const pageBySlugQuery = (slug: string) =>
               cta: true,
             },
           },
+          "blocks.featured-article": {
+            populate: {
+              image: {
+                fields: ["url", "alternativeText"],
+              },
+              link: true,
+            },
+          },
+          "blocks.subscribe": {
+            populate: true,
+          },
+
         },
       },
     },
@@ -110,4 +115,30 @@ export async function getGlobalSettings() {
   const url = new URL(path, BASE_URL);
   url.search = globalSettingQuery;
   return fetchAPI(url.href, { method: "GET" });
+}
+
+export async function getAllSeriesContent() {
+  const path = "/api/series-contents";
+  const url = new URL(path, BASE_URL);
+  url.search = qs.stringify({
+    populate: ["Image", "youtubeLink"]
+  });
+  return await fetchAPI(url.href, { method: "GET" });
+}
+
+const seriesContentBySlugQuery = (slug: string) =>
+  qs.stringify({
+    filters: {
+      slug: {
+        $eq: slug,
+      },
+    },
+    populate: ["Image", "youtubeLink"],
+  });
+
+export async function getSeriesContentBySlug(slug: string) {
+  const path = "/api/series-contents";
+  const url = new URL(path, BASE_URL);
+  url.search = seriesContentBySlugQuery(slug);
+  return await fetchAPI(url.href, { method: "GET" });
 }

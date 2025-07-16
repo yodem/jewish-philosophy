@@ -1,10 +1,10 @@
-import { BlockRenderer } from "@/app/components/blocks/BlockRenderer";
+import { BlockRenderer } from "@/components/blocks/BlockRenderer";
 import { getPageBySlug } from "@/data/loaders";
 import { notFound } from "next/navigation";
 
 async function loader(slug: string) {
-    const { data } = await getPageBySlug(slug);
-    if (data.length === 0) notFound();
+    const { data } = await getPageBySlug(slug);    
+    if (!data || data.length === 0) notFound();
     return { blocks: data[0]?.blocks };
 }
 
