@@ -1,13 +1,5 @@
-import React from "react";
+import Box from '@mui/material/Box';
 
-export default function PlaylistLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="min-h-screen">
-      {children}
-    </div>
-  );
+export default function PlaylistsLayout({ children }: { children: React.ReactNode }) {
+  return <Box minHeight="100vh">{children}</Box>;
 } 

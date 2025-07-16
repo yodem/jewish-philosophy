@@ -1,8 +1,17 @@
-import './globals.css';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
+import ClientThemeProvider from '../components/ClientThemeProvider';
+import { Roboto } from 'next/font/google';
+
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto',
+});
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const globalRes = await getGlobalSettings();
@@ -12,15 +21,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const header = globalRes?.data?.header;
 
   return (
-    <html lang="en">
-      <body className="min-h-scren bg-gradient-to-br from-blue-100 via-blue-200 to-white">
-        <Suspense fallback={<nav className="w-full bg-gray-900 text-white py-4 px-8 flex items-center justify-between shadow-md"><div className="animate-pulse h-8 w-32 bg-gray-700 rounded" /></nav>}>
-          <Navbar header={header} />
-        </Suspense>
-        <main>
-          {children}
-        </main>
-        <Footer copyright={copyright} links={links} />
+    <html lang="en" className={roboto.variable}>
+      <body>
+        <AppRouterCacheProvider>
+          <ClientThemeProvider>
+            <Suspense fallback={null}>
+              <Navbar header={header} />
+            </Suspense>
+            {children}
+            <Footer copyright={copyright} links={links} />
+          </ClientThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );

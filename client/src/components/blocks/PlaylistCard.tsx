@@ -1,36 +1,28 @@
 'use client';
-import React from 'react';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import Image from 'next/image';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import { StrapiImage } from '../StrapiImage';
 
-interface PlaylistCardProps {
-  image: string;
-  title: string;
-  description: string;
-  cta: string;
-  className?: string;
-  episodeCount?: number;
-}
-
-const PlaylistCard: React.FC<PlaylistCardProps> = ({ image, title, description, cta, className, episodeCount }) => {
+export default function PlaylistCard({ image, title, description, cta, episodeCount }: any) {
   return (
-    <Card className={`w-120 min-h-[340px] lg:w-108 lg:min-h-[380px] hover:shadow-xl transition-shadow duration-200 cursor-pointer ${className || ''}`}>
-      <Image
-        src={image}
-        alt={title}
-        width={400}
-        height={300}
-        className="w-full h-48 lg:h-56 object-cover rounded-lg mb-4"
-      />
-      <h3 className="text-lg font-bold mb-1 text-center">{title}</h3>
-      {typeof episodeCount === 'number' && (
-        <div className="text-xs text-gray-500 text-center mb-1">{episodeCount} episode{episodeCount !== 1 ? 's' : ''}</div>
-      )}
-      <p className="text-gray-600 text-sm mb-4 text-center min-h-[48px]">{description}</p>
-      <Button as="button" className="mt-auto cursor-pointer">{cta}</Button>
+    <Card sx={{ width: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+      <Box sx={{ width: '100%', height: 192, borderRadius: 2, overflow: 'hidden', mb: 2 }}>
+        <StrapiImage src={image} alt={title} width={400} height={192} />
+      </Box>
+      <CardContent sx={{ flex: 1, width: '100%', p: 0 }}>
+        <Typography variant="h6" fontWeight={700} align="center" gutterBottom>{title}</Typography>
+        {typeof episodeCount === 'number' && (
+          <Typography variant="caption" color="text.secondary" align="center" display="block" gutterBottom>
+            {episodeCount} episode{episodeCount !== 1 ? 's' : ''}
+          </Typography>
+        )}
+        <Typography variant="body2" color="text.secondary" align="center" sx={{ minHeight: 48, mb: 2 }}>{description}</Typography>
+      </CardContent>
+      <Button variant="contained" color="primary" fullWidth>{cta}</Button>
     </Card>
   );
-};
-
-export default PlaylistCard; 
+} 

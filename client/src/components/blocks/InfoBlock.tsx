@@ -1,26 +1,23 @@
-import React from 'react';
-import { InfoBlockProps } from '../../types';
-import Button from '../Button';
+'use client';
+
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { StrapiImage } from '../StrapiImage';
 
-export default function InfoBlock({ data }: { data: InfoBlockProps }) {
-  const { heading, content, image, cta } = data;
+export default function InfoBlock({ image, heading, content }: any) {
   return (
-    <section className={`flex flex-col md:flex-row gap-4 md:gap-8 p-4 md:p-8 justify-between rounded-xl shadow-md`}>
+    <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={4} p={4} borderRadius={2} boxShadow={2} alignItems="center" justifyContent="space-between">
       {image && (
-        <div className="w-full md:w-auto flex-shrink-0 mb-4 md:mb-0">
-          <StrapiImage src={image.url} alt={image.alternativeText} width={300} height={200} className="rounded-lg object-cover w-full md:w-[400px] h-auto md:h-[300px]" />
-        </div>
+        <Box width={{ xs: '100%', md: 400 }} flexShrink={0} mb={{ xs: 2, md: 0 }}>
+          <Box sx={{ borderRadius: 1.5, overflow: 'hidden', width: '100%', height: 'auto' }}>
+            <StrapiImage src={image.url} alt={image.alternativeText} width={400} height={300} />
+          </Box>
+        </Box>
       )}
-      <div className="space-y-2 md:space-y-4">
-        <h2 className="text-xl md:text-2xl font-bold">{heading}</h2>
-        <p className="text-gray-700">{content}</p>
-        {cta && (
-          <Button href={cta.href} className="mt-2 md:mt-4">
-            {cta.text}
-          </Button>
-        )}
-      </div>
-    </section>
+      <Box flex={1}>
+        <Typography variant="h5" fontWeight={700} gutterBottom>{heading}</Typography>
+        <Typography color="text.secondary">{content}</Typography>
+      </Box>
+    </Box>
   );
 } 

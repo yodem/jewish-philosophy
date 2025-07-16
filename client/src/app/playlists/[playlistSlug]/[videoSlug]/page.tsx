@@ -19,8 +19,8 @@ async function PlaylistSidebar({
 }) {
   const videos: Video[] = playlist.videos || [];
   return (
-    <aside className="w-full md:w-96 bg-white rounded-2xl p-6 h-fit shadow-lg max-h-[80vh] overflow-y-auto">
-      <h4 className="mb-6 text-xl font-bold text-gray-800">
+    <aside style={{ width: '100%', maxWidth: 384, background: 'white', borderRadius: 24, padding: 24, height: 'fit-content', boxShadow: '0 4px 24px rgba(0,0,0,0.08)', maxHeight: '80vh', overflowY: 'auto' }}>
+      <h4 style={{ marginBottom: 24, fontSize: 20, fontWeight: 700, color: '#1f2937' }}>
         In this playlist
       </h4>
       <ul className="space-y-4">
@@ -42,9 +42,9 @@ async function PlaylistSidebar({
                   alt={v.title}
                   width={80}
                   height={45}
-                  className="w-20 h-[45px] object-cover rounded-md shadow-sm"
+                  style={{ width: 80, height: 45, objectFit: 'cover', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
                 />
-                <span className="text-sm font-medium">{v.title}</span>
+                <span style={{ fontSize: 14, fontWeight: 500 }}>{v.title}</span>
               </div>
             </Link>
           </li>
@@ -92,8 +92,8 @@ export default async function VideoDetailPage({
   return (
     <main>
       <HeroSection data={heroData} />
-      <div className="container mx-auto p-4 flex flex-col md:flex-row gap-8">
-        <div className="flex-1">
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: 16, display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <div style={{ flex: 1 }}>
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -103,11 +103,11 @@ export default async function VideoDetailPage({
             ]}
           />
           <YoutubePlayer videoId={video.videoId} title={video.title} />
-          <div className="bg-white rounded-2xl p-6 shadow-lg mt-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          <div style={{ background: 'white', borderRadius: 24, padding: 24, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', marginTop: 32 }}>
+            <h2 style={{ fontSize: 24, fontWeight: 700, marginBottom: 16, color: '#1f2937' }}>
               About this video
             </h2>
-            <p className="text-gray-700 leading-relaxed">{video.description}</p>
+            <p style={{ color: '#374151', lineHeight: 1.6 }}>{video.description}</p>
           </div>
         </div>
         <PlaylistSidebar

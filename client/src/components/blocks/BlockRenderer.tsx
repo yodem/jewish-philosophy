@@ -1,27 +1,25 @@
-import React from 'react';
-import { Block } from '../../types';
-import { Subscribe } from './Subscribe'; // Assuming this is the subscribe component
+'use client';
+
+import Box from '@mui/material/Box';
 import HeroSection from './HeroSection';
 import InfoBlock from './InfoBlock';
+import Subscribe from './Subscribe';
 
-function BlockRenderer({ blocks }: { blocks: Block[] }) {  
+export default function BlockRenderer({ blocks }: { blocks: any[] }) {
   return (
-    <div className="space-y-8">
-      {blocks.map((block, index) => {
+    <Box display="flex" flexDirection="column" gap={4}>
+      {blocks.map((block, idx) => {
         switch (block.__component) {
           case 'blocks.hero-section':
-            return <HeroSection key={index} data={block} />;
-          case 'blocks.subscribe':
-            return <Subscribe key={index} {...block} />;
+            return <HeroSection key={idx} {...block} />;
           case 'blocks.info-block':
-            return <InfoBlock key={index} data={block} />;
-          // Add cases for other blocks if needed
+            return <InfoBlock key={idx} {...block} />;
+          case 'blocks.subscribe':
+            return <Subscribe key={idx} {...block} />;
           default:
             return null;
         }
       })}
-    </div>
+    </Box>
   );
-}
-
-export default BlockRenderer; 
+} 

@@ -1,27 +1,25 @@
 'use client';
 import React from 'react';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
-interface VideoCardProps {
-  image: string;
-  title: string;
-  cta: string;
-  className?: string;
-}
-
-const VideoCard: React.FC<VideoCardProps> = ({ image, title, cta, className }) => {
+export default function VideoCard({ image, title, cta }: any) {
   return (
-    <Card className={`w-60 min-h-[220px] hover:shadow-xl transition-shadow duration-200 cursor-pointer ${className || ''}`}>
-      <img
-        src={image}
+    <Card sx={{ width: 208, display: 'flex', flexDirection: 'column', alignItems: 'center', p: 2 }}>
+      <CardMedia
+        component="img"
+        image={image}
         alt={title}
-        className="w-52 h-32 object-cover rounded-lg mb-3"
+        sx={{ width: 208, height: 128, borderRadius: 2, mb: 1 }}
       />
-      <h4 className="text-base font-semibold mb-2 text-center">{title}</h4>
-      <Button as="button" className="mt-auto">{cta}</Button>
+      <CardContent sx={{ flex: 1, width: '100%', p: 0 }}>
+        <Typography variant="subtitle1" fontWeight={600} align="center" gutterBottom>{title}</Typography>
+      </CardContent>
+      <Button variant="contained" color="primary" fullWidth>{cta}</Button>
     </Card>
   );
-};
-
-export default VideoCard; 
+} 

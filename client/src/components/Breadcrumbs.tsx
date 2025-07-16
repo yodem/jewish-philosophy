@@ -1,30 +1,27 @@
-import Link from "next/link";
-import React from "react";
+'use client';
 
-export interface BreadcrumbItem {
-  label: string;
-  href?: string;
-}
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import MuiLink from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import NextLink from 'next/link';
 
-export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
+export default function CustomBreadcrumbs({ items }: { items: { label: string, href?: string }[] }) {
   return (
-    <nav className="text-sm mb-6" aria-label="Breadcrumb">
-      <ol className="list-none p-0 inline-flex">
+    <Box mb={3}>
+      <Breadcrumbs aria-label="breadcrumb">
         {items.map((item, idx) => (
-          <li key={item.label} className="flex items-center">
-            {item.href ? (
-              <Link href={item.href} className="text-blue-600 hover:underline">
-                {item.label}
-              </Link>
-            ) : (
-              <span className="text-gray-500">{item.label}</span>
-            )}
-            {idx < items.length - 1 && (
-              <span className="mx-2 text-gray-400">/</span>
-            )}
-          </li>
+          item.href ? (
+            <MuiLink key={item.label} component={NextLink} href={item.href} underline="hover" color="primary">
+              {item.label}
+            </MuiLink>
+          ) : (
+            <Typography key={item.label} color="text.secondary">
+              {item.label}
+            </Typography>
+          )
         ))}
-      </ol>
-    </nav>
+      </Breadcrumbs>
+    </Box>
   );
 } 

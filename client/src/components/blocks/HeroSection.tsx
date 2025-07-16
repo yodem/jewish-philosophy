@@ -1,34 +1,31 @@
-import React from 'react';
-import { HeroSectionProps } from '../../types';
-import { StrapiImage } from '../StrapiImage';
-import Button from '../Button';
+'use client';
 
-export default function HeroSection({ data }: { data: HeroSectionProps }) {
-  const { theme, heading, image, cta, author } = data;
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { StrapiImage } from '../StrapiImage';
+import MuiLink from '@mui/material/Link';
+import NextLink from 'next/link';
+
+export default function HeroSection({ heading, author, image, cta }: any) {
   return (
-    <section className={`relative text-white py-8 px-2 sm:py-12 sm:px-4 md:py-20 md:px-8 rounded-xl overflow-hidden transition-all duration-500 ease-in-out hover:shadow-2xl`}>
+    <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={4} py={6}>
       {image && (
-        <div className={`absolute inset-0`}>
-          <StrapiImage
-            src={image.url}
-            alt={image.alternativeText}
-            fill
-            className="object-cover transition-transform duration-700 hover:scale-105"
-          />
-        </div>
+        <Box flexShrink={0} width={{ xs: '100%', md: 400 }} mb={{ xs: 2, md: 0 }}>
+          <Box sx={{ borderRadius: 2, overflow: 'hidden', width: '100%', height: 'auto' }}>
+            <StrapiImage src={image.url} alt={image.alternativeText} width={400} height={300} />
+          </Box>
+        </Box>
       )}
-      <div className="relative z-10 max-w-2xl sm:max-w-3xl md:max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fadeIn">
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight">{heading}</h1>
-        {author && <p className="text-base sm:text-lg md:text-xl opacity-90">By {author}</p>}
+      <Box flex={1} textAlign="center">
+        <Typography variant="h3" fontWeight={800} gutterBottom>{heading}</Typography>
+        {author && <Typography variant="subtitle1" color="text.secondary" gutterBottom>By {author}</Typography>}
         {cta && (
-          <Button
-            href={cta.href}
-            className={`inline-block px-4 py-2 sm:px-6 sm:py-3 bg-white text-${theme}-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-300`}
-          >
+          <Button component={NextLink} href={cta.href} variant="contained" color="primary" size="large" sx={{ mt: 2 }}>
             {cta.text}
           </Button>
         )}
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 } 

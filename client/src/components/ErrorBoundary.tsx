@@ -1,6 +1,9 @@
 'use client';
 
 import { Component, ReactNode } from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 
 interface Props {
     children: ReactNode;
@@ -28,20 +31,17 @@ export default class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex items-center justify-center p-8">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold text-red-600 mb-4">Something went wrong</h2>
-                        <p className="text-gray-600 mb-4">
+                <Box display="flex" alignItems="center" justifyContent="center" p={4}>
+                    <Box textAlign="center">
+                        <Typography variant="h5" color="error" fontWeight={700} mb={2}>Something went wrong</Typography>
+                        <Typography color="text.secondary" mb={2}>
                             {this.state.error?.message || 'An unexpected error occurred'}
-                        </p>
-                        <button
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                            onClick={() => this.setState({ hasError: false })}
-                        >
-                            Try again
-                        </button>
-                    </div>
-                </div>
+                        </Typography>
+                        <Button variant="contained" color="primary" onClick={() => this.setState({ hasError: false })}>
+                            Try Again
+                        </Button>
+                    </Box>
+                </Box>
             );
         }
 
