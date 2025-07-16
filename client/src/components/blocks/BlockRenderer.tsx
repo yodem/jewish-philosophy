@@ -1,27 +1,27 @@
-import type { Block } from "@/types";
-import { FeaturedArticle } from "./FeaturedArticle";
-import { Subscribe } from "./Subscribe";
-import { HeroSection } from "./HeroSection";
-import { InfoBlock } from "./InfoBlock";
-import { SeriesContent } from "./SeriesContent";
+import React from 'react';
+import { Block } from '../../types';
+import { Subscribe } from './Subscribe'; // Assuming this is the subscribe component
+import HeroSection from './HeroSection';
+import InfoBlock from './InfoBlock';
 
-function blockRenderer(block: Block, index: number) {
-    switch (block.__component) {
-        case "blocks.hero-section":
-            return <HeroSection {...block} key={index} />;
-        case "blocks.info-block":
-            return <InfoBlock {...block} key={index} />;
-        case "blocks.featured-article":
-            return <FeaturedArticle {...block} key={index} />;
-        case "blocks.subscribe":
-            return <Subscribe {...block} key={index} />;
-        case "blocks.series-content":
-            return <SeriesContent {...block} key={index} />;
-        default:
+function BlockRenderer({ blocks }: { blocks: Block[] }) {  
+  return (
+    <div className="space-y-8">
+      {blocks.map((block, index) => {
+        switch (block.__component) {
+          case 'blocks.hero-section':
+            return <HeroSection key={index} data={block} />;
+          case 'blocks.subscribe':
+            return <Subscribe key={index} {...block} />;
+          case 'blocks.info-block':
+            return <InfoBlock key={index} data={block} />;
+          // Add cases for other blocks if needed
+          default:
             return null;
-    }
+        }
+      })}
+    </div>
+  );
 }
 
-export function BlockRenderer({ blocks }: { blocks: Block[] }) {
-    return blocks.map((block, index) => blockRenderer(block, index));
-}
+export default BlockRenderer; 

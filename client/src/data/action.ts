@@ -9,19 +9,25 @@ const subscribeSchema = z.object({
   }),
 });
 
-export async function subscribeAction(prevState: any, formData: FormData) {
+interface SubscribeState {
+  zodErrors: Record<string, string[]> | null;
+  strapiErrors: string;
+  successMessage: string;
+  errorMessage: string;
+}
+
+export async function subscribeAction(prevState: SubscribeState, formData: FormData) {
   const validatedFields = subscribeSchema.safeParse({
     email: formData.get("email"),
   });
 
-    if (!validatedFields.success) {
-
-    console.dir(validatedFields.error.flatten().fieldErrors, { depth: null})
-
+  if (!validatedFields.success) {
     return {
       ...prevState,
       zodErrors: validatedFields.error.flatten().fieldErrors,
-      strapiErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
     };
   }
   const response = await subscribeService(validatedFields.data.email);
@@ -29,16 +35,18 @@ export async function subscribeAction(prevState: any, formData: FormData) {
   if (!response.data) {
     return {
       ...prevState,
-      strapiErrors: response.error.message,
+      strapiErrors: response.error.message || "Unknown error",
       errorMessage: "Oops! Something went wrong. Please try again.",
+      successMessage: "",
     };
   }
 
   if (response.data.error) {
     return {
       ...prevState,
-      strapiErrors: response.data.error.message,
+      strapiErrors: response.data.error.message || "Unknown error",
       errorMessage: "Oops! Something went wrong. Please try again.",
+      successMessage: "",
     };
   }
 
@@ -46,8 +54,8 @@ export async function subscribeAction(prevState: any, formData: FormData) {
     ...prevState,
     successMessage: "You've been added to the newsletter!",
     zodErrors: null,
-    strapiErrors: null,
-    errorMessage: null,
-  }
+    strapiErrors: "",
+    errorMessage: "",
+  };
 }
   

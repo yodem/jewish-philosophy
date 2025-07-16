@@ -19,13 +19,6 @@
       "type": "component",
       "component": "elements.link",
       "repeatable": false
-    },
-    "theme": {
-      "type": "enumeration",
-      "enum": [
-        "turquoise",
-        "orange"
-      ]
     }
   },
   "config": {}

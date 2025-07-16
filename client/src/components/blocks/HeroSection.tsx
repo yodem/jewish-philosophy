@@ -1,53 +1,34 @@
-import Link from "next/link";
-import type { HeroSectionProps } from "@/types";
-import { StrapiImage } from "../StrapiImage";
+import React from 'react';
+import { HeroSectionProps } from '../../types';
+import { StrapiImage } from '../StrapiImage';
+import Button from '../Button';
 
-export function HeroSection({
-    theme,
-    heading,
-    cta,
-    image,
-    author,
-    publishedAt,
-    darken = false,
-}: Readonly<HeroSectionProps>) {
-    const themeClasses = {
-        container: theme === "turquoise" ? "text-gray-800" : "text-white",
-        button:
-            theme === "turquoise"
-                ? "bg-black text-white hover:bg-gray-800"
-                : "bg-white text-black hover:bg-gray-200",
-    };
-
-    return (
-        <section className="relative flex min-h-[60vh] items-center">
-            <div className="absolute inset-0 -z-20 bg-gradient-to-b from-yellow-300 to-orange-200 rounded-b-[9rem]">
-                <StrapiImage
-                    src={image.url}
-                    alt={image.alternativeText || "No alternative text provided"}
-                    className="h-full w-full opacity-80 object-cover rounded-b-[10rem]"
-                    width={1920}
-                    height={1080}
-                    priority
-                />
-                {darken && <div className="absolute inset-0 bg-black/50 -z-10"></div>}
-            </div>
-            <div className={`z-10 p-4 ${themeClasses.container}`}>
-                <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl lg:text-7xl">
-                    {heading}
-                </h1>
-                {author && <p className="mt-4 text-lg md:text-xl">{author}</p>}
-                {publishedAt && <p className="mt-2 text-base text-gray-300">{publishedAt}</p>}
-                {cta && (
-                    <Link
-                        href={cta.href}
-                        target={cta.isExternal ? "_blank" : "_self"}
-                        className={`mt-8 inline-block rounded-md px-8 py-3 text-lg font-semibold transition-colors ${themeClasses.button}`}
-                    >
-                        {cta.text}
-                    </Link>
-                )}
-            </div>
-        </section>
-    );
-}
+export default function HeroSection({ data }: { data: HeroSectionProps }) {
+  const { theme, heading, image, cta, author } = data;
+  return (
+    <section className={`relative text-white py-8 px-2 sm:py-12 sm:px-4 md:py-20 md:px-8 rounded-xl overflow-hidden transition-all duration-500 ease-in-out hover:shadow-2xl`}>
+      {image && (
+        <div className={`absolute inset-0`}>
+          <StrapiImage
+            src={image.url}
+            alt={image.alternativeText}
+            fill
+            className="object-cover transition-transform duration-700 hover:scale-105"
+          />
+        </div>
+      )}
+      <div className="relative z-10 max-w-2xl sm:max-w-3xl md:max-w-4xl mx-auto text-center space-y-3 sm:space-y-4 animate-fadeIn">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight">{heading}</h1>
+        {author && <p className="text-base sm:text-lg md:text-xl opacity-90">By {author}</p>}
+        {cta && (
+          <Button
+            href={cta.href}
+            className={`inline-block px-4 py-2 sm:px-6 sm:py-3 bg-white text-${theme}-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-300`}
+          >
+            {cta.text}
+          </Button>
+        )}
+      </div>
+    </section>
+  );
+} 
