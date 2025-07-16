@@ -17,7 +17,7 @@ export function StrapiImage({
     const imageUrl = getStrapiMedia(src);
     if (!imageUrl) return null;
 
-    return <Image src={imageUrl} alt={alt} className={className} {...rest} />;
+    return <Image src={imageUrl} alt={alt || 'Place Holder'} className={className} {...rest} />;
 }
 
 export function getStrapiMedia(url: string | null) {

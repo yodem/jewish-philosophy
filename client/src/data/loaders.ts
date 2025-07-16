@@ -5,33 +5,9 @@ import qs from "qs";
 const homePageQuery = qs.stringify({
   populate: {
     blocks: {
-      on: {
-        "blocks.hero-section": {
-          populate: {
-            image: {
-              fields: ["url", "alternativeText"],
-            },
-            logo: {
-              populate: {
-                image: {
-                  fields: ["url", "alternativeText"],
-                },
-              },
-            },
-            cta: true,
-          },
-        },
-        "blocks.info-block": {
-          populate: {
-            image: {
-              fields: ["url", "alternativeText"],
-            },
-            cta: true,
-          },
-        },
-      },
-    },
-  },
+      populate: '*'
+    }
+  }
 });
 
 export async function getHomePage() {
@@ -51,36 +27,7 @@ const pageBySlugQuery = (slug: string) =>
     },
     populate: {
       blocks: {
-        on: {
-          "blocks.hero-section": {
-            populate: {
-              image: {
-                fields: ["url", "alternativeText"],
-              },
-              cta: true,
-            },
-          },
-          "blocks.info-block": {
-            populate: {
-              image: {
-                fields: ["url", "alternativeText"],
-              },
-              cta: true,
-            },
-          },
-          "blocks.featured-article": {
-            populate: {
-              image: {
-                fields: ["url", "alternativeText"],
-              },
-              link: true,
-            },
-          },
-          "blocks.subscribe": {
-            populate: true,
-          },
-
-        },
+        populate: '*'
       },
     },
   });
@@ -107,6 +54,11 @@ const globalSettingQuery = qs.stringify({
         cta: true,
       },
     },
+    footer: {
+      populate: {
+        links: true,
+      },
+    },
   },
 });
 
@@ -117,28 +69,48 @@ export async function getGlobalSettings() {
   return fetchAPI(url.href, { method: "GET" });
 }
 
-export async function getAllSeriesContent() {
-  const path = "/api/series-contents";
+const allPlaylistsQuery = qs.stringify({
+  populate: '*',
+});
+
+export async function getAllPlaylists() {
+  const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
-  url.search = qs.stringify({
-    populate: ["Image", "youtubeLink"]
-  });
-  return await fetchAPI(url.href, { method: "GET" });
+  url.search = allPlaylistsQuery;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data
 }
 
-const seriesContentBySlugQuery = (slug: string) =>
-  qs.stringify({
+export async function getPlaylistBySlug(slug: string) {
+  const query = qs.stringify({
     filters: {
-      slug: {
-        $eq: slug,
-      },
+      slug: { $eq: slug },
     },
-    populate: ["Image", "youtubeLink"],
+    populate: { videos: { populate: '*' } },
   });
-
-export async function getSeriesContentBySlug(slug: string) {
-  const path = "/api/series-contents";
+  const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
-  url.search = seriesContentBySlugQuery(slug);
-  return await fetchAPI(url.href, { method: "GET" });
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  
+  const item = res.data?.[0]
+  return item
+}
+
+export async function getVideoBySlug(slug: string) {
+  const query = qs.stringify({
+    filters: {
+      slug: { $eq: slug },
+    },
+    populate: '*',
+  });
+  const path = "/api/videos";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  const item = res.data[0] as { id: number; attributes: Record<string, unknown> };
+  return { id: item.id, ...item.attributes };
 }

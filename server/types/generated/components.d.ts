@@ -1,18 +1,5 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
-export interface BlocksFeaturedArticle extends Struct.ComponentSchema {
-  collectionName: 'components_blocks_featured_articles';
-  info: {
-    displayName: 'Featured Article';
-  };
-  attributes: {
-    excerpt: Schema.Attribute.Text;
-    headline: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'>;
-    link: Schema.Attribute.Component<'elements.link', false>;
-  };
-}
-
 export interface BlocksHeroSection extends Struct.ComponentSchema {
   collectionName: 'components_blocks_hero_sections';
   info: {
@@ -22,7 +9,6 @@ export interface BlocksHeroSection extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'elements.link', false>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
-    theme: Schema.Attribute.Enumeration<['turquoise', 'orange']>;
   };
 }
 
@@ -36,8 +22,6 @@ export interface BlocksInfoBlock extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'elements.link', false>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
-    reversed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    theme: Schema.Attribute.Enumeration<['turquoise', 'orange']>;
   };
 }
 
@@ -87,6 +71,17 @@ export interface ElementsLogo extends Struct.ComponentSchema {
   };
 }
 
+export interface LayoutFooter extends Struct.ComponentSchema {
+  collectionName: 'components_layout_footers';
+  info: {
+    displayName: 'Footer';
+  };
+  attributes: {
+    copyright: Schema.Attribute.String;
+    links: Schema.Attribute.Component<'elements.link', true>;
+  };
+}
+
 export interface LayoutHeader extends Struct.ComponentSchema {
   collectionName: 'components_layout_headers';
   info: {
@@ -102,13 +97,13 @@ export interface LayoutHeader extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
-      'blocks.featured-article': BlocksFeaturedArticle;
       'blocks.hero-section': BlocksHeroSection;
       'blocks.info-block': BlocksInfoBlock;
       'blocks.subscribe': BlocksSubscribe;
       'blocks.youtube-link': BlocksYoutubeLink;
       'elements.link': ElementsLink;
       'elements.logo': ElementsLogo;
+      'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;
     }
   }

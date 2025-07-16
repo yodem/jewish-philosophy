@@ -35,7 +35,7 @@ interface Base<
 export interface SeriesContentProps extends Base<"blocks.series-content"> {
   Title: string;
   description: string;
-  youtubeLink?: any; // You can refine this if you know the structure
+  youtubeLink?: { url: string; title?: string };
   Author: string;
   Image: ImageProps;
   seriesName: "Intro To Jewish Philosophy" | "Philosophy Terms";
@@ -74,4 +74,35 @@ export interface SubscribeProps extends Base<"blocks.subscribe"> {
   content: string;
   placeholder: string;
   buttonText: string;
+}
+
+export interface Video {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl300x400: string;
+  imageUrlStandard: string;
+  videoId: string;
+  slug: string;
+  playlist: number | Playlist;
+}
+
+export interface Playlist {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl300x400: string;
+  imageUrlStandard: string;
+  youtubeId: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  videos: Video[];
+}
+
+export interface NavbarHeader {
+  logo?: LogoProps;
+  navigation?: LinkProps[];
+  cta?: LinkProps;
 }

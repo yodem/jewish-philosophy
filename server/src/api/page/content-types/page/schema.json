@@ -22,7 +22,6 @@
       "components": [
         "blocks.info-block",
         "blocks.hero-section",
-        "blocks.featured-article",
         "blocks.subscribe"
       ]
     },

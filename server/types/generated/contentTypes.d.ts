@@ -388,6 +388,7 @@ export interface ApiGlobalGlobal extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
+    footer: Schema.Attribute.Component<'layout.footer', false>;
     header: Schema.Attribute.Component<'layout.header', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -476,12 +477,7 @@ export interface ApiPagePage extends Struct.CollectionTypeSchema {
   };
   attributes: {
     blocks: Schema.Attribute.DynamicZone<
-      [
-        'blocks.info-block',
-        'blocks.hero-section',
-        'blocks.featured-article',
-        'blocks.subscribe',
-      ]
+      ['blocks.info-block', 'blocks.hero-section', 'blocks.subscribe']
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -530,43 +526,6 @@ export interface ApiPlaylistPlaylist extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     videos: Schema.Attribute.Relation<'oneToMany', 'api::video.video'>;
     youtubeId: Schema.Attribute.String;
-  };
-}
-
-export interface ApiSeriesContentSeriesContent
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'series_contents';
-  info: {
-    displayName: 'SeriesContent';
-    pluralName: 'series-contents';
-    singularName: 'series-content';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    Author: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.RichText;
-    Image: Schema.Attribute.Media<'images'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::series-content.series-content'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    seriesName: Schema.Attribute.Enumeration<
-      ['Intro To Jewish Philosophy', 'Philosophy Terms']
-    >;
-    slug: Schema.Attribute.UID<'Title'>;
-    Title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    youtubeLink: Schema.Attribute.DynamicZone<['blocks.youtube-link']>;
   };
 }
 
@@ -1115,7 +1074,6 @@ declare module '@strapi/strapi' {
       'api::newsletter-signup.newsletter-signup': ApiNewsletterSignupNewsletterSignup;
       'api::page.page': ApiPagePage;
       'api::playlist.playlist': ApiPlaylistPlaylist;
-      'api::series-content.series-content': ApiSeriesContentSeriesContent;
       'api::video.video': ApiVideoVideo;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
