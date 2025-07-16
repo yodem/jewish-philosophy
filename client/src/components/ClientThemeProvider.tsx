@@ -1,26 +1,32 @@
 'use client';
+import { CacheProvider } from '@emotion/react';
+import createCache from '@emotion/cache';
+import { prefixer } from 'stylis';
+import rtlPlugin from '@mui/stylis-plugin-rtl';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { Roboto } from 'next/font/google';
+import React, { useMemo } from 'react';
+import { useDirection } from './DirectionProvider';
+import baseTheme from '../theme';
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-roboto',
+const rtlCache = createCache({
+  key: 'muirtl',
+  stylisPlugins: [prefixer, rtlPlugin],
+});
+const ltrCache = createCache({
+  key: 'muiltr',
+  stylisPlugins: [prefixer],
 });
 
-const theme = createTheme({
-  typography: {
-    fontFamily: 'var(--font-roboto)',
-  },
-});
+const ClientThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { direction } = useDirection();
+  const theme = useMemo(() => createTheme({ ...baseTheme, direction }), [direction]);
+  const cache = direction === 'rtl' ? rtlCache : ltrCache;
 
-export default function ClientThemeProvider({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
+    <CacheProvider value={cache}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </CacheProvider>
   );
-} 
+};
+
+export default ClientThemeProvider; 

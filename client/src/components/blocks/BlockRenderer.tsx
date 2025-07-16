@@ -7,7 +7,7 @@ import Subscribe from './Subscribe';
 
 export default function BlockRenderer({ blocks }: { blocks: any[] }) {
   return (
-    <Box display="flex" flexDirection="column" gap={4}>
+    <Box display="flex" flexDirection="column" gap={8}>
       {blocks.map((block, idx) => {
         switch (block.__component) {
           case 'blocks.hero-section':

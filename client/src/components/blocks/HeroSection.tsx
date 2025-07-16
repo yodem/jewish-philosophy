@@ -6,10 +6,11 @@ import Button from '@mui/material/Button';
 import { StrapiImage } from '../StrapiImage';
 import MuiLink from '@mui/material/Link';
 import NextLink from 'next/link';
+import Paper from '@mui/material/Paper';
 
 export default function HeroSection({ heading, author, image, cta }: any) {
   return (
-    <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={4} py={6}>
+    <Paper component={Box} elevation={4} display="flex" flexDirection={{ xs: 'column', md: 'row' }} alignItems="center" gap={4} p={6} sx={{ borderRadius: 4 }}>
       {image && (
         <Box flexShrink={0} width={{ xs: '100%', md: 400 }} mb={{ xs: 2, md: 0 }}>
           <Box sx={{ borderRadius: 2, overflow: 'hidden', width: '100%', height: 'auto' }}>
@@ -26,6 +27,6 @@ export default function HeroSection({ heading, author, image, cta }: any) {
           </Button>
         )}
       </Box>
-    </Box>
+    </Paper>
   );
 } 

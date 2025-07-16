@@ -1,10 +1,8 @@
 'use client';
 import { createTheme } from '@mui/material/styles';
 
-const theme = createTheme({
-  typography: {
-    fontFamily: 'var(--font-roboto)',
-  },
-});
+const baseTheme = {
+  // ... your theme options, e.g. palette, typography, etc.
+};
 
-export default theme;
+export default baseTheme;

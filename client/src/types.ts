@@ -106,3 +106,20 @@ export interface NavbarHeader {
   navigation?: LinkProps[];
   cta?: LinkProps;
 }
+
+export interface FooterProps {
+  copyright: string;
+  links: { label: string; url: string }[];
+}
+
+export interface GlobalSettings {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  header: NavbarHeader;
+  footer: FooterProps | null;
+}

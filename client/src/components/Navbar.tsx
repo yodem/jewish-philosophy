@@ -9,11 +9,15 @@ import MuiLink from '@mui/material/Link';
 import NextLink from 'next/link';
 import { StrapiImage } from './StrapiImage';
 import { NavbarHeader } from '@/types';
+import { useDirection } from './DirectionProvider';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 export default function Navbar({ header }: { header: NavbarHeader }) {
   const navLinks = header?.navigation || [];
+  const { direction, toggleDirection } = useDirection();
   return (
-    <AppBar position="static" color="primary" elevation={1} sx={{ mb: 2 }}>
+    <AppBar position="fixed" color="primary" elevation={1} sx={{ mb: 2 }}>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <Box display="flex" alignItems="center" gap={4}>
          <StrapiImage src={header?.logo?.image?.url || ''} width={50} height={50} alt={header?.logo?.image?.alternativeText || ''} />
@@ -28,6 +32,11 @@ export default function Navbar({ header }: { header: NavbarHeader }) {
             {header.cta.text}
           </Button>
         )}
+        <FormControlLabel
+          control={<Switch checked={direction === 'rtl'} onChange={toggleDirection} />}
+          label={direction === 'rtl' ? 'עברית (RTL)' : 'English (LTR)'}
+          sx={{ ml: 2 }}
+        />
       </Toolbar>
     </AppBar>
   );

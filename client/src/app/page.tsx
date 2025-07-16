@@ -7,7 +7,7 @@ export default async function HomeRoute() {
   const homeRes = await getHomePage();  
   const blocks = homeRes?.data?.blocks || [];
   return (
-    <Container maxWidth="md" sx={{ py: 8 }}>
+    <Container maxWidth="lg" sx={{ py: 8 }}>
       <ErrorBoundary>
         <BlockRenderer blocks={blocks} />
       </ErrorBoundary>

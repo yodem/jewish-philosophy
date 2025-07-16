@@ -6,7 +6,7 @@ const CHANNEL_ID = 'UCCveJN9rRmW22wHRcce68ng';
 
 async function deleteAll(endpoint: string) {
   const res = await fetch(`${STRAPI_URL}/${endpoint}?pagination[pageSize]=1000`);
-  const data = await res.json();
+  const data = (await res.json()) as { data?: { id: string }[] };
   for (const item of data.data || []) {
     await fetch(`${STRAPI_URL}/${endpoint}/${item.id}`, { method: 'DELETE' });
   }
@@ -15,14 +15,14 @@ async function deleteAll(endpoint: string) {
 async function fetchPlaylists() {
   const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=20`;
   const res = await fetch(url);
-  const data = await res.json();
+  const data = (await res.json()) as { items?: any[] };
   return data.items || [];
 }
 
 async function fetchPlaylistItems(playlistId: string) {
   const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=20`;
   const res = await fetch(url);
-  const data = await res.json();
+  const data = (await res.json()) as { items?: any[] };
   return data.items || [];
 }
 
@@ -42,7 +42,7 @@ async function createPlaylist(playlist: any) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  const data = await res.json();
+  const data = (await res.json()) as { data?: any };
   if (!data.data) {
     console.error('Playlist creation error:', data);
   }
@@ -52,7 +52,7 @@ async function createPlaylist(playlist: any) {
 async function createVideo(video: any, playlistId: string) {
   // Find the Strapi playlist by youtubeId
   const playlistRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlistId}`);
-  const playlistData = await playlistRes.json();
+  const playlistData = (await playlistRes.json()) as { data?: any[] };
   const strapiPlaylistId = playlistData.data?.[0]?.id;
   if (!strapiPlaylistId) {
     console.error('No playlist found for video', video, playlistId);
@@ -74,7 +74,7 @@ async function createVideo(video: any, playlistId: string) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
-  const data = await res.json();
+  const data = (await res.json()) as { data?: any };
   if (!data.data) {
     console.error('Video creation error:', data);
   }

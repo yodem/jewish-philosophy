@@ -3,8 +3,10 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
+import { DirectionProvider } from '../components/DirectionProvider';
 import ClientThemeProvider from '../components/ClientThemeProvider';
 import { Roboto } from 'next/font/google';
+import Box from '@mui/material/Box';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -14,24 +16,27 @@ const roboto = Roboto({
 });
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const globalRes = await getGlobalSettings();
-  const footer = globalRes?.data?.footer;
-  const links = footer?.links?.map((l: any) => ({ label: l.label, url: l.url })) || [];
+  const globalSettings = await getGlobalSettings();
+  const header = globalSettings?.data?.header || {};
+  const footer = globalSettings?.data?.footer || {};
   const copyright = footer?.copyright || '';
-  const header = globalRes?.data?.header;
+  const links = footer?.links || [];
 
   return (
     <html lang="en" className={roboto.variable}>
       <body>
-        <AppRouterCacheProvider>
+        <DirectionProvider>
           <ClientThemeProvider>
-            <Suspense fallback={null}>
-              <Navbar header={header} />
-            </Suspense>
-            {children}
-            <Footer copyright={copyright} links={links} />
+            <Box sx={{ 
+              minHeight: '100vh',
+              background: 'linear-gradient(180deg, #fff 0%, #e3f2fd 100%)'
+            }}>
+            <Navbar header={header} />
+              {children}
+              <Footer copyright={copyright} links={links} />
+              </Box>
           </ClientThemeProvider>
-        </AppRouterCacheProvider>
+        </DirectionProvider>
       </body>
     </html>
   );
