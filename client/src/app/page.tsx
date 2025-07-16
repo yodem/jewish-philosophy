@@ -1,6 +1,7 @@
+import ErrorBoundary from '@/components/ErrorBoundary';
+import HomePageContent from '@/components/HomePageContent';
 import { Suspense } from 'react';
-import HomePageContent from './components/HomePageContent';
-import ErrorBoundary from './components/ErrorBoundary';
+
 
 function LoadingFallback() {
   return (
