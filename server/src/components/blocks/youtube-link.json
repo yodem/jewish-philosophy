@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blocks_youtube_links",
+  "info": {
+    "displayName": "YoutubeLink"
+  },
+  "options": {},
+  "attributes": {
+    "link": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
