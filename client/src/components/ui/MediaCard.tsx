@@ -3,6 +3,7 @@
 import { Card } from './card';
 import { Button } from './button';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 export type MediaCardType = 'playlist' | 'video';
 
@@ -32,23 +33,39 @@ export default function MediaCard({
 
   return (
     <Card
-      className={`flex flex-col items-center ${isLarge ? "w-120 h-90" : "w-80 min-h-[340px] lg:w-96 lg:min-h-[380px]"} ${bgColor} hover:shadow-xl transition-shadow duration-200 cursor-pointer ${className || ''}`}
+      className={cn(
+        "flex flex-col items-center transition-shadow duration-200 cursor-pointer overflow-hidden",
+        isLarge 
+          ? "w-full h-auto aspect-video" 
+          : "w-full sm:w-64 md:w-72 lg:w-80 min-h-[280px] sm:min-h-[320px] lg:min-h-[340px]",
+        bgColor,
+        "hover:shadow-xl",
+        className
+      )}
     >
-      <Image
-        src={image}
-        alt={title}
-        width={isLarge ? 1200:400}
-        height={isLarge ? 900:300}
-        className={`object-contain rounded-lg mb-4 w-full ${isLarge ? "h-90 w-120" : "h-48 w-56"}`}
-      />
-      <h3 className="font-bold mb-1 text-center text-lg max-w-[90%]">{title}</h3>
-      {typeof episodeCount === 'number' && (
-        <div className="text-xs text-gray-500 text-center mb-1">מספר פרקים - {episodeCount} </div>
-      )}
-      {description && (
-        <p className="text-gray-600 text-sm mb-4 text-center min-h-[48px]">{description}</p>
-      )}
-      <Button className="mt-auto cursor-pointer w-full max-w-[90%]">{`צפייה ב${type === 'playlist' ? 'סדרה' : 'סרטון'}`}</Button>
+      <div className="w-full relative">
+        <Image
+          src={image}
+          alt={title}
+          width={isLarge ? 1200 : 400}
+          height={isLarge ? 900 : 300}
+          className={cn(
+            "object-cover rounded-t-lg w-full",
+            isLarge ? "aspect-video" : "aspect-[4/3]"
+          )}
+          priority
+        />
+      </div>
+      <div className="flex flex-col items-center p-4 w-full">
+        <h3 className="font-bold mb-1 text-center text-lg line-clamp-2">{title}</h3>
+        {typeof episodeCount === 'number' && (
+          <div className="text-xs text-gray-500 text-center mb-1">מספר פרקים - {episodeCount}</div>
+        )}
+        {description && (
+          <p className="text-gray-600 text-sm mb-4 text-center line-clamp-2">{description}</p>
+        )}
+        <Button className="mt-auto cursor-pointer w-full">{`צפייה ב${type === 'playlist' ? 'סדרה' : 'סרטון'}`}</Button>
+      </div>
     </Card>
   );
 } 
