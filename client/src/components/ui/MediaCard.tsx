@@ -50,7 +50,7 @@ export default function MediaCard({
           width={isLarge ? 1200 : 400}
           height={isLarge ? 900 : 300}
           className={cn(
-            "object-cover rounded-t-lg w-full",
+            "object-contain rounded-t-lg w-full",
             isLarge ? "aspect-video" : "aspect-[4/3]"
           )}
           priority
