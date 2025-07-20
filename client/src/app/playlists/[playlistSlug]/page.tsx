@@ -6,7 +6,7 @@ import type { Playlist, Video } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MediaCard from "@/components/ui/MediaCard";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import GenericCarousel from "@/components/ui/GenericCarousel";
 
 export default async function PlaylistDetailPage({ params }: { params: { playlistSlug: string } | Promise<{ playlistSlug: string }> }) {
   let resolvedParams: { playlistSlug: string };
@@ -60,56 +60,23 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
         </div>
       )}
       {restVideos.length > 0 && (
-        <div className="container mx-auto px-2 my-8 flex flex-col items-center justify-center w-full overflow-x-hidden">
+        <div className="flex flex-col items-center">
           <h3 className="text-xl font-semibold mb-4 text-center">פרקים נוספים</h3>
-          <div className="w-full max-w-full overflow-x-auto md:max-w-3xl xl:max-w-6xl">
-            <Carousel opts={{ align: 'start', loop: true }} className="w-full">
-              <CarouselPrevious />
-              <CarouselContent className="md:-ml-4">
-                {restVideos.map((video) => (
-                  <CarouselItem key={video.id} className="w-full basis-full pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3">
-                    <Link href={`/playlists/${playlistSlug}/${video.slug}`} className="block w-full h-full">
-                      <MediaCard
-                        image={video.imageUrl300x400 || video.imageUrlStandard}
-                        title={video.title}
-                        type="video"
-                        className="h-full"
-                        isLarge={false}
-                      />
-                    </Link>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselNext />
-            </Carousel>
-          </div>
+          <GenericCarousel 
+            items={restVideos} 
+            type="video" 
+            baseUrl={`/playlists/${playlistSlug}`}
+          />
         </div>
       )}
       {otherPlaylists.length > 0 && (
-        <div className="mt-16 flex flex-col items-center justify-center px-2">
+        <div className="flex flex-col items-center">
           <h3 className="text-xl font-semibold mb-4 text-center">סדרות נוספות</h3>
-          <div className="w-full max-w-full overflow-x-auto md:max-w-3xl xl:max-w-6xl">
-            <Carousel opts={{ align: 'start', loop: true }} className="w-full">
-              <CarouselPrevious />
-              <CarouselContent className="md:-ml-4">
-                {otherPlaylists.map((playlist) => (
-                  <CarouselItem key={playlist.id} className="w-full basis-full pl-2 md:pl-4 md:basis-1/2 xl:basis-1/3">
-                    <Link href={`/playlists/${playlist.slug}`} className="no-underline h-full">
-                      <MediaCard
-                        image={playlist.imageUrl300x400 || playlist.imageUrlStandard}
-                        title={playlist.title}
-                        description={playlist.description}
-                        episodeCount={playlist.videos?.length}
-                        type="playlist"
-                        className="h-full"
-                      />
-                    </Link>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselNext />
-            </Carousel>
-          </div>
+          <GenericCarousel 
+            items={otherPlaylists} 
+            type="playlist" 
+            baseUrl="/playlists"
+          />
         </div>
       )}
     </>

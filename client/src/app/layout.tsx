@@ -1,4 +1,6 @@
 import './globals.css';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { getGlobalSettings } from "@/data/loaders";
@@ -14,6 +16,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="hebrew" dir="rtl">
+      {/* <link
+          rel="stylesheet"
+          type="text/css"
+          charSet="UTF-8"
+          href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css"
+        />
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css"
+        /> */}
+
+
       <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col">
         <Suspense fallback={<nav className="w-full bg-gray-900 text-white py-4 px-8 flex items-center justify-between shadow-md"><div className="animate-pulse h-8 w-32 bg-gray-700 rounded" /></nav>}>
           <Navbar header={header} />
