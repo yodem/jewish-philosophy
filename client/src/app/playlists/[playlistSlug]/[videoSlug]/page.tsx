@@ -30,29 +30,35 @@ export default async function VideoDetailPage({
     return notFound();
   }
   return (
-      <div className="container mx-auto px-2 my-8 flex flex-col items-center justify-center w-full">
-        <Card className="flex-1 bg-white rounded-2xl p-4 md:p-6 shadow-lg border-0">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Playlists", href: "/playlists" },
-              { label: playlist.title, href: `/playlists/${playlistSlug}` },
-              { label: video.title },
-            ]}
-          />
-          <YoutubePlayer videoId={video.videoId} title={video.title} />
-          <div className="bg-white rounded-2xl p-6 shadow-lg mt-8">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">
-              תיאור
-            </h2>
-            <p className="text-gray-700 leading-relaxed">{video.description}</p>
+    <div className="container mx-auto px-2 my-4 sm:my-8 flex flex-col items-center justify-center w-full">
+      <Card className="flex-1 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">
+        <Breadcrumbs
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Playlists", href: "/playlists" },
+            { label: playlist.title, href: `/playlists/${playlistSlug}` },
+            { label: video.title },
+          ]}
+        />
+        <YoutubePlayer videoId={video.videoId} title={video.title} />
+        <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md mt-6 sm:mt-8">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-800">
+            תיאור
+          </h2>
+          <p className="text-gray-700 leading-relaxed">{video.description}</p>
+        </div>
+        
+        {playlist.videos && playlist.videos.length > 0 && (
+          <div className="mt-8 w-full">
+            <h3 className="text-xl font-semibold mb-4 text-center">פרקים בסדרה</h3>
+            <GenericCarousel 
+              items={playlist.videos} 
+              type="video" 
+              baseUrl={`/playlists/${playlistSlug}`}
+            />
           </div>
-          <GenericCarousel 
-            items={playlist.videos} 
-            type="video" 
-            baseUrl={`/playlists/${playlistSlug}`}
-          />
-        </Card>
-      </div>
+        )}
+      </Card>
+    </div>
   );
 } 

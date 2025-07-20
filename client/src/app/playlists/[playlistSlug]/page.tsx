@@ -29,7 +29,7 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
   const [firstVideo, ...restVideos] = videos;
 
   return (
-    <>
+    <div className="w-full max-w-full overflow-hidden">
       <Breadcrumbs
         items={[
           { label: "Home", href: "/" },
@@ -37,31 +37,31 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
           { label: playlist.title },
         ]}
       />
-      <div className="flex flex-col items-center mb-8 px-2 overflow-x-hidden">
-        <h2 className="text-3xl font-bold mb-2 text-center">{playlist.title}</h2>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl text-center">
+      <div className="flex flex-col items-center mb-6 sm:mb-8 px-2 sm:px-4">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center">{playlist.title}</h2>
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl text-center">
           {playlist.description}
         </p>
       </div>
       {firstVideo && (
-        <div className="mb-12 flex flex-col items-center px-2">
-          <Link href={`/playlists/${playlistSlug}/${firstVideo.slug}`} className="block w-full max-w-3xl">
+        <div className="mb-8 sm:mb-12 flex flex-col items-center px-2">
+          <Link href={`/playlists/${playlistSlug}/${firstVideo.slug}`} className="block w-full max-w-md sm:max-w-3xl">
             <MediaCard
               image={firstVideo.imageUrl300x400 || firstVideo.imageUrlStandard}
               title={firstVideo.title}
               type="video"
-              className="w-full h-full text-center text-xl"
+              className="w-full"
               isLarge={true}
             />
           </Link>
-          <div className="mt-4 text-center max-w-2xl text-gray-700">
+          <div className="mt-4 text-center max-w-full sm:max-w-2xl text-gray-700 px-2">
             {firstVideo.description}
           </div>
         </div>
       )}
       {restVideos.length > 0 && (
-        <div className="flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-4 text-center">פרקים נוספים</h3>
+        <div className="flex flex-col items-center mt-4 sm:mt-8">
+          <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">פרקים נוספים</h3>
           <GenericCarousel 
             items={restVideos} 
             type="video" 
@@ -70,8 +70,8 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
         </div>
       )}
       {otherPlaylists.length > 0 && (
-        <div className="flex flex-col items-center">
-          <h3 className="text-xl font-semibold mb-4 text-center">סדרות נוספות</h3>
+        <div className="flex flex-col items-center mt-4 sm:mt-8">
+          <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">סדרות נוספות</h3>
           <GenericCarousel 
             items={otherPlaylists} 
             type="playlist" 
@@ -79,6 +79,6 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
           />
         </div>
       )}
-    </>
+    </div>
   );
 } 
