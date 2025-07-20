@@ -5,14 +5,14 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MediaCard from "@/components/ui/MediaCard";
 import Link from "next/link";
-import type { Playlist, Video } from "@/types";
+import type { Blog, Playlist, Video } from "@/types";
 import { cn } from "@/lib/utils";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useCallback, useState } from "react";
 
 interface GenericCarouselProps {
-  items: (Playlist | Video)[];
-  type: "playlist" | "video";
+  items: (Playlist | Video | Blog)[];
+  type: "playlist" | "video" | "blog";
   baseUrl: string; // e.g. "/playlists" or `/playlists/${playlistSlug}`
   className?: string;
 }
@@ -45,8 +45,27 @@ function SamplePrevArrow(props: { className?: string; style?: React.CSSPropertie
 
 export default function GenericCarousel({ items, type, baseUrl, className }: GenericCarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const isPlaylist = type === "playlist";
-  
+  console.log({items});
+
+  // Dicts for field access by type
+  const imageField: Record<GenericCarouselProps["type"], (item: Playlist | Video | Blog) => string | undefined> = {
+    playlist: (item) => (item as Playlist).imageUrl300x400 || (item as Playlist).imageUrlStandard,
+    video: (item) => (item as Video).imageUrl300x400 || (item as Video).imageUrlStandard,
+    blog: (item) => (item as Blog).coverImage?.url,
+  };
+
+  const descriptionField: Record<GenericCarouselProps["type"], (item: Playlist | Video | Blog) => string | undefined> = {
+    playlist: (item) => (item as Playlist).description,
+    video: (item) => (item as Video).description,
+    blog: (item) => (item as Blog).author.name,
+  };
+
+  const episodeCountField: Record<GenericCarouselProps["type"], (item: Playlist | Video | Blog) => number | undefined> = {
+    playlist: (item) => (item as Playlist).videos?.length,
+    video: () => undefined,
+    blog: () => undefined,
+  };
+
   // Track current slide for mobile swipe handling
   const afterChange = useCallback((current: number) => {
     setCurrentSlide(current);
@@ -100,10 +119,10 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
             <div key={item.id} className="px-2 pb-6">
               <Link href={`${baseUrl}/${item.slug}`} className="no-underline block h-full">
                 <MediaCard
-                  image={(item as any).imageUrl300x400 || (item as any).imageUrlStandard}
+                  image={imageField[type](item) || ""}
                   title={item.title}
-                  description={isPlaylist ? (item as Playlist).description : undefined}
-                  episodeCount={isPlaylist ? (item as Playlist).videos?.length : undefined}
+                  description={descriptionField[type](item)}
+                  episodeCount={episodeCountField[type](item)}
                   type={type}
                 />
               </Link>
