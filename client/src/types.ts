@@ -85,3 +85,30 @@ export interface NavbarHeader {
   navigation?: LinkProps[];
   cta?: LinkProps;
 }
+
+export type Autor = {
+  id: number;
+  documentId: string;
+  name: string;
+}
+
+export type Category = {
+  id: number;
+  documentId: string;
+  name: string;
+  slug: string;
+  description: string;
+}
+
+export type Blog = {
+  id: number;
+  documentId: string;
+  title: string;
+  content: string;
+  description: string;
+  slug: string;
+  coverImage?: ImageProps;
+  publishedAt: string;
+  author: Autor;
+  categories: Category[];
+}

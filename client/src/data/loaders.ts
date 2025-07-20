@@ -1,6 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
+import { Blog, Category, ImageProps } from "@/types";
 
 const homePageQuery = qs.stringify({
   populate: {
@@ -114,3 +115,35 @@ export async function getVideoBySlug(slug: string) {
   const item = res.data[0]
   return item
 }
+
+// Blog queries
+const allBlogsQuery = qs.stringify({
+  populate: '*',
+  sort: ['publishedAt:desc'],
+});
+
+export async function getAllBlogs(): Promise<Blog[]> {
+  const path = "/api/blogs";
+  const url = new URL(path, BASE_URL);
+  url.search = allBlogsQuery;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data
+}
+
+export async function getBlogBySlug(slug: string) {
+  const query = qs.stringify({
+    filters: {
+      slug: { $eq: slug },
+    },
+    populate: '*',
+  });
+  const path = "/api/blogs";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  
+  return res.data[0]
+}
+
