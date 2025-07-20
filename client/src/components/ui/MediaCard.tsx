@@ -1,6 +1,5 @@
 // MediaCard.tsx
 'use client';
-import React from 'react';
 import { Card } from './card';
 import { Button } from './button';
 import Image from 'next/image';
@@ -17,7 +16,7 @@ export interface MediaCardProps {
   isLarge?: boolean;
 }
 
-const MediaCard: React.FC<MediaCardProps> = ({
+export default function MediaCard({
   image,
   title,
   description,
@@ -25,11 +24,11 @@ const MediaCard: React.FC<MediaCardProps> = ({
   className,
   type,
   isLarge = false,
-}) => {
+}: MediaCardProps) {
   // Only background color differs by type
   const bgColor = type === 'playlist'
-    ? 'bg-gradient-to-br from-blue-50 to-white'
-    : 'bg-gradient-to-br from-orange-50 to-white';
+    ? 'bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-gray-950'
+    : 'bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/30 dark:to-gray-950';
 
   return (
     <Card
@@ -52,6 +51,4 @@ const MediaCard: React.FC<MediaCardProps> = ({
       <Button className="mt-auto cursor-pointer w-full max-w-[90%]">{`צפייה ב${type === 'playlist' ? 'סדרה' : 'סרטון'}`}</Button>
     </Card>
   );
-};
-
-export default MediaCard; 
+} 
