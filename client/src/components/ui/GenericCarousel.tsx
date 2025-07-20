@@ -78,7 +78,8 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
           dots: true,
           arrows: false,
           swipeToSlide: true,
-          touchThreshold: 10,
+          infinite: false,
+          speed: 300,
         }
       }
     ],
