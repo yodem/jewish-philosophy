@@ -66,6 +66,10 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
     blog: () => undefined,
   };
 
+  // Determine slidesToShow based on type and screen size (default 3)
+  const defaultSlidesToShow = 3;
+  const shouldDisableInfinite =  items.length <= defaultSlidesToShow;
+
   // Track current slide for mobile swipe handling
   const afterChange = useCallback((current: number) => {
     setCurrentSlide(current);
@@ -73,9 +77,9 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
   
   const settings = {
     dots: true,
-    infinite: true,
+    infinite: !shouldDisableInfinite,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: defaultSlidesToShow,
     slidesToScroll: 1,
     rtl: true,
     arrows: true,
@@ -97,7 +101,7 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
           dots: true,
           arrows: false,
           swipeToSlide: true,
-          infinite: false,
+          infinite: false, // Always disable infinite on mobile
           speed: 300,
         }
       }
