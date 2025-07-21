@@ -48,7 +48,8 @@ function SubscribeInner({
   }, [successMessage, errorMessage, enqueueSnackbar]);
 
   return (
-    <Card className="w-full max-w-xl mx-auto px-2 py-8 bg-white/95 rounded-2xl shadow-lg flex flex-col items-center gap-6 border-0">
+
+    <Card className="w-full max-w-xl mx-auto px-2 py-8 bg-white/95 rounded-2xl shadow-lg flex flex-col items-center gap-6  p-6 mt-8 bg-gradient-to-tl from-zinc-200 via-stone-100 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 border border-gray-200">
       <CardContent className="w-full flex flex-col items-center gap-2 px-0">
         <CardTitle className="text-2xl font-semibold mb-1 text-center">{headline}</CardTitle>
         <CardDescription className="text-gray-700 mb-4 text-center">{content}</CardDescription>
