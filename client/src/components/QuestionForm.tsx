@@ -7,6 +7,15 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { submitQuestionAction } from "@/data/action";
+import { SnackbarProvider, useSnackbar } from 'notistack';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const initialState = {
   zodErrors: null,
@@ -29,20 +38,48 @@ function SubmitButton() {
   );
 }
 
-export default function QuestionForm() {
+function QuestionFormInner() {
   const router = useRouter();
   const [state, formAction] = useActionState(submitQuestionAction, initialState);
   const [showForm, setShowForm] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
 
-  // Redirect after successful submission
+  // Show notifications on submit
   useEffect(() => {
+    if (state.successMessage) {
+      enqueueSnackbar(state.successMessage, { variant: 'success' });
+      setDialogOpen(true);
+    }
+    if (state.errorMessage || state.strapiErrors) {
+      enqueueSnackbar(state.errorMessage || state.strapiErrors, { variant: 'error' });
+    }
+  }, [state.successMessage, state.errorMessage, state.strapiErrors, enqueueSnackbar]);
+
+  // Dialog confirm handler
+  const handleDialogConfirm = () => {
+    setDialogOpen(false);
     if (state.slug) {
       router.push(`/responsa/${state.slug}`);
     }
-  }, [state.slug, router]);
+  };
 
   return (
     <div className="w-full bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mt-8 shadow-sm">
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>לעבור לעמוד השאלה?</DialogTitle>
+            <DialogDescription>
+              השאלה נשלחה בהצלחה! האם תרצה לעבור לעמוד השאלה?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>לא, תודה</Button>
+            <Button onClick={handleDialogConfirm}>כן, עבור לעמוד השאלה</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {!showForm ? (
         <div className="text-center">
           <h3 className="text-xl font-semibold mb-4">יש לך שאלה?</h3>
@@ -54,7 +91,6 @@ export default function QuestionForm() {
       ) : (
         <>
           <h3 className="text-xl font-semibold mb-6">שאל שאלה חדשה</h3>
-          
           <form action={formAction} className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-1">
@@ -70,7 +106,6 @@ export default function QuestionForm() {
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.title[0]}</p>
               )}
             </div>
-            
             <div>
               <label htmlFor="questioneer" className="block text-sm font-medium mb-1">
                 שם השואל
@@ -85,7 +120,6 @@ export default function QuestionForm() {
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.questioneer[0]}</p>
               )}
             </div>
-            
             <div>
               <label htmlFor="content" className="block text-sm font-medium mb-1">
                 תוכן השאלה
@@ -103,25 +137,6 @@ export default function QuestionForm() {
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.content[0]}</p>
               )}
             </div>
-            
-            {state.successMessage && (
-              <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 p-3 rounded-md">
-                {state.successMessage}
-              </div>
-            )}
-            
-            {state.errorMessage && (
-              <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-md">
-                {state.errorMessage}
-              </div>
-            )}
-            
-            {state.strapiErrors && (
-              <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 p-3 rounded-md">
-                API Error: {state.strapiErrors}
-              </div>
-            )}
-            
             <div className="flex justify-between items-center gap-4">
               <Button 
                 type="button" 
@@ -136,5 +151,13 @@ export default function QuestionForm() {
         </>
       )}
     </div>
+  );
+}
+
+export default function QuestionForm() {
+  return (
+    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <QuestionFormInner />
+    </SnackbarProvider>
   );
 } 

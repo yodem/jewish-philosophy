@@ -141,7 +141,6 @@ export default function ResponsaPage() {
       )}
       
       <div className="mt-12">
-        <h2 className="text-2xl font-bold text-center mb-6">יש לך שאלה חדשה?</h2>
         <div className="max-w-3xl mx-auto">
           <QuestionFormWrapper />
         </div>

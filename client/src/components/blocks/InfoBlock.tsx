@@ -10,9 +10,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
   return (
     <Card className={`flex  flex-col  ${reversed ? "flex-row-reverse" : "md:md:flex-row "} gap-6 md:gap-10 p-4 md:p-8 items-center rounded-2xl shadow-lg border-0 bg-white/90 max-w-4xl mx-auto my-6`}>
       {image && (
-        <div className="w-full md:w-auto flex-shrink-0 mb-4 md:mb-0 flex justify-center">
-          <StrapiImage src={image.url} alt={image.alternativeText} width={300} height={200} className="rounded-lg object-cover w-full md:w-[400px] h-auto md:h-[300px] shadow-md" />
-        </div>
+          <StrapiImage src={image.url} alt={image.alternativeText} width={900} height={900} className="rounded-lg object-cover w-[400px] h-[300px] shadow-md" />
       )}
       <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0">
         <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900">{heading}</CardTitle>

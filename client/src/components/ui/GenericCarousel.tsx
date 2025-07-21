@@ -44,8 +44,7 @@ function SamplePrevArrow(props: { className?: string; style?: React.CSSPropertie
 }
 
 export default function GenericCarousel({ items, type, baseUrl, className }: GenericCarouselProps) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  console.log({items});
+
 
   // Dicts for field access by type
   const imageField: Record<GenericCarouselProps["type"], (item: Playlist | Video | Blog) => string | undefined> = {
@@ -71,9 +70,7 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
   const shouldDisableInfinite =  items.length <= defaultSlidesToShow;
 
   // Track current slide for mobile swipe handling
-  const afterChange = useCallback((current: number) => {
-    setCurrentSlide(current);
-  }, []);
+
   
   const settings = {
     dots: true,
@@ -83,7 +80,6 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
     slidesToScroll: 1,
     rtl: true,
     arrows: true,
-    afterChange,
     responsive: [
       {
         breakpoint: 1024,
@@ -116,8 +112,8 @@ export default function GenericCarousel({ items, type, baseUrl, className }: Gen
   }
 
   return (
-    <div className={cn("w-full max-w-full md:max-w-3xl xl:max-w-6xl py-4 px-0 md:px-6 mb-8 relative", className)}>
-      <div className="overflow-hidden">
+    <div className={cn("w-full max-w-full md:max-w-3xl xl:max-w-6xl py-4 px-0 md:px-6 mb-8 relative h-full", className)}>
+      <div className=" h-full">
         <Slider {...settings}>
           {items.map((item) => (
             <div key={item.id} className="px-2 pb-6">
