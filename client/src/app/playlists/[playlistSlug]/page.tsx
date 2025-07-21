@@ -70,7 +70,7 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
         </div>
       )}
       {otherPlaylists.length > 0 && (
-        <div className="flex flex-col items-center mt-4 sm:mt-8">
+        <div className="flex flex-col items-center mt-4 sm:mt-8 w-full h-full">
           <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">סדרות נוספות</h3>
           <GenericCarousel 
             items={otherPlaylists} 

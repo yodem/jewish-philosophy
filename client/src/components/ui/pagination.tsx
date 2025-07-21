@@ -86,7 +86,7 @@ export function Pagination({
         onClick={handlePrevious}
         disabled={currentPage === 1}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronRight className="h-4 w-4" />
         <span className="sr-only">Previous Page</span>
       </Button>
 
@@ -122,7 +122,7 @@ export function Pagination({
         onClick={handleNext}
         disabled={currentPage === totalPages}
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronLeft className="h-4 w-4" />
         <span className="sr-only">Next Page</span>
       </Button>
     </div>

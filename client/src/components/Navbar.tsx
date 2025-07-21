@@ -68,8 +68,10 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
             <SheetContent side="left" className="p-0 w-64 bg-gray-900 text-white">
               <div className="flex flex-col h-full">
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-800">
-                  {header?.logo?.logoText && (
-                    <span className="text-xl font-bold whitespace-nowrap">{header.logo.logoText}</span>
+                  {header?.logo?.image?.url && (
+                    <Link href="/">
+                      <StrapiImage src={header.logo.image.url} alt={header.logo.logoText} width={40} height={40} className='cursor-pointer' />
+                    </Link>
                   )}
                 </div>
                 <div className="flex flex-col gap-1 px-4 py-6">

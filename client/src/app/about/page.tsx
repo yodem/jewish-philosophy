@@ -47,11 +47,7 @@ export default async function AboutPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <BlockRenderer blocks={blocks} />
-      
-    
-      
       <div className="mt-16 max-w-3xl mx-auto">
-        <h2 className="text-2xl font-bold text-center mb-6">Have a question about us?</h2>
         <QuestionFormWrapper />
       </div>
     </div>

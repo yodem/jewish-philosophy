@@ -5,6 +5,8 @@ import { useActionState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardTitle, CardDescription } from "../ui/card";
+import { SnackbarProvider, useSnackbar } from 'notistack';
+import React from "react";
 
 interface SubscribeState {
   zodErrors: Record<string, string[]> | null;
@@ -20,7 +22,7 @@ const INITIAL_STATE: SubscribeState = {
   successMessage: "",
 };
 
-export function Subscribe({
+function SubscribeInner({
   headline,
   content,
   placeholder,
@@ -30,10 +32,20 @@ export function Subscribe({
     subscribeAction,
     INITIAL_STATE
   );
-
   const zodErrors = formState?.zodErrors;
   const errorMessage = formState?.errorMessage || formState?.strapiErrors;
   const successMessage = formState?.successMessage;
+  const { enqueueSnackbar } = useSnackbar();
+
+  // Show notifications on submit
+  React.useEffect(() => {
+    if (successMessage) {
+      enqueueSnackbar(successMessage, { variant: 'success' });
+    }
+    if (errorMessage) {
+      enqueueSnackbar(errorMessage, { variant: 'error' });
+    }
+  }, [successMessage, errorMessage, enqueueSnackbar]);
 
   return (
     <Card className="w-full max-w-xl mx-auto px-2 py-8 bg-white/95 rounded-2xl shadow-lg flex flex-col items-center gap-6 border-0">
@@ -60,5 +72,13 @@ export function Subscribe({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+export function Subscribe(props: Readonly<SubscribeProps>) {
+  return (
+    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+      <SubscribeInner {...props} />
+    </SnackbarProvider>
   );
 }

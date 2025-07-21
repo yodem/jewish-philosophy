@@ -13,7 +13,8 @@ export default function HeroSection({ data }: { data: HeroSectionProps }) {
           <StrapiImage
             src={image.url}
             alt={image.alternativeText}
-            fill
+            width={1200}
+            height={1200}
             className="object-cover w-full h-full transition-transform duration-700 hover:scale-105 opacity-60"
           />
         </div>
