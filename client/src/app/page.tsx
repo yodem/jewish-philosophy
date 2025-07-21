@@ -27,7 +27,6 @@ export default async function HomeRoute() {
       
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-6">שאל שאלה</h2>
           <QuestionFormWrapper />
         </div>
       </div>
