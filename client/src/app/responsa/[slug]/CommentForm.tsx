@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addCommentAction } from "@/data/action";
-import { useFormState } from "react-dom";
+import { useActionState } from "react";
 
 const initialState = {
   zodErrors: null,
@@ -16,7 +16,7 @@ const initialState = {
 
 export default function CommentForm({ responsaId }: { responsaId: number }) {
   const router = useRouter();
-  const [state, formAction] = useFormState(addCommentAction, initialState);
+  const [state, formAction] = useActionState(addCommentAction, initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {

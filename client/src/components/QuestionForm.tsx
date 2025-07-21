@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +22,7 @@ function SubmitButton() {
     <Button 
       type="submit" 
       disabled={pending} 
-      className="w-full md:w-auto"
+      className="w-auto"
     >
       {pending ? "שולח שאלה..." : "שלח שאלה"}
     </Button>
@@ -30,21 +31,13 @@ function SubmitButton() {
 
 export default function QuestionForm() {
   const router = useRouter();
-  const [state, formAction] = useFormState(submitQuestionAction, initialState);
+  const [state, formAction] = useActionState(submitQuestionAction, initialState);
   const [showForm, setShowForm] = useState(false);
-  console.log("Current form state:", state);
 
   // Redirect after successful submission
   useEffect(() => {
     if (state.slug) {
-      console.log("Slug found, preparing to redirect to:", `/responsa/${state.slug}`);
-      // Small delay to show success message before redirect
-      const timer = setTimeout(() => {
-        console.log("Redirecting to:", `/responsa/${state.slug}`);
-        router.push(`/responsa/${state.slug}`);
-      }, 1500);
-      
-      return () => clearTimeout(timer);
+      router.push(`/responsa/${state.slug}`);
     }
   }, [state.slug, router]);
 
@@ -129,7 +122,7 @@ export default function QuestionForm() {
               </div>
             )}
             
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-4">
               <Button 
                 type="button" 
                 variant="outline" 
