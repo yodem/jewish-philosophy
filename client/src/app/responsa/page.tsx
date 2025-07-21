@@ -32,6 +32,7 @@ export default function ResponsaPage() {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 10;
 
+  console.log({responsas});
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);

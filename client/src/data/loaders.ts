@@ -167,9 +167,7 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
   const query = qs.stringify({
     populate: {
       categories: true,
-      comments: {
-        count: true
-      }
+      comments: true
     },
     sort: ['createdAt:desc'],
     pagination: {
