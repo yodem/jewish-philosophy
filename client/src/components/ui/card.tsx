@@ -40,11 +40,13 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
 
 function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <article
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-muted-foreground text-sm prose lg:prose-lg", className)}
       {...props}
-    />
+    >
+      {props.children}
+    </article>
   )
 }
 

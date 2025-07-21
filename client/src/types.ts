@@ -112,3 +112,28 @@ export type Blog = {
   author: Autor;
   categories: Category[];
 }
+
+export type Comment = {
+  id: number;
+  documentId: string;
+  answer: string;
+  answerer: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  responsa?: number | Responsa;
+}
+
+export type Responsa = {
+  id: number;
+  documentId: string;
+  title: string;
+  content: string;
+  questioneer: string;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  categories: Category[];
+  comments: Comment[];
+}

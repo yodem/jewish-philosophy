@@ -30,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </Card>
           </div>
         </main>
-        <Footer copyright={copyright} links={links} />
+        {/* <Footer copyright={copyright} links={links} /> */}
       </body>
     </html>
   );

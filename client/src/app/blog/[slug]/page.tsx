@@ -7,6 +7,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 interface BlogPostPageProps {
   params: {
@@ -99,6 +100,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <article className="prose prose-lg max-w-none dark:prose-invert">
           <div dangerouslySetInnerHTML={{ __html: content }} />
         </article>
+      </div>
+      <div className="mt-10 border-t pt-8 mx-auto w-full max-w-xl sm:max-w-2xl px-2 sm:px-4">
+        <QuestionFormWrapper />
       </div>
     </div>
   );

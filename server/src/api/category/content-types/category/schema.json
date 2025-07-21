@@ -26,6 +26,12 @@
       "relation": "manyToMany",
       "target": "api::blog.blog",
       "inversedBy": "categories"
+    },
+    "responsas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::responsa.responsa",
+      "inversedBy": "categories"
     }
   }
 }

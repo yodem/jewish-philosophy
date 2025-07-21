@@ -4,6 +4,7 @@ import { getHomePage } from "@/data/loaders";
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 function LoadingFallback() {
   return (
@@ -17,12 +18,19 @@ export default async function HomeRoute() {
   const homeRes = await getHomePage();  
   const blocks = homeRes?.data?.blocks || [];
   return (
-
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <BlockRenderer blocks={blocks} />
-          </Suspense>
-        </ErrorBoundary>
-
+    <>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <BlockRenderer blocks={blocks} />
+        </Suspense>
+      </ErrorBoundary>
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-6">שאל שאלה</h2>
+          <QuestionFormWrapper />
+        </div>
+      </div>
+    </>
   );
 }

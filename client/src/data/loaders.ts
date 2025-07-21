@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Category, ImageProps } from "@/types";
+import { Blog, Category, ImageProps, Responsa, Comment } from "@/types";
 
 const homePageQuery = qs.stringify({
   populate: {
@@ -147,3 +147,83 @@ export async function getBlogBySlug(slug: string) {
   return res.data[0]
 }
 
+// Responsa queries
+const responsaPageQuery = qs.stringify({
+  populate: {
+    heroSection: {
+      populate: '*'
+    }
+  }
+});
+
+export async function getResponsaPage() {
+  const path = "/api/responsa-page";
+  const url = new URL(path, BASE_URL);
+  url.search = responsaPageQuery;
+  return await fetchAPI(url.href, { method: "GET" });
+}
+
+export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
+  const query = qs.stringify({
+    populate: {
+      categories: true,
+      comments: {
+        count: true
+      }
+    },
+    sort: ['createdAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    },
+    ...(search ? {
+      filters: {
+        title: {
+          $containsi: search
+        }
+      }
+    } : {})
+  });
+  
+  const path = "/api/responsas";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return {
+    data: res.data,
+    meta: res.meta
+  };
+}
+
+export async function getResponsaBySlug(slug: string) {
+  const query = qs.stringify({
+    filters: {
+      slug: { $eq: slug },
+    },
+    populate: {
+      categories: true,
+      comments: {
+        populate: '*',
+        sort: ['createdAt:asc']
+      }
+    },
+  });
+  const path = "/api/responsas";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  
+  return res.data[0];
+}
+
+export async function createComment(data: { answer: string; answerer: string; responsa: number }) {
+  const path = "/api/comments";
+  const url = new URL(path, BASE_URL);
+  
+  return await fetchAPI(url.href, { 
+    method: "POST",
+    body: { data }
+  });
+}
