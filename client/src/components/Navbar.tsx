@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavbarHeader } from '../types';
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu';
-import { Sheet, SheetTrigger, SheetContent } from './ui/sheet';
+import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './ui/sheet';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { Menu as MenuIcon } from 'lucide-react';
@@ -66,6 +66,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0 w-64 bg-gray-900 text-white">
+              <SheetTitle><span className="sr-only">Main menu</span></SheetTitle>
               <div className="flex flex-col h-full">
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-800">
                   {header?.logo?.image?.url && (
