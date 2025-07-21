@@ -5,6 +5,7 @@ import MediaCard from "@/components/ui/MediaCard";
 import GenericCarousel from "@/components/ui/GenericCarousel";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
+import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 export default async function BlogListPage() {
   const pageRes = await getPageBySlug("blog");
@@ -53,6 +54,7 @@ export default async function BlogListPage() {
         </div>
       )}
       </div>
+      
     </div>
   );
 } 

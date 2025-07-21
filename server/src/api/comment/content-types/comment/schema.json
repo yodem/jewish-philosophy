@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "comments",
+  "info": {
+    "singularName": "comment",
+    "pluralName": "comments",
+    "displayName": "Comment",
+    "description": "Comments for responsa questions"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "answer": {
+      "type": "richtext",
+      "required": true
+    },
+    "answerer": {
+      "type": "string",
+      "required": true
+    },
+    "responsa": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::responsa.responsa",
+      "inversedBy": "comments"
+    }
+  }
+} 

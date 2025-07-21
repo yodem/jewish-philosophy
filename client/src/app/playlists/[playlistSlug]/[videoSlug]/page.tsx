@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card } from "@/components/ui/card";
 import GenericCarousel from "@/components/ui/GenericCarousel";
+import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 
 export default async function VideoDetailPage({
@@ -47,7 +48,9 @@ export default async function VideoDetailPage({
           </h2>
           <p className="text-gray-700 leading-relaxed">{video.description}</p>
         </div>
-        
+        <div className="mt-10 border-t pt-8">
+          <QuestionFormWrapper />
+        </div>
         {playlist.videos && playlist.videos.length > 0 && (
           <div className="mt-8 w-full">
             <h3 className="text-xl font-semibold mb-4 text-center">פרקים בסדרה</h3>

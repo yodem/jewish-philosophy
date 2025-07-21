@@ -6,25 +6,29 @@ type NextFetchRequestConfig = {
 interface FetchAPIOptions {
   method: "GET" | "POST" | "PUT" | "DELETE";
   authToken?: string;
-  body?: Record<string, unknown>;
+  body?: Record<string, unknown> | string;
   next?: NextFetchRequestConfig;
+  headers?: Record<string, string>;
 }
 
 export async function fetchAPI(url: string, options: FetchAPIOptions) {
-  const { method, authToken, body, next } = options;
+  const { method, authToken, body, next, headers: customHeaders } = options;
 
-  const headers: RequestInit & { next?: NextFetchRequestConfig } = {
+  const requestHeaders: HeadersInit = {
+    ...(customHeaders || {}),
+    ...(!customHeaders?.["Content-Type"] && { "Content-Type": "application/json" }),
+    ...(authToken && { Authorization: `Bearer ${authToken}` }),
+  };
+
+  const requestInit: RequestInit & { next?: NextFetchRequestConfig } = {
     method,
-    headers: {
-      "Content-Type": "application/json",
-      ...(authToken && { Authorization: `Bearer ${authToken}` }),
-    },
-    ...(body && { body: JSON.stringify(body) }),
+    headers: requestHeaders,
+    ...(body && { body: typeof body === 'string' ? body : JSON.stringify(body) }),
     ...(next && { next }),
   };
 
   try {
-    const response = await fetch(url, headers);
+    const response = await fetch(url, requestInit);
     const contentType = response.headers.get("content-type");
     if (
       contentType &&

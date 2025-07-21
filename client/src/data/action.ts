@@ -2,6 +2,9 @@
 
 import z from "zod";
 import { subscribeService } from "./services";
+import { createComment } from "./loaders";
+import { redirect } from "next/navigation";
+import { BASE_URL } from "../../consts";
 
 const subscribeSchema = z.object({
   email: z.string().email({
@@ -57,5 +60,191 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
     strapiErrors: "",
     errorMessage: "",
   };
+}
+
+const commentSchema = z.object({
+  answer: z.string().min(1, {
+    message: "Please enter your answer",
+  }),
+  answerer: z.string().min(1, {
+    message: "Please enter your name",
+  }),
+  responsaId: z.string().transform(val => parseInt(val, 10)),
+});
+
+interface CommentState {
+  zodErrors: Record<string, string[]> | null;
+  strapiErrors: string;
+  successMessage: string;
+  errorMessage: string;
+}
+
+export async function addCommentAction(prevState: CommentState, formData: FormData) {
+  const validatedFields = commentSchema.safeParse({
+    answer: formData.get("answer"),
+    answerer: formData.get("answerer"),
+    responsaId: formData.get("responsaId"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
+
+  try {
+    const { answer, answerer, responsaId } = validatedFields.data;
+    const response = await createComment({
+      answer,
+      answerer,
+      responsa: responsaId
+    });
+
+    if (!response.data) {
+      return {
+        ...prevState,
+        strapiErrors: response.error?.message || "Unknown error",
+        errorMessage: "Oops! Something went wrong. Please try again.",
+        successMessage: "",
+      };
+    }
+
+    return {
+      ...prevState,
+      successMessage: "Your comment has been added!",
+      zodErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+    };
+  } catch (error) {
+    return {
+      ...prevState,
+      strapiErrors: "",
+      errorMessage: "Oops! Something went wrong. Please try again.",
+      successMessage: "",
+    };
+  }
+}
+
+const questionSchema = z.object({
+  title: z.string().min(3, {
+    message: "כותרת חייבת להכיל לפחות 3 תווים",
+  }),
+  content: z.string().min(10, {
+    message: "תוכן השאלה חייב להכיל לפחות 10 תווים",
+  }),
+  questioneer: z.string().min(2, {
+    message: "שם השואל חייב להכיל לפחות 2 תווים",
+  }),
+});
+
+interface QuestionState {
+  zodErrors: Record<string, string[]> | null;
+  strapiErrors: string;
+  successMessage: string;
+  errorMessage: string;
+  slug?: string;
+}
+
+export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
+  console.log("submitQuestionAction", {prevState, formData});
+  const validatedFields = questionSchema.safeParse({
+    title: formData.get("title"),
+    content: formData.get("content"),
+    questioneer: formData.get("questioneer"),
+  });
+
+  console.log({validatedFields});
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
+
+  try {
+    const { title, content, questioneer } = validatedFields.data;
+    
+    // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
+    // Transliterate Hebrew characters to Latin or use timestamp as fallback
+    const timestamp = Date.now();
+    let slug = title
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-');
+    
+    // If slug is empty or very short (likely because of Hebrew chars), use a timestamp prefix
+    if (slug.length < 3) {
+      slug = `question-${timestamp}`;
+    } else {
+      // Otherwise, append timestamp to ensure uniqueness
+      slug = `${slug}-${timestamp}`;
+    }
+      
+    console.log("Submitting with slug:", slug);
+      
+    const response = await fetch(`${BASE_URL}/api/responsas`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: {
+          title,
+          content,
+          questioneer,
+          slug,
+        }
+      }),
+    });
+
+    const responseData = await response.json();
+    console.log("Response from Strapi:", responseData);
+
+    if (!response.ok) {
+      console.error('Error response:', responseData);
+      return {
+        ...prevState,
+        strapiErrors: responseData.error?.message || "Unknown error",
+        errorMessage: "שגיאה בשליחת השאלה. אנא נסה שוב.",
+        successMessage: "",
+      };
+    }
+
+    // Extract the slug from the response data
+    // Check both possible response structures
+    const createdSlug = 
+      responseData.data?.attributes?.slug || // Format 1
+      responseData.data?.slug ||            // Format 2
+      slug;                                // Fallback to submitted slug
+      
+    console.log("Created slug:", createdSlug);
+
+    // Return the slug for redirection
+    return {
+      ...prevState,
+      successMessage: "השאלה נשלחה בהצלחה!",
+      zodErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+      slug: createdSlug,
+    };
+  } catch (error) {
+    console.error('Submission error:', error);
+    return {
+      ...prevState,
+      strapiErrors: "",
+      errorMessage: "שגיאה בשליחת השאלה. אנא נסה שוב.",
+      successMessage: "",
+    };
+  }
 }
   

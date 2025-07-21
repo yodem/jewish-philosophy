@@ -72,6 +72,27 @@ export interface ElementsLogo extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementsTeamMember extends Struct.ComponentSchema {
+  collectionName: 'components_elements_team_members';
+  info: {
+    description: 'A team member profile for the About page';
+    displayName: 'Team Member';
+  };
+  attributes: {
+    bio: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    position: Schema.Attribute.String;
+    socialLinks: Schema.Attribute.Component<'elements.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+        },
+        number
+      >;
+  };
+}
+
 export interface LayoutFooter extends Struct.ComponentSchema {
   collectionName: 'components_layout_footers';
   info: {
@@ -104,6 +125,7 @@ declare module '@strapi/strapi' {
       'blocks.youtube-link': BlocksYoutubeLink;
       'elements.link': ElementsLink;
       'elements.logo': ElementsLogo;
+      'elements.team-member': ElementsTeamMember;
       'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;
     }
