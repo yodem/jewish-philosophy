@@ -19,7 +19,7 @@ const contentTypes = [
   { value: 'all', label: 'הכל' },
   { value: 'blog', label: 'בלוגים' },
   { value: 'video', label: 'סרטונים' },
-  { value: 'playlist', label: 'רשימות נגינה' },
+  { value: 'playlist', label: 'סדרות' },
   { value: 'responsa', label: 'שו"ת' },
 ];
 

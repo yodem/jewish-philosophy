@@ -33,8 +33,8 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
     <div className="w-full max-w-full overflow-hidden">
       <Breadcrumbs
         items={[
-          { label: "Home", href: "/" },
-          { label: "Playlists", href: "/playlists" },
+          { label: "בית", href: "/" },
+          { label: "סדרות", href: "/playlists" },
           { label: playlist.title },
         ]}
       />
@@ -48,16 +48,15 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
         <div className="mb-8 sm:mb-12 flex flex-col items-center px-2">
           <Link href={`/playlists/${playlistSlug}/${firstVideo.slug}`} className="block w-full max-w-md sm:max-w-3xl">
             <MediaCard
-              image={firstVideo.imageUrl300x400 || firstVideo.imageUrlStandard}
+              image={firstVideo.imageUrlStandard}
               title={firstVideo.title}
+              description={firstVideo.description}
               type="video"
               className="w-full"
               isLarge={true}
             />
           </Link>
-          <div className="mt-4 text-center max-w-full sm:max-w-2xl text-gray-700 px-2">
-            {firstVideo.description}
-          </div>
+         
         </div>
       )}
       {restVideos.length > 0 && (
