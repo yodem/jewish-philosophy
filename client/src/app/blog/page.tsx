@@ -1,8 +1,8 @@
-import { getAllBlogs, getPageBySlug } from "@/data/loaders";
+import { getBlogsPaginated, getPageBySlug } from "@/data/loaders";
 import { Blog } from "@/types";
 import Link from "next/link";
 import MediaCard from "@/components/ui/MediaCard";
-import GenericCarousel from "@/components/ui/GenericCarousel";
+import BlogGrid from "@/components/BlogGrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
@@ -11,7 +11,7 @@ export default async function BlogListPage() {
   const pageRes = await getPageBySlug("blog");
   const data = pageRes?.data;
   const blocks = data?.[0]?.blocks || [];
-  const blogs = await getAllBlogs();
+  const blogs = await getBlogsPaginated(1, 10); // Get first 10 for mobile, will show 12 on desktop
   
   const [firstBlog, ...restBlogs] = blogs;
 
@@ -50,9 +50,8 @@ export default async function BlogListPage() {
       {restBlogs.length > 0 && (
         <div className="flex flex-col items-center mt-4 sm:mt-8">
           <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">מאמרים נוספים</h3>
-          <GenericCarousel 
-            items={restBlogs} 
-            type="blog" 
+          <BlogGrid 
+            initialBlogs={restBlogs} 
             baseUrl="/blog"
           />
         </div>

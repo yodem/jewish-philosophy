@@ -83,6 +83,22 @@ export async function getAllPlaylists() {
   return res.data
 }
 
+export async function getPlaylistsPaginated(page: number = 1, pageSize: number = 12) {
+  const query = qs.stringify({
+    populate: '*',
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/playlists";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
+}
+
 export async function getPlaylistBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
@@ -98,6 +114,49 @@ export async function getPlaylistBySlug(slug: string) {
   
   const item = res.data?.[0]
   return item
+}
+
+export async function getPlaylistVideosPaginated(playlistId: number, page: number = 1, pageSize: number = 12) {
+  const query = qs.stringify({
+    filters: {
+      playlists: {
+        id: { $eq: playlistId }
+      }
+    },
+    populate: '*',
+    pagination: {
+      page,
+      pageSize
+    },
+    sort: ['createdAt:asc'] // Maintain video order in playlist
+  });
+  const path = "/api/videos";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
+}
+
+export async function getAllPlaylistVideos(playlistId: number) {
+  const query = qs.stringify({
+    filters: {
+      playlists: {
+        id: { $eq: playlistId }
+      }
+    },
+    populate: '*',
+    pagination: {
+      pageSize: 100 // Get up to 100 videos in one call
+    },
+    sort: ['createdAt:asc'] // Maintain video order in playlist
+  });
+  const path = "/api/videos";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
 }
 
 export async function getVideoBySlug(slug: string) {
@@ -116,6 +175,22 @@ export async function getVideoBySlug(slug: string) {
   return item
 }
 
+export async function getVideosPaginated(page: number = 1, pageSize: number = 12) {
+  const query = qs.stringify({
+    populate: '*',
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/videos";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
+}
+
 // Blog queries
 const allBlogsQuery = qs.stringify({
   populate: '*',
@@ -129,6 +204,23 @@ export async function getAllBlogs(): Promise<Blog[]> {
   const res = await fetchAPI(url.href, { method: "GET" });
   
   return res.data
+}
+
+export async function getBlogsPaginated(page: number = 1, pageSize: number = 12): Promise<Blog[]> {
+  const query = qs.stringify({
+    populate: '*',
+    sort: ['publishedAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/blogs";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
 }
 
 export async function getBlogBySlug(slug: string) {
