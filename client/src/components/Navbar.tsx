@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavbarHeader } from '../types';
@@ -8,8 +8,9 @@ import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuL
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './ui/sheet';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
-import { Menu as MenuIcon } from 'lucide-react';
+import { Menu as MenuIcon, Search } from 'lucide-react';
 import { StrapiImage } from './StrapiImage';
+import SearchDialog from './SearchDialog';
 
 interface NavbarProps {
   header?: NavbarHeader;
@@ -19,15 +20,13 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
   const pathname = usePathname();
   const navLinks = header?.navigation;
   const isMobile = useIsMobile();
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
     <nav className="w-full bg-gray-900 text-white py-4 px-4 sm:px-8 flex items-center justify-between shadow-md">
-      <div className="flex items-center gap-4 sm:gap-8">
-        {header?.logo?.image?.url && (
-          <Link href="/">
-            <StrapiImage src={header.logo.image.url} alt={header.logo.logoText} width={40} height={40} className='cursor-pointer' />
-          </Link>
-        )}
+      {/* Left side - Search Icon */}
+      {/* Right side - Navigation (desktop) or Hamburger Menu (mobile) */}
+      <div className="flex items-center">
         {!isMobile && navLinks && (
           <NavigationMenu className="hidden sm:flex">
             <NavigationMenuList>
@@ -46,13 +45,10 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
             </NavigationMenuList>
           </NavigationMenu>
         )}
-      </div>
-      {/* CTA and Mobile Menu */}
-      <div className="flex items-center gap-2">
         {header?.cta && !isMobile && (
           <Link
             href={header.cta.href}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors ml-4"
           >
             {header.cta.text}
           </Link>
@@ -65,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
                 <span className="sr-only">Open menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="p-0 w-64 bg-gray-900 text-white">
+            <SheetContent side="right" className="p-0 w-64 bg-gray-900 text-white">
               <SheetTitle><span className="sr-only">Main menu</span></SheetTitle>
               <div className="flex flex-col h-full">
                 <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-800">
@@ -101,6 +97,37 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
           </Sheet>
         )}
       </div>
+
+      {/* Center - Logo */}
+      <div className="flex items-center justify-center flex-1">
+        {header?.logo?.image?.url && (
+          <Link href="/">
+            <StrapiImage 
+              src={header.logo.image.url} 
+              alt={header.logo.logoText} 
+              width={40} 
+              height={40} 
+              className='cursor-pointer' 
+            />
+          </Link>
+        )}
+      </div>
+
+      
+
+      <div className="flex items-center">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="text-white hover:text-blue-400" 
+          onClick={() => setIsSearchOpen(true)}
+        >
+          <Search className="size-6" />
+          <span className="sr-only">Search</span>
+        </Button>
+      </div>
+      {/* Search Dialog */}
+      <SearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
     </nav>
   );
 };
