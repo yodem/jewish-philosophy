@@ -1,10 +1,8 @@
-import BackButton from "@/components/BackButton";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { getBlogBySlug, getAllBlogs } from "@/data/loaders";
-import { Blog, Category } from "@/types";
+import { getBlogBySlug } from "@/data/loaders";
+import { Category } from "@/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import Image from "next/image";
 import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";

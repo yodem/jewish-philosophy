@@ -2,7 +2,6 @@ import BlockRenderer from "@/components/blocks/BlockRenderer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { getHomePage } from "@/data/loaders";
 import { Suspense } from "react";
-import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 

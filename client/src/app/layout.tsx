@@ -1,17 +1,12 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
-import { SnackbarProvider } from 'notistack';
 import Providers from './providers';
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const globalRes = await getGlobalSettings();
-  const footer = globalRes?.data?.footer;
-  const links = footer?.links?.map((l: any) => ({ label: l.label, url: l.url })) || [];
-  const copyright = footer?.copyright || '';
   const header = globalRes?.data?.header;
 
   return (

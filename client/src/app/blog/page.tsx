@@ -1,11 +1,9 @@
 import { getBlogsPaginated, getPageBySlug } from "@/data/loaders";
-import { Blog } from "@/types";
 import Link from "next/link";
 import MediaCard from "@/components/ui/MediaCard";
 import BlogGrid from "@/components/BlogGrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
-import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 export default async function BlogListPage() {
   const pageRes = await getPageBySlug("blog");

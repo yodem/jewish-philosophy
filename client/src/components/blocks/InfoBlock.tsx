@@ -1,7 +1,7 @@
 import React from 'react';
 import { InfoBlockProps } from '../../types';
 import { Button } from '../ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
+import { Card, CardContent, CardTitle, CardDescription } from '../ui/card';
 import { StrapiImage } from '../StrapiImage';
 import ReactMarkdown from 'react-markdown';
 
