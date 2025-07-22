@@ -151,14 +151,11 @@ interface QuestionState {
 }
 
 export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
-  console.log("submitQuestionAction", {prevState, formData});
   const validatedFields = questionSchema.safeParse({
     title: formData.get("title"),
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
   });
-
-  console.log({validatedFields});
 
   if (!validatedFields.success) {
     return {
@@ -188,9 +185,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       // Otherwise, append timestamp to ensure uniqueness
       slug = `${slug}-${timestamp}`;
     }
-      
-    console.log("Submitting with slug:", slug);
-      
+            
     const response = await fetch(`${BASE_URL}/api/responsas`, {
       method: 'POST',
       headers: {
@@ -207,7 +202,6 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
     });
 
     const responseData = await response.json();
-    console.log("Response from Strapi:", responseData);
 
     if (!response.ok) {
       console.error('Error response:', responseData);
@@ -226,8 +220,6 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       responseData.data?.slug ||            // Format 2
       slug;                                // Fallback to submitted slug
       
-    console.log("Created slug:", createdSlug);
-
     // Return the slug for redirection
     return {
       ...prevState,

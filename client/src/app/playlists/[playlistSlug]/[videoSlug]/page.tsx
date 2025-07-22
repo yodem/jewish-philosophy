@@ -35,8 +35,8 @@ export default async function VideoDetailPage({
       <Card className="flex-1 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">
         <Breadcrumbs
           items={[
-            { label: "Home", href: "/" },
-            { label: "Playlists", href: "/playlists" },
+            { label: "בית", href: "/" },
+            { label: "סדרות", href: "/playlists" },
             { label: playlist.title, href: `/playlists/${playlistSlug}` },
             { label: video.title },
           ]}
@@ -46,7 +46,7 @@ export default async function VideoDetailPage({
           <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-800">
             תיאור
           </h2>
-          <p className="text-gray-700 leading-relaxed">{video.description}</p>
+          <p className="text-gray-700 leading-relaxed text-justify">{video.description}</p>
         </div>
         <div className="mt-10 border-t pt-8">
           <QuestionFormWrapper />

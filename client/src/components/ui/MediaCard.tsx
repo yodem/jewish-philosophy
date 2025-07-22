@@ -54,6 +54,7 @@ export default function MediaCard({
           alt={title}
           width={isLarge ? 1200 : 400}
           height={isLarge ? 900 : 300}
+          quality={isLarge ? 100 : 50}
           className={cn(
             "object-contain rounded-lg w-full h-full")}
           priority

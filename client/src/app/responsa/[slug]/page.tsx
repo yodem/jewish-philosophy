@@ -55,7 +55,7 @@ export default function ResponsaPage() {
     <div className="container mx-auto py-8">
       <Breadcrumbs items={[
         { label: 'בית', href: '/' },
-        { label: 'שאלות ותשובות', href: '/responsa' },
+        { label: 'שו״ת', href: '/responsa' },
         { label: title }
       ]} />
       
