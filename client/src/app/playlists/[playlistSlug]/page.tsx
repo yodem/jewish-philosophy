@@ -1,5 +1,3 @@
-import BackButton from "@/components/BackButton";
-import HeroSection from "@/components/blocks/HeroSection";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { getPlaylistBySlug, getPlaylistsPaginated } from "@/data/loaders";
 import type { Playlist, Video } from "@/types";

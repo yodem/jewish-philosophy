@@ -1,31 +1,12 @@
 import { Metadata } from "next";
 import { getPageBySlug } from "@/data/loaders";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
-import { StrapiImage } from "@/components/StrapiImage";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn more about our team and mission",
 };
-
-interface TeamMember {
-  id: number;
-  name: string;
-  position: string;
-  bio: string;
-  image: {
-    url: string;
-    alternativeText: string;
-  };
-  socialLinks: {
-    id: number;
-    text: string;
-    href: string;
-    isExternal: boolean;
-  }[];
-}
 
 export default async function AboutPage() {
   const pageRes = await getPageBySlug("about");

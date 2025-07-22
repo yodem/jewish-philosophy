@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Category, ImageProps, Responsa, Comment } from "@/types";
+import { Blog } from "@/types";
 
 const homePageQuery = qs.stringify({
   populate: {

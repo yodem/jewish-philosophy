@@ -38,7 +38,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">תוצאות חיפוש</h1>
         {filters.query && (
           <p className="text-lg text-gray-600">
-            תוצאות עבור: <span className="font-semibold">"{filters.query}"</span>
+            תוצאות עבור: <span className="font-semibold">&ldquo;{filters.query}&rdquo;</span>
           </p>
         )}
       </div>

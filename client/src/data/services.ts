@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Responsa, Video, Playlist, Category } from "@/types";
+import { Category } from "@/types";
 
 export async function subscribeService(email: string) {
     const url = new URL("/api/newsletter-signups", BASE_URL);
@@ -43,6 +43,13 @@ export interface SearchFilters {
   pageSize?: number;
 }
 
+interface CoverImage {
+  url: string;
+  alternativeText?: string;
+  width?: number;
+  height?: number;
+}
+
 export interface SearchResult {
   id: number;
   title: string;
@@ -51,7 +58,7 @@ export interface SearchResult {
   type: 'blog' | 'video' | 'playlist' | 'responsa';
   publishedAt?: string;
   categories?: Category[];
-  coverImage?: any;
+  coverImage?: CoverImage;
   imageUrl300x400?: string;
   imageUrlStandard?: string;
   playlistSlug?: string; // For videos that belong to playlists
@@ -69,8 +76,43 @@ export interface SearchResponse {
   };
 }
 
+interface SearchQuery {
+  sort: string[];
+  pagination: {
+    page: number;
+    pageSize: number;
+  };
+  filters?: {
+    title?: {
+      $containsi: string;
+    };
+    categories?: {
+      slug: {
+        $eq: string;
+      };
+    };
+  };
+  populate?: Record<string, unknown> | string;
+}
+
+interface SearchResultItem {
+  id: number;
+  title: string;
+  description?: string;
+  content?: string;
+  slug: string;
+  publishedAt?: string;
+  categories?: Category[];
+  coverImage?: CoverImage;
+  imageUrl300x400?: string;
+  imageUrlStandard?: string;
+  playlist?: {
+    slug: string;
+  };
+}
+
 const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
-  const baseQuery: any = {
+  const baseQuery: SearchQuery = {
     sort: ['publishedAt:desc'],
     pagination: {
       page: filters.page || 1,
@@ -123,7 +165,7 @@ const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
   return qs.stringify(baseQuery);
 };
 
-const mapToSearchResult = (item: any, type: 'blog' | 'video' | 'playlist' | 'responsa'): SearchResult => {
+const mapToSearchResult = (item: SearchResultItem, type: 'blog' | 'video' | 'playlist' | 'responsa'): SearchResult => {
   return {
     id: item.id,
     title: item.title,
@@ -152,7 +194,7 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
     const response = await fetchAPI(url.href, { method: "GET" });
     
     return {
-      data: response.data.map((item: any) => mapToSearchResult(item, contentType as any)),
+      data: response.data.map((item: SearchResultItem) => mapToSearchResult(item, contentType as 'blog' | 'video' | 'playlist' | 'responsa')),
       meta: response.meta
     };
   }
@@ -160,7 +202,6 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
   // Search all content types
   const contentTypes = ['blog', 'video', 'playlist', 'responsa'];
   const allResults: SearchResult[] = [];
-  let totalCount = 0;
 
   // For "all" search, we'll search each content type and combine results
   // This is a simplified approach - in production you might want a unified search endpoint
@@ -174,9 +215,8 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
       const response = await fetchAPI(url.href, { method: "GET" });
       
       if (response.data && Array.isArray(response.data)) {
-        const mappedResults = response.data.map((item: any) => mapToSearchResult(item, type as any));
+        const mappedResults = response.data.map((item: SearchResultItem) => mapToSearchResult(item, type as 'blog' | 'video' | 'playlist' | 'responsa'));
         allResults.push(...mappedResults);
-        totalCount += response.meta?.pagination?.total || 0;
       }
     } catch (error) {
       console.error(`Error searching ${type}:`, error);

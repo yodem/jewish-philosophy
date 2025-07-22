@@ -3,7 +3,6 @@
 import z from "zod";
 import { subscribeService } from "./services";
 import { createComment } from "./loaders";
-import { redirect } from "next/navigation";
 import { BASE_URL } from "../../consts";
 
 const subscribeSchema = z.object({
@@ -120,7 +119,7 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
       strapiErrors: "",
       errorMessage: "",
     };
-  } catch (error) {
+  } catch {
     return {
       ...prevState,
       strapiErrors: "",

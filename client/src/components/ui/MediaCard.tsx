@@ -2,7 +2,6 @@
 'use client';
 import { Card } from './card';
 import { Button } from './button';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { StrapiImage } from '../StrapiImage';
 

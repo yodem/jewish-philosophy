@@ -1,10 +1,6 @@
-import BackButton from "@/components/BackButton";
-import HeroSection from "@/components/blocks/HeroSection";
 import YoutubePlayer from "@/components/YoutubePlayer";
 import { getPlaylistBySlug, getVideoBySlug } from "@/data/loaders";
-import type { HeroSectionProps, Playlist, Video } from "@/types";
-import Image from "next/image";
-import Link from "next/link";
+import type { Playlist, Video } from "@/types";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card } from "@/components/ui/card";
