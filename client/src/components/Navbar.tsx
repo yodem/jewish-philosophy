@@ -10,6 +10,7 @@ import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { Menu as MenuIcon } from 'lucide-react';
 import { StrapiImage } from './StrapiImage';
+import NavbarSearch from './NavbarSearch';
 
 interface NavbarProps {
   header?: NavbarHeader;
@@ -47,6 +48,14 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
           </NavigationMenu>
         )}
       </div>
+      
+      {/* Search - Desktop only */}
+      {!isMobile && (
+        <div className="flex-1 max-w-md mx-4">
+          <NavbarSearch />
+        </div>
+      )}
+      
       {/* CTA and Mobile Menu */}
       <div className="flex items-center gap-2">
         {header?.cta && !isMobile && (

@@ -83,6 +83,48 @@ export async function getAllPlaylists() {
   return res.data
 }
 
+export async function searchPlaylists(search = '') {
+  const query = qs.stringify({
+    populate: '*',
+    ...(search ? {
+      filters: {
+        $or: [
+          { title: { $containsi: search } },
+          { description: { $containsi: search } }
+        ]
+      }
+    } : {})
+  });
+
+  const path = "/api/playlists";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data;
+}
+
+export async function searchVideos(search = '') {
+  const query = qs.stringify({
+    populate: '*',
+    ...(search ? {
+      filters: {
+        $or: [
+          { title: { $containsi: search } },
+          { description: { $containsi: search } }
+        ]
+      }
+    } : {})
+  });
+
+  const path = "/api/videos";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data;
+}
+
 export async function getPlaylistBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
@@ -129,6 +171,50 @@ export async function getAllBlogs(): Promise<Blog[]> {
   const res = await fetchAPI(url.href, { method: "GET" });
   
   return res.data
+}
+
+export async function searchBlogs(search = '', categoryId?: string) {
+  const filters: Record<string, any> = {};
+  
+  if (search && categoryId) {
+    filters.$and = [
+      {
+        $or: [
+          { title: { $containsi: search } },
+          { description: { $containsi: search } },
+          { content: { $containsi: search } }
+        ]
+      },
+      {
+        categories: {
+          id: { $eq: categoryId }
+        }
+      }
+    ];
+  } else if (search) {
+    filters.$or = [
+      { title: { $containsi: search } },
+      { description: { $containsi: search } },
+      { content: { $containsi: search } }
+    ];
+  } else if (categoryId) {
+    filters.categories = {
+      id: { $eq: categoryId }
+    };
+  }
+
+  const query = qs.stringify({
+    populate: '*',
+    sort: ['publishedAt:desc'],
+    ...(Object.keys(filters).length > 0 ? { filters } : {})
+  });
+
+  const path = "/api/blogs";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data;
 }
 
 export async function getBlogBySlug(slug: string) {
@@ -224,4 +310,71 @@ export async function createComment(data: { answer: string; answerer: string; re
     method: "POST",
     body: { data }
   });
+}
+
+// Category queries
+export async function getAllCategories(): Promise<Category[]> {
+  const query = qs.stringify({
+    sort: ['name:asc'],
+  });
+  
+  const path = "/api/categories";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data;
+}
+
+// Universal search function for navbar
+export async function universalSearch(query: string, contentType?: string, categoryId?: string) {
+  const results: {
+    blogs: Blog[];
+    playlists: Array<{
+      id: number;
+      title: string;
+      description: string;
+      slug: string;
+      imageUrl300x400?: string;
+      imageUrlStandard?: string;
+    }>;
+    videos: Array<{
+      id: number;
+      title: string;
+      description: string;
+      slug: string;
+      imageUrl300x400?: string;
+      imageUrlStandard?: string;
+      playlist: any;
+    }>;
+    responsas: Responsa[];
+  } = {
+    blogs: [],
+    playlists: [],
+    videos: [],
+    responsas: []
+  };
+
+  try {
+    if (!contentType || contentType === 'blog') {
+      results.blogs = await searchBlogs(query, categoryId);
+    }
+    
+    if (!contentType || contentType === 'playlist') {
+      results.playlists = await searchPlaylists(query);
+    }
+    
+    if (!contentType || contentType === 'video') {
+      results.videos = await searchVideos(query);
+    }
+    
+    if (!contentType || contentType === 'responsa') {
+      const responsaResult = await getAllResponsas(1, 50, query);
+      results.responsas = responsaResult.data;
+    }
+  } catch (error) {
+    console.error('Error in universal search:', error);
+  }
+
+  return results;
 }

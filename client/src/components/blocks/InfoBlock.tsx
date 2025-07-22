@@ -3,7 +3,7 @@ import { InfoBlockProps } from '../../types';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../ui/card';
 import { StrapiImage } from '../StrapiImage';
-import ReactMarkdown from 'react-markdown';
+// import ReactMarkdown from 'react-markdown';
 
 export default function InfoBlock({ data }: { data: InfoBlockProps }) {
   const { heading, content, image, cta, reversed } = data;
@@ -15,7 +15,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
       <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0">
         <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900">{heading}</CardTitle>
         <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg">
-          <ReactMarkdown>{content}</ReactMarkdown>
+          <div dangerouslySetInnerHTML={{ __html: content }} />
         </CardDescription>
         {cta && (
           <Button asChild className="mt-2 md:mt-4">

@@ -15,15 +15,9 @@ import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 export default async function VideoDetailPage({
   params,
 }: {
-  params: { playlistSlug: string; videoSlug: string } | Promise<{ playlistSlug: string; videoSlug: string }>;
+  params: Promise<{ playlistSlug: string; videoSlug: string }>;
 }) {
-  let resolvedParams: { playlistSlug: string; videoSlug: string };
-  if (params instanceof Promise) {
-    resolvedParams = await params;
-  } else {
-    resolvedParams = params;
-  }
-  const { playlistSlug, videoSlug } = resolvedParams;
+  const { playlistSlug, videoSlug } = await params;
   const video = (await getVideoBySlug(videoSlug)) as Video | null;
   const playlist = (await getPlaylistBySlug(playlistSlug)) as Playlist | null;
 

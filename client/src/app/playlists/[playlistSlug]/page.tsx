@@ -8,14 +8,8 @@ import { notFound } from "next/navigation";
 import MediaCard from "@/components/ui/MediaCard";
 import GenericCarousel from "@/components/ui/GenericCarousel";
 
-export default async function PlaylistDetailPage({ params }: { params: { playlistSlug: string } | Promise<{ playlistSlug: string }> }) {
-  let resolvedParams: { playlistSlug: string };
-  if (params instanceof Promise) {
-    resolvedParams = await params;
-  } else {
-    resolvedParams = params;
-  }
-  const { playlistSlug } = resolvedParams;
+export default async function PlaylistDetailPage({ params }: { params: Promise<{ playlistSlug: string }> }) {
+  const { playlistSlug } = await params;
   
   const playlist = (await getPlaylistBySlug(playlistSlug)) as Playlist | null;
   if (!playlist) {
