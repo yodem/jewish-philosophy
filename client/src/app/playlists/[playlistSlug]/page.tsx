@@ -1,12 +1,13 @@
 import BackButton from "@/components/BackButton";
 import HeroSection from "@/components/blocks/HeroSection";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { getPlaylistBySlug, getAllPlaylists } from "@/data/loaders";
+import { getPlaylistBySlug, getPlaylistsPaginated } from "@/data/loaders";
 import type { Playlist, Video } from "@/types";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import MediaCard from "@/components/ui/MediaCard";
-import GenericCarousel from "@/components/ui/GenericCarousel";
+import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
+import PlaylistGrid from "@/components/PlaylistGrid";
 
 export default async function PlaylistDetailPage({ params }: { params: { playlistSlug: string } | Promise<{ playlistSlug: string }> }) {
   let resolvedParams: { playlistSlug: string };
@@ -22,7 +23,7 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
     return notFound();
   }
 
-  const allPlaylists = (await getAllPlaylists()) as Playlist[];
+  const allPlaylists = (await getPlaylistsPaginated(1, 10)) as Playlist[];
   const otherPlaylists = allPlaylists.filter((p) => p.id !== playlist.id);
 
   const videos: Video[] = playlist.videos || [];
@@ -62,9 +63,9 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
       {restVideos.length > 0 && (
         <div className="flex flex-col items-center mt-4 sm:mt-8">
           <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">פרקים נוספים</h3>
-          <GenericCarousel 
-            items={restVideos} 
-            type="video" 
+          <PlaylistVideoGridWrapper 
+            initialVideos={restVideos} 
+            playlistId={playlist.id}
             baseUrl={`/playlists/${playlistSlug}`}
           />
         </div>
@@ -72,9 +73,8 @@ export default async function PlaylistDetailPage({ params }: { params: { playlis
       {otherPlaylists.length > 0 && (
         <div className="flex flex-col items-center mt-4 sm:mt-8 w-full h-full">
           <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">סדרות נוספות</h3>
-          <GenericCarousel 
-            items={otherPlaylists} 
-            type="playlist" 
+          <PlaylistGrid 
+            initialPlaylists={otherPlaylists} 
             baseUrl="/playlists"
           />
         </div>

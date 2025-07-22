@@ -8,7 +8,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Card } from "@/components/ui/card";
-import GenericCarousel from "@/components/ui/GenericCarousel";
+import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
 
@@ -54,9 +54,9 @@ export default async function VideoDetailPage({
         {playlist.videos && playlist.videos.length > 0 && (
           <div className="mt-8 w-full">
             <h3 className="text-xl font-semibold mb-4 text-center">פרקים בסדרה</h3>
-            <GenericCarousel 
-              items={playlist.videos} 
-              type="video" 
+            <PlaylistVideoGridWrapper 
+              initialVideos={playlist.videos} 
+              playlistId={playlist.id}
               baseUrl={`/playlists/${playlistSlug}`}
             />
           </div>
