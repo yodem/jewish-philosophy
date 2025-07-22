@@ -24,12 +24,25 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
 
   return (
     <nav className="w-full bg-gray-900 text-white py-4 px-4 sm:px-8 flex items-center justify-between shadow-md">
-      {/* Left side - Search Icon */}
-      {/* Right side - Navigation (desktop) or Hamburger Menu (mobile) */}
       <div className="flex items-center">
         {!isMobile && navLinks && (
-          <NavigationMenu className="hidden sm:flex">
+          <NavigationMenu className="hidden sm:flex sm:flex-row-reverse">
+                  <div className="flex items-center justify-center flex-1 ml-4">
+                    {header?.logo?.image?.url && (
+                      <Link href="/">
+                        <StrapiImage 
+                          src={header.logo.image.url} 
+                          alt={header.logo.logoText} 
+                          width={40} 
+                          height={40} 
+                          className='cursor-pointer' 
+                        />
+                      </Link>
+                    )}
+                  </div>
             <NavigationMenuList>
+              <NavigationMenuItem>
+              </NavigationMenuItem>
               {navLinks.map((link) => (
                 <NavigationMenuItem key={link.id}>
                   <NavigationMenuLink asChild active={pathname === link.href}>
@@ -97,24 +110,6 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
           </Sheet>
         )}
       </div>
-
-      {/* Center - Logo */}
-      <div className="flex items-center justify-center flex-1">
-        {header?.logo?.image?.url && (
-          <Link href="/">
-            <StrapiImage 
-              src={header.logo.image.url} 
-              alt={header.logo.logoText} 
-              width={40} 
-              height={40} 
-              className='cursor-pointer' 
-            />
-          </Link>
-        )}
-      </div>
-
-      
-
       <div className="flex items-center">
         <Button 
           variant="ghost" 

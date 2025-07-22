@@ -126,14 +126,14 @@ export default function PaginatedGrid({
               ref={isLastItem ? lastItemElementRef : undefined}
               className="w-full"
             >
-              <Link href={`${baseUrl}/${item.slug}`} className="no-underline block h-full">
+              <Link href={`${baseUrl}/${item.slug}`} className="no-underline h-full w-full flex flex-1 items-center justify-center">
                 <MediaCard
                   image={getImageUrl(item)}
                   title={item.title}
                   description={getDescription(item)}
                   episodeCount={getEpisodeCount(item)}
                   type={type}
-                  className="w-full h-full"
+                  className="w-full h-full flex-1 flex flex-col justify-center"
                 />
               </Link>
             </div>

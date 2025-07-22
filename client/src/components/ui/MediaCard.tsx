@@ -42,23 +42,20 @@ export default function MediaCard({
   return (
     <Card
       className={cn(
-        "flex flex-col items-center transition-shadow duration-200 cursor-pointer overflow-hidden",
-        isLarge 
-          ? "w-full h-auto" 
-          : "w-full sm:w-64 md:w-72 lg:w-80 min-h-[280px] sm:min-h-[320px] lg:min-h-[340px]",
+        "flex flex-col w-full h-auto items-center transition-shadow duration-200 cursor-pointer overflow-hidden",
         bgColorMap[type],
         "hover:shadow-xl",
         className
       )}
     >
-      <div className="w-full relative">
+      <div className="w-full ">
         <StrapiImage
           src={image}
           alt={title}
           width={isLarge ? 1200 : 400}
           height={isLarge ? 900 : 300}
           className={cn(
-            "object-contain rounded-lg")}
+            "object-contain rounded-lg w-full h-full")}
           priority
         />
       </div>

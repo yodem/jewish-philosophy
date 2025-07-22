@@ -90,7 +90,7 @@ export default function PlaylistVideoGrid({
               ref={isLastVideo ? lastVideoElementRef : undefined}
               className="w-full"
             >
-              <Link href={`${baseUrl}/${video.slug}`} className="no-underline block h-full">
+              <Link href={`${baseUrl}/${video.slug}`} className="no-underline h-full w-full flex items-center justify-center">
                 <MediaCard
                   image={video.imageUrl300x400 || video.imageUrlStandard || ''}
                   title={video.title}
