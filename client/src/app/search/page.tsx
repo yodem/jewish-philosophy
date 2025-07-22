@@ -4,6 +4,10 @@ import { SearchFilters } from '@/data/services';
 import SearchResults from '@/components/SearchResults';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { getPageBySlug } from '@/data/loaders';
+import { Block } from '@/types';
+
+// Force dynamic rendering to prevent build-time data fetching issues
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'חיפוש תוכן',
@@ -11,22 +15,29 @@ export const metadata: Metadata = {
 };
 
 interface SearchPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  // Fetch search page content
-  const pageRes = await getPageBySlug("search");
-  const data = pageRes?.data;
-  const blocks = data?.[0]?.blocks || [];
+  // Fetch search page content with error handling
+  let blocks: Block[] = [];
+  try {
+    const pageRes = await getPageBySlug("search");
+    const data = pageRes?.data;
+    blocks = data?.[0]?.blocks || [];
+  } catch (error) {
+    console.warn('Failed to fetch search page content:', error);
+    // Continue with empty blocks if data fetching fails
+  }
 
   // Parse search parameters
+  const resolvedSearchParams = await searchParams;
   const filters: SearchFilters = {
-    query: typeof searchParams.q === 'string' ? searchParams.q : undefined,
-    contentType: typeof searchParams.type === 'string' ? 
-      searchParams.type as SearchFilters['contentType'] : 'all',
-    category: typeof searchParams.category === 'string' ? searchParams.category : undefined,
-    page: typeof searchParams.page === 'string' ? parseInt(searchParams.page) : 1,
+    query: typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : undefined,
+    contentType: typeof resolvedSearchParams.type === 'string' ? 
+      resolvedSearchParams.type as SearchFilters['contentType'] : 'all',
+    category: typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined,
+    page: typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page) : 1,
     pageSize: 10,
   };
 

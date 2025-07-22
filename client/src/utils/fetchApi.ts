@@ -11,6 +11,10 @@ interface FetchAPIOptions {
   headers?: Record<string, string>;
 }
 
+interface ErrorWithCause extends Error {
+  cause?: { code?: string };
+}
+
 export async function fetchAPI(url: string, options: FetchAPIOptions) {
   const { method, authToken, body, next, headers: customHeaders } = options;
 
@@ -41,6 +45,18 @@ export async function fetchAPI(url: string, options: FetchAPIOptions) {
     }
   } catch (error) {
     console.error(`Error ${method} data:`, error);
+    
+    // During build time or when server is unavailable, return empty data structure
+    // instead of throwing to prevent build failures
+    const errorWithCause = error as ErrorWithCause;
+    if (errorWithCause instanceof Error && 
+        (errorWithCause.message.includes('ECONNREFUSED') || 
+         errorWithCause.message.includes('fetch failed') ||
+         errorWithCause.cause?.code === 'ECONNREFUSED')) {
+      console.warn(`Server unavailable during ${method} to ${url}, returning empty response`);
+      return { data: [] };
+    }
+    
     throw error;
   }
 }

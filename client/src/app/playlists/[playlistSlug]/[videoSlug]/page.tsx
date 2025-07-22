@@ -7,19 +7,15 @@ import { Card } from "@/components/ui/card";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 
+// Force dynamic rendering to prevent build-time data fetching issues
+export const dynamic = 'force-dynamic';
 
 export default async function VideoDetailPage({
   params,
 }: {
-  params: { playlistSlug: string; videoSlug: string } | Promise<{ playlistSlug: string; videoSlug: string }>;
+  params: Promise<{ playlistSlug: string; videoSlug: string }>;
 }) {
-  let resolvedParams: { playlistSlug: string; videoSlug: string };
-  if (params instanceof Promise) {
-    resolvedParams = await params;
-  } else {
-    resolvedParams = params;
-  }
-  const { playlistSlug, videoSlug } = resolvedParams;
+  const { playlistSlug, videoSlug } = await params;
   const video = (await getVideoBySlug(videoSlug)) as Video | null;
   const playlist = (await getPlaylistBySlug(playlistSlug)) as Playlist | null;
 
@@ -49,7 +45,9 @@ export default async function VideoDetailPage({
         </div>
         {playlist.videos && playlist.videos.length > 0 && (
           <div className="mt-8 w-full">
-            <h3 className="text-xl font-semibold mb-4 text-center">פרקים בסדרה</h3>
+            <h3 className="text-xl font-semibold mb-4 text-center">
+              פרקים בסדרה
+            </h3>
             <PlaylistVideoGridWrapper 
               initialVideos={playlist.videos} 
               playlistId={playlist.id}

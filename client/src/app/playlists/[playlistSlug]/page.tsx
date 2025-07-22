@@ -7,22 +7,26 @@ import MediaCard from "@/components/ui/MediaCard";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import PlaylistGrid from "@/components/PlaylistGrid";
 
-export default async function PlaylistDetailPage({ params }: { params: { playlistSlug: string } | Promise<{ playlistSlug: string }> }) {
-  let resolvedParams: { playlistSlug: string };
-  if (params instanceof Promise) {
-    resolvedParams = await params;
-  } else {
-    resolvedParams = params;
-  }
-  const { playlistSlug } = resolvedParams;
+// Force dynamic rendering to prevent build-time data fetching issues
+export const dynamic = 'force-dynamic';
+
+export default async function PlaylistDetailPage({ params }: { params: Promise<{ playlistSlug: string }> }) {
+  const { playlistSlug } = await params;
   
   const playlist = (await getPlaylistBySlug(playlistSlug)) as Playlist | null;
   if (!playlist) {
     return notFound();
   }
 
-  const allPlaylists = (await getPlaylistsPaginated(1, 10)) as Playlist[];
-  const otherPlaylists = allPlaylists.filter((p) => p.id !== playlist.id);
+  // Fetch other playlists with error handling
+  let otherPlaylists: Playlist[] = [];
+  try {
+    const allPlaylists = (await getPlaylistsPaginated(1, 10)) as Playlist[];
+    otherPlaylists = allPlaylists.filter((p) => p.id !== playlist.id);
+  } catch (error) {
+    console.warn('Failed to fetch other playlists:', error);
+    // Continue without other playlists if fetch fails
+  }
 
   const videos: Video[] = playlist.videos || [];
   const [firstVideo, ...restVideos] = videos;
