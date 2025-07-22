@@ -5,6 +5,14 @@
 @import "tailwindcss/utilities.css" layer(utilities); */
 @plugin '@tailwindcss/typography';
 
+/* Custom utilities for line clamp */
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* @theme inline {
