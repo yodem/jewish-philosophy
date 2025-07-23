@@ -179,7 +179,7 @@ const mapToSearchResult = (item: SearchResultItem, type: 'blog' | 'video' | 'pla
   return {
     id: item.id,
     title: item.title,
-    description: item.description || item.content?.substring(0, 150) + '...',
+    description: item.description || 'פרטים בפנים...',
     slug: item.slug,
     type,
     publishedAt: item.publishedAt,
