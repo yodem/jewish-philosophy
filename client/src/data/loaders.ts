@@ -49,11 +49,7 @@ const globalSettingQuery = qs.stringify({
             image: true
           }
         },
-        navigation: {
-          populate: {
-            nestedLinks: true
-          }
-        },
+        navigation: true,
         cta: true
       }
     },
