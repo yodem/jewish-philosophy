@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Blog, Playlist, Video } from "@/types";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { GridSkeleton } from "@/components/ui/skeleton";
 
 interface PaginatedGridProps {
   initialItems: (Playlist | Video | Blog)[];
@@ -14,6 +15,7 @@ interface PaginatedGridProps {
   className?: string;
   loadMore: (page: number) => Promise<(Playlist | Video | Blog)[]>;
   hasMore?: boolean;
+  showInitialSkeleton?: boolean;
 }
 
 export default function PaginatedGrid({ 
@@ -22,14 +24,24 @@ export default function PaginatedGrid({
   baseUrl, 
   className, 
   loadMore,
-  hasMore = true 
+  hasMore = true,
+  showInitialSkeleton = false
 }: PaginatedGridProps) {
   const [items, setItems] = useState<(Playlist | Video | Blog)[]>(initialItems);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMoreItems, setHasMoreItems] = useState(hasMore);
+  const [initialLoading, setInitialLoading] = useState(showInitialSkeleton);
   const observer = useRef<IntersectionObserver | null>(null);
   const lastItemElementRef = useRef<HTMLDivElement | null>(null);
+
+  // Simulate initial loading completion
+  useEffect(() => {
+    if (showInitialSkeleton && initialItems.length > 0) {
+      const timer = setTimeout(() => setInitialLoading(false), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [showInitialSkeleton, initialItems]);
 
   // Load more items function
   const handleLoadMore = useCallback(async () => {
@@ -109,6 +121,15 @@ export default function PaginatedGrid({
     }
     return undefined;
   }, [type]);
+
+  // Show skeleton if initial loading
+  if (initialLoading) {
+    return (
+      <div className={cn("w-full max-w-full", className)}>
+        <GridSkeleton count={6} />
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return null;

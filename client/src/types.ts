@@ -154,4 +154,5 @@ export type Writing = {
   blogs: Blog[];
   categories: Category[];
   responsas: Responsa[];
+  image?: ImageProps;
 }

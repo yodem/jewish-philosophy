@@ -106,15 +106,15 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
     if (!response.data) {
       return {
         ...prevState,
-        strapiErrors: response.error?.message || "Unknown error",
-        errorMessage: "Oops! Something went wrong. Please try again.",
+        strapiErrors: response.error?.message || "תקלה לא ידועה",
+        errorMessage: "קרתה תקלה, אנא נסו שנית מאוחר יותר.",
         successMessage: "",
       };
     }
 
     return {
       ...prevState,
-      successMessage: "Your comment has been added!",
+      successMessage: "תשובתך התקבלה!",
       zodErrors: null,
       strapiErrors: "",
       errorMessage: "",
@@ -123,7 +123,7 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
     return {
       ...prevState,
       strapiErrors: "",
-      errorMessage: "Oops! Something went wrong. Please try again.",
+      errorMessage: "קרתה תקלה, אנא נסו שנית מאוחר יותר.",
       successMessage: "",
     };
   }

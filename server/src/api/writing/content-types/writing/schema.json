@@ -56,6 +56,13 @@
     "slug": {
       "type": "uid",
       "targetField": "title"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }

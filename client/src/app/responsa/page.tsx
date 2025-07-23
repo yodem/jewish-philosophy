@@ -18,6 +18,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
+import { TableRowSkeleton } from "@/components/ui/skeleton";
 
 export default function ResponsaPage() {
   const searchParams = useSearchParams();
@@ -95,11 +96,13 @@ export default function ResponsaPage() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={3} className="text-center py-10">
-                  טוען...
-                </TableCell>
-              </TableRow>
+              <>
+                <TableRowSkeleton columns={3} />
+                <TableRowSkeleton columns={3} />
+                <TableRowSkeleton columns={3} />
+                <TableRowSkeleton columns={3} />
+                <TableRowSkeleton columns={3} />
+              </>
             ) : responsas.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={3} className="text-center py-10">
