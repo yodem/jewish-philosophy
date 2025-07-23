@@ -31,7 +31,7 @@ function SubmitButton() {
     <Button 
       type="submit" 
       disabled={pending} 
-      className="w-auto bg-gradient-to-b from-blue-500 via-cyan-500 to-white text-white"
+      className="w-auto text-white"
     >
       {pending ? "שולח שאלה..." : "שלח שאלה"}
     </Button>
