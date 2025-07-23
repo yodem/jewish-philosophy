@@ -2,37 +2,103 @@
 
 import { useEffect, useState } from "react";
 import { notFound, useParams } from "next/navigation";
-import { getResponsaBySlug } from "@/data/loaders";
+import { getResponsaBySlug, getResponsaComments } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Comment as CommentType, Category, Responsa } from "@/types";
 import CommentForm from "./CommentForm";
+import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 
 export default function ResponsaPage() {
   const params = useParams();
   const slug = params.slug as string;
   const [responsa, setResponsa] = useState<Responsa | null>(null);
+  const [commentsData, setCommentsData] = useState<CommentType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function loadResponsa() {
-      try {
-        const data = await getResponsaBySlug(slug);
-        setResponsa(data);
-      } catch (error) {
-        console.error("Error loading responsa:", error);
-      } finally {
-        setIsLoading(false);
-      }
+  const loadResponsa = async () => {
+    try {
+      setIsLoading(true);
+      const data = await getResponsaBySlug(slug);
+      setResponsa(data);
+      setCommentsData(data?.comments || []);
+    } catch (error) {
+      console.error("Error loading responsa:", error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
+  const loadComments = async () => {
+    if (!responsa?.id) return;
+    try {
+      const updatedComments = await getResponsaComments(responsa.id);
+      setCommentsData(updatedComments);
+    } catch (error) {
+      console.error("Error loading comments:", error);
+    }
+  };
+
+  useEffect(() => {
     loadResponsa();
   }, [slug]);
 
+  // Callback to refresh only comments after comment submission
+  const handleCommentAdded = () => {
+    loadComments();
+  };
+
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 text-center">
-        <p>טוען...</p>
+      <div className="container mx-auto py-8">
+        {/* Breadcrumbs skeleton */}
+        <div className="mb-4">
+          <Skeleton className="h-4 w-48 bg-gray-200" />
+        </div>
+        
+        <div className="max-w-3xl mx-auto">
+          {/* Header skeleton */}
+          <div className="mb-8 space-y-4">
+            <Skeleton className="h-8 w-3/4 bg-gray-200" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-4 w-32 bg-gray-200" />
+              <Skeleton className="h-4 w-20 bg-gray-200" />
+            </div>
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-16 bg-gray-200 rounded-full" />
+              <Skeleton className="h-6 w-20 bg-gray-200 rounded-full" />
+            </div>
+          </div>
+          
+          {/* Content skeleton */}
+          <div className="bg-gray-50 p-6 rounded-lg mb-12">
+            <ContentSkeleton />
+          </div>
+          
+          {/* Comments section skeleton */}
+          <div className="space-y-6">
+            <Skeleton className="h-6 w-32 bg-gray-200" />
+            <div className="space-y-4">
+              <div className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-4 w-24 bg-gray-200" />
+                  <Skeleton className="h-4 w-20 bg-gray-200" />
+                </div>
+                <Skeleton className="h-20 w-full bg-gray-200" />
+              </div>
+            </div>
+            
+            {/* Comment form skeleton */}
+            <div className="mt-12 space-y-4">
+              <Skeleton className="h-6 w-32 bg-gray-200" />
+              <div className="bg-gray-50 p-6 rounded-lg space-y-4">
+                <Skeleton className="h-10 w-full bg-gray-200" />
+                <Skeleton className="h-32 w-full bg-gray-200" />
+                <Skeleton className="h-10 w-24 bg-gray-200" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -41,7 +107,7 @@ export default function ResponsaPage() {
     notFound();
   }
   
-  const { title, content, questioneer, publishedAt, categories, comments } = responsa;
+  const { title, content, questioneer, publishedAt, categories } = responsa;
   
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('he-IL', {
@@ -83,11 +149,11 @@ export default function ResponsaPage() {
         </div>
         
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">תשובות ({comments?.length || 0})</h2>
+          <h2 className="text-2xl font-bold mb-6">תשובות ({commentsData?.length || 0})</h2>
           
-          {comments && comments.length > 0 ? (
+          {commentsData && commentsData.length > 0 ? (
             <div className="space-y-8">
-              {comments.map((comment: CommentType) => (
+              {commentsData.map((comment: CommentType) => (
                 <div key={comment.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
                   <div className="flex items-center text-gray-500 mb-4 text-sm">
                     <span className="font-medium">{comment.answerer}</span>
@@ -106,7 +172,7 @@ export default function ResponsaPage() {
           
           <div className="mt-12">
             <h3 className="text-xl font-bold mb-4">הוסף תשובה</h3>
-            <CommentForm responsaId={responsa.id} />
+            <CommentForm responsaId={responsa.id} onCommentAdded={handleCommentAdded} />
           </div>
         </div>
       </div>

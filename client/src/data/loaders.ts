@@ -290,7 +290,6 @@ export async function getResponsaBySlug(slug: string) {
     populate: {
       categories: true,
       comments: {
-        populate: '*',
         sort: ['createdAt:asc']
       }
     },
@@ -301,17 +300,53 @@ export async function getResponsaBySlug(slug: string) {
   const res = await fetchAPI(url.href, { method: "GET" });
   if (res.data.length === 0) return null;
   
-  return res.data[0];
+  const responsa = res.data[0];
+  
+  // If comments are not populated, fetch them separately
+  if (!responsa.comments || responsa.comments.length === 0) {
+    const commentsQuery = qs.stringify({
+      filters: {
+        responsa: { id: { $eq: responsa.id } }
+      },
+      sort: ['createdAt:asc']
+    });
+    const commentsUrl = new URL("/api/comments", BASE_URL);
+    commentsUrl.search = commentsQuery;
+    const commentsRes = await fetchAPI(commentsUrl.href, { method: "GET" });
+    
+    if (commentsRes.data) {
+      responsa.comments = commentsRes.data;
+    }
+  }
+  
+  return responsa;
 }
 
 export async function createComment(data: { answer: string; answerer: string; responsa: number }) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   
-  return await fetchAPI(url.href, { 
+  const result = await fetchAPI(url.href, { 
     method: "POST",
     body: { data }
   });
+  
+  return result;
+}
+
+export async function getResponsaComments(responsaId: number) {
+  const query = qs.stringify({
+    filters: {
+      responsa: { id: { $eq: responsaId } }
+    },
+    sort: ['createdAt:asc']
+  });
+  const path = "/api/comments";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
 }
 
 // Writing queries
