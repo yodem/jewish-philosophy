@@ -14,6 +14,11 @@
     "isExternal": {
       "type": "boolean",
       "default": false
+    },
+    "nestedLinks": {
+      "type": "component",
+      "component": "elements.nested-link",
+      "repeatable": true
     }
   },
   "config": {}

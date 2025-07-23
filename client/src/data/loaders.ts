@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog } from "@/types";
+import { Blog, Writing } from "@/types";
 
 const homePageQuery = qs.stringify({
   populate: {
@@ -46,21 +46,21 @@ const globalSettingQuery = qs.stringify({
       populate: {
         logo: {
           populate: {
-            image: {
-              fields: ["url", "alternativeText"],
-            },
-          },
+            image: true
+          }
         },
-        navigation: true,
-        cta: true,
-      },
+        navigation: {
+          populate: {
+            nestedLinks: true
+          }
+        },
+        cta: true
+      }
     },
     footer: {
-      populate: {
-        links: true,
-      },
-    },
-  },
+      populate: '*'
+    }
+  }
 });
 
 export async function getGlobalSettings() {
@@ -316,4 +316,75 @@ export async function createComment(data: { answer: string; answerer: string; re
     method: "POST",
     body: { data }
   });
+}
+
+// Writing queries
+const allWritingsQuery = qs.stringify({
+  populate: '*',
+  sort: ['publishedAt:desc'],
+});
+
+export async function getAllWritings(): Promise<Writing[]> {
+  const path = "/api/writings";
+  const url = new URL(path, BASE_URL);
+  url.search = allWritingsQuery;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
+}
+
+export async function getWritingsPaginated(page: number = 1, pageSize: number = 12): Promise<Writing[]> {
+  const query = qs.stringify({
+    populate: '*',
+    sort: ['publishedAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/writings";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  
+  return res.data || [];
+}
+
+export async function getWritingsByType(type: 'book' | 'article', page: number = 1, pageSize: number = 12): Promise<Writing[]> {
+  const query = qs.stringify({
+    filters: {
+      type: {
+        $eq: type
+      }
+    },
+    populate: '*',
+    sort: ['publishedAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/writings";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  console.log(res.data);
+  
+  return res.data || [];
+}
+
+export async function getWritingBySlug(slug: string): Promise<Writing | null> {
+  const query = qs.stringify({
+    filters: {
+      slug: { $eq: slug },
+    },
+    populate: '*',
+  });
+  const path = "/api/writings";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  
+  return res.data[0];
 }

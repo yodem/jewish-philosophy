@@ -5,7 +5,7 @@ import { Button } from './button';
 import { cn } from '@/lib/utils';
 import { StrapiImage } from '../StrapiImage';
 
-export type MediaCardType = 'playlist' | 'video' | 'blog';
+export type MediaCardType = 'playlist' | 'video' | 'blog' | 'book' | 'article';
 
 export interface MediaCardProps {
   image: string;
@@ -31,11 +31,15 @@ export default function MediaCard({
     playlist: 'bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-gray-950',
     video: 'bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/30 dark:to-gray-950',
     blog: 'bg-gradient-to-br from-green-50 to-white dark:from-green-950/30 dark:to-gray-950',
+    book: 'bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/30 dark:to-gray-950',
+    article: 'bg-gradient-to-br from-teal-50 to-white dark:from-teal-950/30 dark:to-gray-950',
   };
   const buttonTextMap: Record<MediaCardType, string> = {
     playlist: 'צפייה בסדרה',
     video: 'צפייה בסרטון',
     blog: 'קרא עוד',
+    book: 'צפייה בספר',
+    article: 'קרא מאמר',
   };
 
   return (

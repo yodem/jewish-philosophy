@@ -1,0 +1,61 @@
+{
+  "kind": "collectionType",
+  "collectionName": "writings",
+  "info": {
+    "singularName": "writing",
+    "pluralName": "writings",
+    "displayName": "Writing"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "book",
+        "article"
+      ]
+    },
+    "linkToWriting": {
+      "type": "component",
+      "component": "elements.link",
+      "repeatable": false
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::author.author",
+      "inversedBy": "writings"
+    },
+    "blogs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog.blog",
+      "mappedBy": "writings"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "mappedBy": "writings"
+    },
+    "responsas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::responsa.responsa",
+      "mappedBy": "writings"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    }
+  }
+}

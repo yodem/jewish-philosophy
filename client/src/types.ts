@@ -3,6 +3,7 @@ export interface LinkProps {
   text: string;
   href: string;
   isExternal: boolean;
+  nestedLinks?: Omit<LinkProps, 'nestedLinks' | 'isExternal'>[];
 }
 
 export interface ImageProps {
@@ -136,4 +137,21 @@ export type Responsa = {
   publishedAt: string;
   categories: Category[];
   comments: Comment[];
+}
+
+export type Writing = {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  type: 'book' | 'article';
+  linkToWriting?: LinkProps;
+  author: Autor;
+  slug: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  blogs: Blog[];
+  categories: Category[];
+  responsas: Responsa[];
 }

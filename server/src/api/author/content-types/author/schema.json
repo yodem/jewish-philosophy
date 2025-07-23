@@ -29,6 +29,12 @@
       "relation": "oneToMany",
       "target": "api::blog.blog",
       "mappedBy": "author"
+    },
+    "writings": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::writing.writing",
+      "mappedBy": "author"
     }
   }
 }
