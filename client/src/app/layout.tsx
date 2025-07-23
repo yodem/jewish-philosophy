@@ -5,6 +5,7 @@ import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
 import Providers from './providers';
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { Analytics } from "@vercel/analytics/next"
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const globalRes = await getGlobalSettings();
@@ -29,7 +30,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         </Providers>
       </body>
       <GoogleAnalytics gaId="G-72NSRCMH08" />
-
+      <Analytics />
     </html>
   );
 }
