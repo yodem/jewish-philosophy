@@ -42,7 +42,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   };
 
   return (
-    <div className='flex flex-col '>
+    <div className='flex flex-col w-full'>
         <BlockRenderer blocks={blocks} />
     <div className="w-full max-w-4xl mx-auto">
       <div className="text-center mb-8">

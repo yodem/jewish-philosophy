@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Category, ContentType } from "@/types";
+import { Category } from "@/types";
 
 export async function subscribeService(email: string) {
     const url = new URL("/api/newsletter-signups", BASE_URL);
@@ -289,16 +289,3 @@ export async function getAllCategories(): Promise<Category[]> {
   const response = await fetchAPI(url.href, { method: "GET" });
   return response.data || [];
 }
-
-export async function getAllContentTypes(): Promise<ContentType[]> {
-  // Return hardcoded content types since they are relatively static
-  return Promise.resolve([
-    { value: 'all', label: 'הכל' },
-    { value: 'blog', label: 'בלוגים' },
-    { value: 'video', label: 'סרטונים' },
-    { value: 'playlist', label: 'סדרות' },
-    { value: 'responsa', label: 'שו"ת' },
-    { value: 'writing', label: 'כתבים' },
-  ]);
-}
-  
