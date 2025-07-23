@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Category } from "@/types";
+import { Category, ContentType } from "@/types";
 
 export async function subscribeService(email: string) {
     const url = new URL("/api/newsletter-signups", BASE_URL);
@@ -37,7 +37,7 @@ export async function subscribeService(email: string) {
 
 export interface SearchFilters {
   query?: string;
-  contentType?: 'all' | 'blog' | 'video' | 'playlist' | 'responsa';
+  contentType?: 'all' | 'blog' | 'video' | 'playlist' | 'responsa' | 'writing';
   category?: string;
   page?: number;
   pageSize?: number;
@@ -55,13 +55,15 @@ export interface SearchResult {
   title: string;
   description?: string;
   slug: string;
-  type: 'blog' | 'video' | 'playlist' | 'responsa';
+  type: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing';
   publishedAt?: string;
   categories?: Category[];
   coverImage?: CoverImage;
   imageUrl300x400?: string;
   imageUrlStandard?: string;
   playlistSlug?: string; // For videos that belong to playlists
+  writingType?: 'book' | 'article'; // For writings
+  author?: { name: string }; // For writings and blogs
 }
 
 export interface SearchResponse {
@@ -109,6 +111,8 @@ interface SearchResultItem {
   playlist?: {
     slug: string;
   };
+  type?: 'book' | 'article'; // For writings
+  author?: { name: string }; // For writings and blogs
 }
 
 const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
@@ -129,8 +133,8 @@ const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
     };
   }
 
-  // Add category filter for blogs and responsa
-  if (filters.category && filters.category !== 'all' && (contentType === 'blog' || contentType === 'responsa')) {
+  // Add category filter for blogs, responsa, and writings
+  if (filters.category && filters.category !== 'all' && (contentType === 'blog' || contentType === 'responsa' || contentType === 'writing')) {
     baseQuery.filters = {
       ...baseQuery.filters,
       categories: {
@@ -156,6 +160,12 @@ const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
         comments: true
       };
       break;
+    case 'writing':
+      baseQuery.populate = {
+        categories: true,
+        author: true
+      };
+      break;
     case 'video':
     case 'playlist':
       baseQuery.populate = '*';
@@ -165,7 +175,7 @@ const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
   return qs.stringify(baseQuery);
 };
 
-const mapToSearchResult = (item: SearchResultItem, type: 'blog' | 'video' | 'playlist' | 'responsa'): SearchResult => {
+const mapToSearchResult = (item: SearchResultItem, type: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'): SearchResult => {
   return {
     id: item.id,
     title: item.title,
@@ -178,6 +188,8 @@ const mapToSearchResult = (item: SearchResultItem, type: 'blog' | 'video' | 'pla
     imageUrl300x400: item.imageUrl300x400,
     imageUrlStandard: item.imageUrlStandard,
     playlistSlug: type === 'video' ? item.playlist?.slug : undefined,
+    writingType: type === 'writing' ? item.type : undefined,
+    author: item.author,
   };
 };
 
@@ -186,7 +198,15 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
   
   if (contentType !== 'all') {
     // Search specific content type
-    const endpoint = contentType === 'responsa' ? 'responsas' : `${contentType}s`;
+    let endpoint;
+    if (contentType === 'responsa') {
+      endpoint = 'responsas';
+    } else if (contentType === 'writing') {
+      endpoint = 'writings';
+    } else {
+      endpoint = `${contentType}s`;
+    }
+    
     const query = buildSearchQuery(contentType, filters);
     const url = new URL(`/api/${endpoint}`, BASE_URL);
     url.search = query;
@@ -194,20 +214,28 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
     const response = await fetchAPI(url.href, { method: "GET" });
     
     return {
-      data: response.data.map((item: SearchResultItem) => mapToSearchResult(item, contentType as 'blog' | 'video' | 'playlist' | 'responsa')),
+      data: response.data.map((item: SearchResultItem) => mapToSearchResult(item, contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing')),
       meta: response.meta
     };
   }
 
   // Search all content types
-  const contentTypes = ['blog', 'video', 'playlist', 'responsa'];
+  const contentTypes = ['blog', 'video', 'playlist', 'responsa', 'writing'];
   const allResults: SearchResult[] = [];
 
   // For "all" search, we'll search each content type and combine results
   // This is a simplified approach - in production you might want a unified search endpoint
   for (const type of contentTypes) {
     try {
-      const endpoint = type === 'responsa' ? 'responsas' : `${type}s`;
+      let endpoint;
+      if (type === 'responsa') {
+        endpoint = 'responsas';
+      } else if (type === 'writing') {
+        endpoint = 'writings';
+      } else {
+        endpoint = `${type}s`;
+      }
+      
       const query = buildSearchQuery(type, { ...filters, pageSize: Math.ceil(pageSize / contentTypes.length) });
       const url = new URL(`/api/${endpoint}`, BASE_URL);
       url.search = query;
@@ -215,7 +243,7 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
       const response = await fetchAPI(url.href, { method: "GET" });
       
       if (response.data && Array.isArray(response.data)) {
-        const mappedResults = response.data.map((item: SearchResultItem) => mapToSearchResult(item, type as 'blog' | 'video' | 'playlist' | 'responsa'));
+        const mappedResults = response.data.map((item: SearchResultItem) => mapToSearchResult(item, type as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'));
         allResults.push(...mappedResults);
       }
     } catch (error) {
@@ -260,5 +288,17 @@ export async function getAllCategories(): Promise<Category[]> {
   
   const response = await fetchAPI(url.href, { method: "GET" });
   return response.data || [];
+}
+
+export async function getAllContentTypes(): Promise<ContentType[]> {
+  // Return hardcoded content types since they are relatively static
+  return Promise.resolve([
+    { value: 'all', label: 'הכל' },
+    { value: 'blog', label: 'בלוגים' },
+    { value: 'video', label: 'סרטונים' },
+    { value: 'playlist', label: 'סדרות' },
+    { value: 'responsa', label: 'שו"ת' },
+    { value: 'writing', label: 'כתבים' },
+  ]);
 }
   

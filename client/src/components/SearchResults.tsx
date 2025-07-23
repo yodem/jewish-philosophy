@@ -9,7 +9,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { StrapiImage } from './StrapiImage';
-import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare, BookOpen } from 'lucide-react';
 
 interface SearchResultsProps {
   filters: SearchFilters;
@@ -20,6 +20,7 @@ const contentTypeConfig = {
   video: { icon: Video, label: 'סרטון', color: 'bg-red-100 text-red-800', path: '/playlists' },
   playlist: { icon: List, label: 'רשימת נגינה', color: 'bg-green-100 text-green-800', path: '/playlists' },
   responsa: { icon: MessageSquare, label: 'שו"ת', color: 'bg-purple-100 text-purple-800', path: '/responsa' },
+  writing: { icon: BookOpen, label: 'כתב', color: 'bg-orange-100 text-orange-800', path: '/writings' },
 };
 
 const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
@@ -188,6 +189,18 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
                           <Calendar className="w-4 h-4" />
                           {formatDate(result.publishedAt)}
                         </div>
+                      )}
+                      
+                      {result.type === 'writing' && result.author && (
+                        <div className="text-gray-600">
+                          מאת: {result.author.name}
+                        </div>
+                      )}
+                      
+                      {result.type === 'writing' && result.writingType && (
+                        <Badge variant="outline" className="text-xs">
+                          {result.writingType === 'book' ? 'ספר' : 'מאמר'}
+                        </Badge>
                       )}
                       
                       {result.categories && result.categories.length > 0 && (
