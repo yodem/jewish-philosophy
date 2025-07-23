@@ -12,7 +12,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
-      <GoogleAnalytics gaId="G-72NSRCMH08" />
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
@@ -29,6 +28,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </Providers>
       </body>
+      <GoogleAnalytics gaId="G-72NSRCMH08" />
+
     </html>
   );
 }
