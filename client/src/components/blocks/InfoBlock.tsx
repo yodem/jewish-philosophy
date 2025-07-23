@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown';
 export default function InfoBlock({ data }: { data: InfoBlockProps }) {
   const { heading, content, image, cta, reversed } = data;
   return (
-    <Card className={`flex  flex-col  ${reversed ? "flex-row-reverse" : "md:md:flex-row "} gap-6 md:gap-10 p-4 md:p-8 items-center rounded-2xl shadow-lg border-0 bg-white/90 max-w-4xl mx-auto my-6`}>
+    <Card className={`flex flex-col ${reversed ? "md:flex-row-reverse" : "md:flex-row"} gap-6 md:gap-10 p-4 md:p-8 items-center rounded-2xl shadow-lg border-0 bg-white/90 max-w-4xl mx-auto my-6`}>
       {image && (
           <StrapiImage src={image.url} alt={image.alternativeText} width={900} height={900} className="rounded-lg object-cover w-[400px] h-[300px] shadow-md" />
       )}
