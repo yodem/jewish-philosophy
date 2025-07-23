@@ -4,6 +4,7 @@ import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
 import Providers from './providers';
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const globalRes = await getGlobalSettings();
@@ -11,6 +12,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
+      <GoogleAnalytics gaId="G-72NSRCMH08" />
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
