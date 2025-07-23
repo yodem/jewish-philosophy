@@ -22,6 +22,12 @@ const nextConfig: NextConfig = {
         hostname: "i.ytimg.com",
         pathname: "/**",
       },
+      // Add pattern for Strapi cloud media URLs
+      {
+        protocol: "https",
+        hostname: "*.media.strapiapp.com",
+        pathname: "/**",
+      },
     ],
   },
 };
