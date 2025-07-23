@@ -9,18 +9,21 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { StrapiImage } from './StrapiImage';
+import SearchForm from './SearchForm';
 import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare, BookOpen } from 'lucide-react';
+import { CONTENT_TYPE_CONFIG } from '../../consts';
 
 interface SearchResultsProps {
   filters: SearchFilters;
 }
 
+// Convert string icon names to actual components
 const contentTypeConfig = {
-  blog: { icon: FileText, label: 'בלוג', color: 'bg-blue-100 text-blue-800', path: '/blog' },
-  video: { icon: Video, label: 'סרטון', color: 'bg-red-100 text-red-800', path: '/playlists' },
-  playlist: { icon: List, label: 'רשימת נגינה', color: 'bg-green-100 text-green-800', path: '/playlists' },
-  responsa: { icon: MessageSquare, label: 'שו"ת', color: 'bg-purple-100 text-purple-800', path: '/responsa' },
-  writing: { icon: BookOpen, label: 'כתב', color: 'bg-orange-100 text-orange-800', path: '/writings' },
+  blog: { icon: FileText, label: CONTENT_TYPE_CONFIG.blog.label, color: CONTENT_TYPE_CONFIG.blog.color, path: CONTENT_TYPE_CONFIG.blog.path },
+  video: { icon: Video, label: CONTENT_TYPE_CONFIG.video.label, color: CONTENT_TYPE_CONFIG.video.color, path: CONTENT_TYPE_CONFIG.video.path },
+  playlist: { icon: List, label: CONTENT_TYPE_CONFIG.playlist.label, color: CONTENT_TYPE_CONFIG.playlist.color, path: CONTENT_TYPE_CONFIG.playlist.path },
+  responsa: { icon: MessageSquare, label: CONTENT_TYPE_CONFIG.responsa.label, color: CONTENT_TYPE_CONFIG.responsa.color, path: CONTENT_TYPE_CONFIG.responsa.path },
+  writing: { icon: BookOpen, label: CONTENT_TYPE_CONFIG.writing.label, color: CONTENT_TYPE_CONFIG.writing.color, path: CONTENT_TYPE_CONFIG.writing.path },
 };
 
 const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
@@ -29,6 +32,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Search form state
+  const [searchQuery, setSearchQuery] = useState(filters.query || '');
+  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
+  const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -47,6 +55,43 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
     fetchResults();
   }, [filters]);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery.trim());
+    }
+    
+    if (selectedContentType !== 'all') {
+      // Handle writing sub-types
+      if (selectedContentType === 'writing-book') {
+        params.set('type', 'writing');
+        params.set('writingType', 'book');
+      } else if (selectedContentType === 'writing-article') {
+        params.set('type', 'writing');
+        params.set('writingType', 'article');
+      } else {
+        params.set('type', selectedContentType);
+      }
+    }
+    
+    if (selectedCategory !== 'all') {
+      params.set('category', selectedCategory);
+    }
+
+    // Reset to page 1 when searching
+    params.set('page', '1');
+
+    const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
+    router.push(searchUrl);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams(searchParams);
@@ -140,7 +185,23 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const { pagination } = meta;
 
   return (
-    <div className="space-y-6">
+    <div className="w-full">
+      {/* Search Form */}
+      <Card className="p-6">
+        <SearchForm
+          searchQuery={searchQuery}
+          selectedContentType={selectedContentType}
+          selectedCategory={selectedCategory}
+          onSearchQueryChange={setSearchQuery}
+          onContentTypeChange={setSelectedContentType}
+          onCategoryChange={setSelectedCategory}
+          onSubmit={handleSearch}
+          onKeyPress={handleKeyPress}
+        />
+      </Card>
+
+      <Separator />
+
       {/* Results Summary */}
       <div className="text-center text-gray-600">
         <p>
