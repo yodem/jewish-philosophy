@@ -70,7 +70,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
         </div>}
 
         <div className="text-center mb-8">
-          <p className="text-lg leading-relaxed text-gray-700">{writing.description}</p>
+          <p className="text-lg leading-relaxed text-gray-700 text-justify">{writing.description}</p>
         </div>
 
         {writing.linkToWriting?.href && (
