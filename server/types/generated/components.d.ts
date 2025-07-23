@@ -57,6 +57,7 @@ export interface ElementsLink extends Struct.ComponentSchema {
   attributes: {
     href: Schema.Attribute.String;
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    nestedLinks: Schema.Attribute.Component<'elements.nested-link', true>;
     text: Schema.Attribute.String;
   };
 }
@@ -69,6 +70,17 @@ export interface ElementsLogo extends Struct.ComponentSchema {
   attributes: {
     image: Schema.Attribute.Media<'images' | 'files'>;
     logoText: Schema.Attribute.String;
+  };
+}
+
+export interface ElementsNestedLink extends Struct.ComponentSchema {
+  collectionName: 'components_elements_nested_links';
+  info: {
+    displayName: 'Nested Link';
+  };
+  attributes: {
+    href: Schema.Attribute.String;
+    text: Schema.Attribute.String;
   };
 }
 
@@ -125,6 +137,7 @@ declare module '@strapi/strapi' {
       'blocks.youtube-link': BlocksYoutubeLink;
       'elements.link': ElementsLink;
       'elements.logo': ElementsLogo;
+      'elements.nested-link': ElementsNestedLink;
       'elements.team-member': ElementsTeamMember;
       'layout.footer': LayoutFooter;
       'layout.header': LayoutHeader;

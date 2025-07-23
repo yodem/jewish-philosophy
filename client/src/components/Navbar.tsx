@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NavbarHeader } from '../types';
-import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu';
+import { NavigationMenu, NavigationMenuList, NavigationMenuItem, NavigationMenuLink, NavigationMenuTrigger, NavigationMenuContent } from './ui/navigation-menu';
 import { Sheet, SheetTrigger, SheetContent, SheetTitle } from './ui/sheet';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
   const pathname = usePathname();
   const navLinks = header?.navigation;
   const isMobile = useIsMobile();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);  
 
   return (
     <nav className="w-full bg-gray-900 text-white py-4 px-4 sm:px-8 flex items-center justify-between shadow-md">
@@ -41,19 +41,45 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
                     )}
                   </div>
             <NavigationMenuList>
-              <NavigationMenuItem>
-              </NavigationMenuItem>
               {navLinks.map((link) => (
-                <NavigationMenuItem key={link.id}>
-                  <NavigationMenuLink asChild active={pathname === link.href}>
-                    <Link
-                      href={link.href}
-                      className={`text-lg font-semibold px-3 py-1 rounded transition-colors ${pathname === link.href ? 'text-blue-400 underline' : 'hover:text-blue-400'}`}
-                    >
-                      {link.text}
-                    </Link>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
+                <React.Fragment key={link.id}>
+                  {link.nestedLinks && link.nestedLinks.length > 0 ? (
+                    <NavigationMenuItem>
+                      <NavigationMenuTrigger dir='rtl' className={`bg-gray-900 font-semibold px-3 py-1 rounded transition-colors text-white hover:text-blue-400 data-[state=open]:text-blue-400 ${pathname === link.href ? 'text-blue-400 underline' : ''}`}>
+                        {link.text}
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent className="bg-gray-900 border text-right border-gray-700 shadow-lg">
+                        <ul className="grid w-[250px] gap-1 p-2">
+                          {link.nestedLinks.map((nestedLink) => (
+                            <li key={nestedLink.id}>
+                              <NavigationMenuLink asChild>
+                                <Link
+                                  href={nestedLink.href}
+                                  className={`block text-sm font-medium px-3 py-2 rounded transition-colors text-white hover:text-blue-400 hover:bg-gray-800 ${pathname === nestedLink.href ? 'text-blue-400 bg-gray-800' : ''}`}
+                                >
+                                  {nestedLink.text}
+                                </Link>
+                              </NavigationMenuLink>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </NavigationMenuItem>
+
+                  ) : (
+                    <NavigationMenuItem>
+                      <NavigationMenuLink asChild active={pathname === link.href}>
+                        <Link
+                          href={link.href}
+                          className={`text-lg font-semibold px-3 py-1 rounded transition-colors text-white hover:text-blue-400 ${pathname === link.href ? 'text-blue-400 underline' : ''}`}
+                        >
+                          {link.text}
+                        </Link>
+                      </NavigationMenuLink>
+                    </NavigationMenuItem>
+
+                  )}
+                </React.Fragment>
               ))}
             </NavigationMenuList>
           </NavigationMenu>
@@ -86,13 +112,42 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
                 </div>
                 <div className="flex flex-col gap-1 px-4 py-6">
                   {navLinks?.map((link) => (
-                    <Link
-                      key={link.id}
-                      href={link.href}
-                      className={`block text-lg font-semibold rounded px-2 py-2 transition-colors ${pathname === link.href ? 'text-blue-400 underline' : 'hover:text-blue-400'}`}
-                    >
-                      {link.text}
-                    </Link>
+                    <div key={link.id}>
+                      {link.nestedLinks && link.nestedLinks.length > 0 ? (
+                        <div className="space-y-1">
+                          {link.href ? (
+                            <Link
+                              href={link.href}
+                              className={`block text-lg font-semibold rounded px-2 py-2 transition-colors text-white hover:text-blue-400 hover:bg-gray-800 ${pathname === link.href ? 'text-blue-400 underline bg-gray-800' : ''}`}
+                            >
+                              {link.text}
+                            </Link>
+                          ) : (
+                            <div className={`block text-lg font-semibold rounded px-2 py-2 transition-colors text-white hover:text-blue-400 hover:bg-gray-800 ${pathname === link.href ? 'text-blue-400 underline bg-gray-800' : ''}`}>
+                              {link.text}
+                            </div>
+                          )}
+                          <div className="ml-4 space-y-1">
+                            {link.nestedLinks.map((nestedLink) => (
+                              <Link
+                                key={nestedLink.id}
+                                href={nestedLink.href}
+                                className={`block text-base font-medium rounded px-2 py-1 transition-colors text-white hover:text-blue-400 hover:bg-gray-800 ${pathname === nestedLink.href ? 'text-blue-400 underline bg-gray-800' : ''}`}
+                              >
+                                {nestedLink.text}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <Link
+                          href={link.href}
+                          className={`block text-lg font-semibold rounded px-2 py-2 transition-colors text-white hover:text-blue-400 hover:bg-gray-800 ${pathname === link.href ? 'text-blue-400 underline bg-gray-800' : ''}`}
+                        >
+                          {link.text}
+                        </Link>
+                      )}
+                    </div>
                   ))}
                 </div>
                 {header?.cta && (

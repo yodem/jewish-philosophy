@@ -401,6 +401,7 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'oneToMany', 'api::writing.writing'>;
   };
 }
 
@@ -436,6 +437,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
 
@@ -471,6 +473,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
 
@@ -695,6 +698,7 @@ export interface ApiResponsaResponsa extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
 
@@ -726,6 +730,48 @@ export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     videoId: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
+  collectionName: 'writings';
+  info: {
+    displayName: 'Writing';
+    pluralName: 'writings';
+    singularName: 'writing';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
+    blogs: Schema.Attribute.Relation<'manyToMany', 'api::blog.blog'>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    linkToWriting: Schema.Attribute.Component<'elements.link', false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::writing.writing'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    responsas: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::responsa.responsa'
+    >;
+    slug: Schema.Attribute.UID<'title'>;
+    title: Schema.Attribute.String;
+    type: Schema.Attribute.Enumeration<['book', 'article']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1249,6 +1295,7 @@ declare module '@strapi/strapi' {
       'api::playlist.playlist': ApiPlaylistPlaylist;
       'api::responsa.responsa': ApiResponsaResponsa;
       'api::video.video': ApiVideoVideo;
+      'api::writing.writing': ApiWritingWriting;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

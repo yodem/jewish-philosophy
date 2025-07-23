@@ -33,13 +33,19 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::category.category",
-      "inversedBy": "responsas"
+      "mappedBy": "responsas"
     },
     "comments": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::comment.comment",
       "mappedBy": "responsa"
+    },
+    "writings": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::writing.writing",
+      "inversedBy": "responsas"
     }
   }
-} 
+}

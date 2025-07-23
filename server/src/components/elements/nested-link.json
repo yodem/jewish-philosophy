@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_elements_nested_links",
+  "info": {
+    "displayName": "Nested Link"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string"
+    },
+    "href": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
