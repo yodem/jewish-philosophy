@@ -8,6 +8,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import { Comment as CommentType, Category, Responsa } from "@/types";
 import CommentForm from "./CommentForm";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
+import ReactMarkdown from "react-markdown";
 
 export default function ResponsaPage() {
   const params = useParams();
@@ -143,8 +144,8 @@ export default function ResponsaPage() {
             </div>
           )}
           
-          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg">
-            <div dangerouslySetInnerHTML={{ __html: content }} />
+          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-justify">
+            <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>
         
@@ -160,8 +161,8 @@ export default function ResponsaPage() {
                     <span className="mx-2">•</span>
                     <span>{formatDate(comment.createdAt)}</span>
                   </div>
-                  <div className="prose prose-md dark:prose-invert">
-                    <div dangerouslySetInnerHTML={{ __html: comment.answer }} />
+                  <div className="prose prose-md dark:prose-invert text-justify">
+                    <ReactMarkdown>{comment.answer}</ReactMarkdown>
                   </div>
                 </div>
               ))}
