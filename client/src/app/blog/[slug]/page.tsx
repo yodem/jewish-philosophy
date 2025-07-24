@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
+import ReactMarkdown from "react-markdown";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -45,7 +46,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   });
   
   return (
-    <div className="w-full max-w-full overflow-hidden">
+    <div className="mx-auto overflow-hidden">
       <Breadcrumbs items={[
         { label: 'בית', href: '/' },
         { label: 'בלוג', href: '/blog' },
@@ -74,7 +75,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         )}
         
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl text-center">
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl text-justify">
           {description || ''}
         </p>
       </div>
@@ -96,9 +97,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       )}
       
-      <div className="max-w-3xl mx-auto px-4 mt-8 mb-12">
-        <article className="prose prose-lg max-w-none dark:prose-invert">
-          <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div className="w-full mx-auto px-4 mt-8 mb-12">
+        <article className="prose prose-lg max-w-none dark:prose-invert text-justify">
+        <ReactMarkdown>{content}</ReactMarkdown>
         </article>
       </div>
       <div className="mt-10 border-t pt-8 mx-auto w-full max-w-xl sm:max-w-2xl px-2 sm:px-4">
