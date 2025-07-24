@@ -39,6 +39,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
   
   const { title, content, publishedAt, author, coverImage, description, categories } = blog;
+
   const publishDate = new Date(publishedAt).toLocaleDateString('he-IL', {
     year: 'numeric',
     month: 'long',
@@ -46,7 +47,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   });
   
   return (
-    <div className="mx-auto overflow-hidden">
+    <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
       <Breadcrumbs items={[
         { label: 'בית', href: '/' },
         { label: 'בלוג', href: '/blog' },
@@ -55,7 +56,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       
       {/* <BackButton /> */}
       
-      <div className="flex flex-col items-center mb-6 sm:mb-8 px-2 sm:px-4">
+      <div className="flex flex-col items-center mb-6 sm:mb-8 w-full">
         <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center">{title}</h2>
         <div className="flex items-center text-gray-500 mb-4 text-sm">
           <span>{publishDate}</span>
@@ -81,7 +82,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       </div>
       
       {coverImage && (
-        <div className="mb-8 sm:mb-12 flex flex-col items-center px-2">
+        <div className="mb-8 sm:mb-12 flex flex-col items-center w-full">
           <div className="block w-full max-w-md sm:max-w-3xl">
             <div className="relative aspect-video w-full">
               <StrapiImage
@@ -89,7 +90,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 alt={title}
                 width={900}
                 height={600}
-                className="object-cover rounded-lg"
+                className="object-cover rounded-lg w-full h-full"
                 priority
               />
             </div>
@@ -97,7 +98,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
       )}
       
-      <div className="w-full mx-auto px-4 mt-8 mb-12">
+      <div className="w-full mx-auto mt-8 mb-12 overflow-x-auto px-0 sm:px-4">
         <article className="prose prose-lg max-w-none dark:prose-invert text-justify">
         <ReactMarkdown>{content}</ReactMarkdown>
         </article>

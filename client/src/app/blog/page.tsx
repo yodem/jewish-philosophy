@@ -10,15 +10,13 @@ export default async function BlogListPage() {
   const data = pageRes?.data;
   const blocks = data?.[0]?.blocks || [];
   const blogs = await getBlogsPaginated(1, 10); // Get first 10 for mobile, will show 12 on desktop
-  
   const [firstBlog, ...restBlogs] = blogs;
-
   return (
     <div className="container mx-auto py-8 px-4">
       <Breadcrumbs
         items={[
-          { label: "Home", href: "/" },
-          { label: "Blog" },
+          { label: "בית", href: "/" },
+          { label: "בלוג" },
         ]}
       />
       <BlockRenderer blocks={blocks} />
@@ -29,7 +27,7 @@ export default async function BlogListPage() {
             <MediaCard
               image={firstBlog.coverImage?.url || ''}
               title={firstBlog.title}
-              description={firstBlog?.author?.name || 'Unknown Author'}
+              description={firstBlog?.author?.name || 'המערכת'}
               type="blog"
               className="w-full"
               isLarge={true}
