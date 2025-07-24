@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { notFound, useParams } from "next/navigation";
 import { getResponsaBySlug, getResponsaComments } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";

@@ -29,7 +29,7 @@ export default async function BlogListPage() {
             <MediaCard
               image={firstBlog.coverImage?.url || ''}
               title={firstBlog.title}
-              description={firstBlog.author.name}
+              description={firstBlog?.author?.name || 'Unknown Author'}
               type="blog"
               className="w-full"
               isLarge={true}
