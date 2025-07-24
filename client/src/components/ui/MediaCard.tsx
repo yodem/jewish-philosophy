@@ -69,7 +69,7 @@ export default function MediaCard({
           <div className="text-xs text-gray-500 text-center mb-1">מספר פרקים - {episodeCount}</div>
         )}
         {description && (
-          <p className="text-gray-600 text-sm mb-4 text-center line-clamp-2">{description}</p>
+          <p className="text-gray-600 text-sm mb-4 text-justify line-clamp-2">{description}</p>
         )}
         <Button className="mt-auto cursor-pointer w-full">{buttonTextMap[type]}</Button>
       </div>
