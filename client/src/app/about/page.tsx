@@ -17,9 +17,9 @@ export default async function AboutPage() {
   if (!data) {
     return (
       <div className="container mx-auto py-12 px-4">
-        <h1 className="text-3xl font-bold mb-8 text-center">About Us</h1>
+        <h1 className="text-3xl font-bold mb-8 text-center">אודות</h1>
         <p className="text-center text-gray-500">
-          Content for this page is being prepared. Please check back later.
+          התוכן לא זמין כרגע. אנא נסו שנית מאוחר יותר.
         </p>
       </div>
     );

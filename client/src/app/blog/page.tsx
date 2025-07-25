@@ -35,7 +35,7 @@ export default async function BlogListPage() {
           </Link>
           <div className="w-full flex flex-col items-center justify-center gap-4 overflow-hidden">
             <h3 className="text-lg sm:text-xl font-semibold mt-2 sm:mt-4 text-center">תיאור</h3>
-            <div className=" text-center max-w-full sm:max-w-2xl text-gray-700 px-2">
+            <div className="max-w-full sm:max-w-2xl text-gray-700 px-2 text-justify">
               {firstBlog.description}
             </div>
           </div>
