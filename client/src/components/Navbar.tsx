@@ -23,19 +23,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
 
   return (
     <nav className="w-full bg-gray-900 text-white py-4 px-4 sm:px-8 flex items-center justify-between shadow-md">
-      <div className="flex items-center gap-6">
-        {/* Logo */}
-        {header?.logo?.image?.url && (
-          <Link href="/" className="flex items-center">
-            <StrapiImage 
-              src={header.logo.image.url} 
-              alt={header.logo.logoText} 
-              width={40} 
-              height={40} 
-              className='cursor-pointer' 
-            />
-          </Link>
-        )}
+      <div className="flex justify-between items-center gap-6">
 
         {/* Desktop Navigation */}
         {!isMobile && navLinks && (
@@ -53,17 +41,22 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
             ))}
           </div>
         )}
-
-        {/* Desktop CTA */}
-        {header?.cta && !isMobile && (
-          <Link
-            href={header.cta.href}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-          >
-            {header.cta.text}
+         {/* Logo */}
+         {header?.logo?.image?.url && (
+          <Link href="/" className="flex items-center">
+            <StrapiImage 
+              src={header.logo.image.url} 
+              alt={header.logo.logoText} 
+              width={200} 
+              height={60} 
+              className='cursor-pointer' 
+            />
           </Link>
         )}
+
+       
       </div>
+      
 
       <div className="flex items-center gap-2">
         {/* Search Button */}
@@ -96,8 +89,8 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
                       <StrapiImage 
                         src={header.logo.image.url} 
                         alt={header.logo.logoText} 
-                        width={40} 
-                        height={40} 
+                        width={200} 
+                        height={60} 
                         className='cursor-pointer' 
                       />
                     </Link>
