@@ -6,11 +6,37 @@ import { notFound } from "next/navigation";
 import MediaCard from "@/components/ui/MediaCard";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import PlaylistGrid from "@/components/PlaylistGrid";
+import { Metadata } from "next";
+import { generateMetadata as createMetadata, generateStructuredData, getImageUrl } from "@/lib/metadata";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
 
-export default async function PlaylistDetailPage({ params }: { params: Promise<{ playlistSlug: string }> }) {
+interface PlaylistPageProps {
+  params: Promise<{ playlistSlug: string }>;
+}
+
+export async function generateMetadata({ params }: PlaylistPageProps): Promise<Metadata> {
+  const { playlistSlug } = await params;
+  const playlist = await getPlaylistBySlug(playlistSlug) as Playlist | null;
+  
+  if (!playlist) {
+    return {
+      title: "Playlist Not Found",
+    };
+  }
+
+  return createMetadata({
+    title: `${playlist.title} | סדרות שיעורים - פילוסופיה יהודית`,
+    description: playlist.description,
+    url: `/playlists/${playlistSlug}`,
+    type: "website",
+    image: getImageUrl(playlist.imageUrl300x400 || playlist.imageUrlStandard),
+    keywords: `סדרת שיעורים, ${playlist.title}, פילוסופיה יהודית, פילוסופיה דתית, הרמב"ם, שיעורי וידאו, מבוא לפילוסופיה יהודית, שלום צדיק`,
+  });
+}
+
+export default async function PlaylistDetailPage({ params }: PlaylistPageProps) {
   const { playlistSlug } = await params;
   
   const playlist = (await getPlaylistBySlug(playlistSlug)) as Playlist | null;
@@ -31,15 +57,43 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
   const videos: Video[] = playlist.videos || [];
   const [firstVideo, ...restVideos] = videos;
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  
+  // Structured data for the playlist
+  const playlistStructuredData = generateStructuredData({
+    type: 'Course',
+    name: playlist.title,
+    description: playlist.description,
+    url: `${baseUrl}/playlists/${playlistSlug}`,
+    image: getImageUrl(playlist.imageUrl300x400 || playlist.imageUrlStandard),
+    additionalProperties: {
+      "@type": "Course",
+      "courseCode": playlistSlug,
+      "numberOfCredits": videos.length,
+      "timeRequired": `PT${videos.length * 10}M`,
+      "hasCourseInstance": videos.map((video) => ({
+        "@type": "CourseInstance",
+        "name": video.title,
+        "description": video.description,
+        "url": `${baseUrl}/playlists/${playlistSlug}/${video.slug}`
+      }))
+    }
+  });
+
   return (
-    <div className="w-full max-w-full overflow-hidden">
-      <Breadcrumbs
-        items={[
-          { label: "בית", href: "/" },
-          { label: "סדרות", href: "/playlists" },
-          { label: playlist.title },
-        ]}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(playlistStructuredData) }}
       />
+      <div className="w-full max-w-full overflow-hidden">
+        <Breadcrumbs
+          items={[
+            { label: "בית", href: "/" },
+            { label: "סדרות", href: "/playlists" },
+            { label: playlist.title },
+          ]}
+        />
       <div className="flex flex-col items-center mb-6 sm:mb-8 px-2 sm:px-4">
         <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center">{playlist.title}</h2>
         <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300 max-w-3xl text-center">
@@ -81,5 +135,6 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
         </div>
       )}
     </div>
+    </>
   );
 } 

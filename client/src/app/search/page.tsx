@@ -5,14 +5,18 @@ import SearchResults from '@/components/SearchResults';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { getPageBySlug } from '@/data/loaders';
 import { Block } from '@/types';
+import { generateMetadata } from '@/lib/metadata';
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = {
-  title: 'חיפוש תוכן',
-  description: 'חפש בכל התוכן באתר - בלוגים, סרטונים, רשימות נגינה ושו"ת',
-};
+export const metadata: Metadata = generateMetadata({
+  title: 'חיפוש תכנים | פילוסופיה יהודית - מנוע חיפוש בלימודי יהדות',
+  description: 'חפש בכל התכנים בפילוסופיה יהודית - מאמרים, שיעורי וידאו, ספרים, כתבים ושאלות ותשובות. מצא את התכנים הרלוונטיים ללימוד שלך.',
+  url: '/search',
+  type: 'website',
+  keywords: 'חיפוש פילוסופיה יהודית, מנוע חיפוש יהודי, חיפוש הרמב"ם, חיפוש מושגים פילוסופיים, חיפוש מאמרים, פילוסופיה דתית, מבוא לפילוסופיה יהודית, מורה נבוכים, כוזרי, שלום צדיק',
+});
 
 interface SearchPageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
