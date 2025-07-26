@@ -7,6 +7,13 @@ import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import ReactMarkdown from "react-markdown";
+import { 
+  fetchContentWithSEO, 
+  strapiSEOPluginToMetadata, 
+  generateSEOPluginStructuredData,
+  validateSEOPluginContent,
+  type ContentWithSEO 
+} from "@/lib/strapi-seo-plugin";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -16,18 +23,19 @@ interface BlogPostPageProps {
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
   
-  if (!blog) {
+  // Fetch blog content with official Strapi SEO plugin data
+  const blogContent = await fetchContentWithSEO('blog', slug) as ContentWithSEO | null;
+  
+  if (!blogContent) {
     return {
-      title: "Blog Post Not Found",
+      title: "Blog Post Not Found | פילוסופיה יהודית",
+      description: "הפוסט המבוקש לא נמצא במערכת פילוסופיה יהודית",
     };
   }
-  
-  return {
-    title: `${blog.title} | בלוג`,
-    description: blog.description || blog.content.slice(0, 160),
-  };
+
+  // Use official Strapi SEO plugin to generate metadata
+  return strapiSEOPluginToMetadata(blogContent);
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -45,14 +53,42 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  // Fetch the same content with SEO plugin data for structured data
+  const blogWithSEO = await fetchContentWithSEO('blog', slug) as ContentWithSEO | null;
+  
+  // Generate structured data using the official Strapi SEO plugin
+  const structuredData = blogWithSEO 
+    ? generateSEOPluginStructuredData(blogWithSEO, 'Article')
+    : {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": title,
+        "description": description || content.slice(0, 160),
+        "inLanguage": "he-IL"
+      };
+
+  // Optional: Validate SEO content for debugging
+  if (blogWithSEO && process.env.NODE_ENV === 'development') {
+    const validation = validateSEOPluginContent(blogWithSEO);
+    console.log(`SEO Score for "${title}": ${validation.seoScore}/100`, {
+      warnings: validation.warnings,
+      errors: validation.errors
+    });
+  }
   
   return (
-    <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
-      <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'בלוג', href: '/blog' },
-        { label: title }
-      ]} />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
+        <Breadcrumbs items={[
+          { label: 'בית', href: '/' },
+          { label: 'בלוג', href: '/blog' },
+          { label: title }
+        ]} />
       
       {/* <BackButton /> */}
       
@@ -107,5 +143,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <QuestionFormWrapper />
       </div>
     </div>
+    </>
   );
 } 

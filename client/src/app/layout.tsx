@@ -6,6 +6,56 @@ import { Card } from "@/components/ui/card";
 import Providers from './providers';
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Analytics } from "@vercel/analytics/next"
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'פילוסופיה יהודית | לימוד פילוסופיה יהודית מקוונת',
+    template: '%s | פילוסופיה יהודית',
+  },
+  description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורים, ספרים, מאמרים ושאלות ותשובות. גלו תכנים איכותיים בהלכה, אגדה, פילוסופיה יהודית ועוד.',
+  keywords: ['פילוסופיה יהודית', 'פילוסופיה דתית', 'הרמב"ם', 'בחירה חופשית', 'ידיעת האל', 'השגחה', 'טעמי המצוות', 'מוסר הרמב"ם', 'דרך האמצע', 'נבל ברשות התורה', 'הוכחה לקיום האל', 'מהות האל', 'הכרחי המציאות', 'טרנסצנדנטיות האל', 'ביקורת החילון', 'יהדות רציונלית', 'דטרמיניזם', 'הגלגלים בפילוסופיה', 'מושגים בפילוסופיה יהודית', 'מבוא לפילוסופיה יהודית', 'על-טבעי ביהדות', 'חילון ליברלי', 'קיום מצוות', 'רוח החוק', 'סכלים נבדלים', 'אמת מהותית', 'השגה שכלית', 'תורה מן השמיים', 'הגדרת דת', 'הגדרת פילוסופיה', 'פילוסופיה דתית מתונה', 'פילוסופיה דתית רדיקלית', 'ספקות דתיות', 'אחדות האל', 'שכר ועונש', 'רבי יהודה הלוי', 'רבי סעדיה גאון', 'אריסטו', 'אבן רושד', 'מורה נבוכים', 'משנה תורה', 'שמונה פרקים', 'הלכות יסודי התורה', 'הלכות דעות', 'כוזרי', 'שלום צדיק', 'סדרות שיעורים', 'שיעורי וידאו', 'קורסים יהודיים', 'לימוד ברצף'],
+  authors: [{ name: 'שלום צדיק' }],
+  creator: 'שלום צדיק',
+  publisher: 'שלום צדיק, יותם פרום',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: 'פילוסופיה יהודית | לימוד פילוסופיה יהודית מקוונת',
+    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורים, ספרים, מאמרים ושאלות ותשובות. גלו תכנים איכותיים בהלכה, אגדה, פילוסופיה יהודית ועוד.',
+    url: '/',
+    siteName: 'פילוסופיה יהודית',
+    locale: 'he_IL',
+    type: 'website',
+    images: [
+      {
+        url: '/og-default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'פילוסופיה יהודית - פלטפורמה ללימוד פילוסופיה יהודית מקוונת',
+      },
+    ],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const globalRes = await getGlobalSettings();

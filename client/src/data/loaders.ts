@@ -2,6 +2,7 @@ import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
 import { Blog, Writing } from "@/types";
+import { buildSEOPluginQuery } from "@/lib/strapi-seo-plugin";
 
 const homePageQuery = qs.stringify({
   populate: {
@@ -232,6 +233,23 @@ export async function getBlogBySlug(slug: string) {
   const res = await fetchAPI(url.href, { method: "GET" });
   if (res.data.length === 0) return null;
   
+  return res.data[0]
+}
+
+// Enhanced SEO-aware blog loader using official Strapi SEO plugin
+export async function getBlogBySlugWithSEO(slug: string) {
+  const query = qs.stringify({
+    filters: {
+      slug: { $eq: slug },
+    },
+    ...JSON.parse(buildSEOPluginQuery().replace('populate=', ''))
+  });
+  const path = "/api/blogs";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET" });
+  if (res.data.length === 0) return null;
+  console.log(res);
   return res.data[0]
 }
 

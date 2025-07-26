@@ -4,6 +4,16 @@ import MediaCard from "@/components/ui/MediaCard";
 import BlogGrid from "@/components/BlogGrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
+import { Metadata } from "next";
+import { generateMetadata, generateStructuredData } from "@/lib/metadata";
+
+export const metadata: Metadata = generateMetadata({
+  title: "בלוג | פילוסופיה יהודית - מאמרים בלימודי יהדות",
+  description: "מאמרים מעמיקים ורלוונטיים בנושאי הלכה, אגדה, פילוסופיה יהודית, פרשת השבוע ועוד. כתבי עת איכותיים מאת רבנים וחוקרים מובילים.",
+  url: "/blog",
+  type: "website",
+  keywords: "בלוג פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מאמרי פילוסופיה, מושגים בפילוסופיה יהודית, מבוא לפילוסופיה יהודית, מורה נבוכים, משנה תורה, כוזרי, שלום צדיק, יהדות רציונלית, פילוסופיה דתית מתונה",
+});
 
 export default async function BlogListPage() {
   const pageRes = await getPageBySlug("blog");
@@ -11,14 +21,56 @@ export default async function BlogListPage() {
   const blocks = data?.[0]?.blocks || [];
   const blogs = await getBlogsPaginated(1, 10); // Get first 10 for mobile, will show 12 on desktop
   const [firstBlog, ...restBlogs] = blogs;
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  
+  // Structured data for the blog collection
+  const blogCollectionStructuredData = generateStructuredData({
+    type: 'WebPage',
+    name: 'בלוג פילוסופיה יהודית - מאמרים בלימודי יהדות',
+    description: 'מאמרים מעמיקים ורלוונטיים בנושאי הלכה, אגדה, פילוסופיה יהודית, פרשת השבוע ועוד. כתבי עת איכותיים מאת רבנים וחוקרים מובילים.',
+    url: `${baseUrl}/blog`,
+    additionalProperties: {
+      "mainEntity": {
+        "@type": "Blog",
+        "name": "בלוג פילוסופיה יהודית",
+        "description": "פלטפורמה לפרסום מאמרים איכותיים בלימודי יהדות, הלכה, אגדה ופילוסופיה יהודית",
+        "url": `${baseUrl}/blog`,
+        "inLanguage": "he-IL",
+        "about": [
+          {
+            "@type": "Thing",
+            "name": "הלכה יהודית",
+            "description": "לימוד ופסיקה הלכתית"
+          },
+          {
+            "@type": "Thing", 
+            "name": "פילוסופיה יהודית",
+            "description": "מחשבת ישראל ופילוסופיה יהודית"
+          },
+          {
+            "@type": "Thing",
+            "name": "פרשת השבוע",
+            "description": "פירושים ודרשות על פרשיות התורה"
+          }
+        ]
+      }
+    }
+  });
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs
-        items={[
-          { label: "בית", href: "/" },
-          { label: "בלוג" },
-        ]}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogCollectionStructuredData) }}
       />
+      <div className="container mx-auto py-8 px-4">
+        <Breadcrumbs
+          items={[
+            { label: "בית", href: "/" },
+            { label: "בלוג" },
+          ]}
+        />
       <BlockRenderer blocks={blocks} />
       {firstBlog && (
         <div className="mb-8 sm:mb-12 flex flex-col items-center px-2 border-b border-gray-200 pb-8 w-full">
@@ -55,5 +107,6 @@ export default async function BlogListPage() {
       </div>
       
     </div>
+    </>
   );
 } 

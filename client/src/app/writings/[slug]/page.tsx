@@ -5,9 +5,34 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import Link from "next/link";
 import { StrapiImage } from "@/components/StrapiImage";
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
+import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: WritingPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const writing = await getWritingBySlug(slug);
+  
+  if (!writing) {
+    return {
+      title: "Writing Not Found",
+    };
+  }
+
+  return createMetadata({
+    title: `${writing.title} | כתבים - פילוסופיה יהודית`,
+    description: writing.description,
+    url: `/writings/${slug}`,
+    type: "article",
+    image: getImageUrl(writing.image?.url),
+    publishedTime: writing.publishedAt,
+    authors: [writing.author.name],
+    tags: writing.categories?.map(cat => cat.name) || undefined,
+    keywords: `${writing.type === 'book' ? 'ספר יהודי' : 'מאמר יהודי'}, ${writing.categories?.map(cat => cat.name).join(', ')}, ${writing.author.name}, לימודי יהדות, בית מדרש דיגיטלי`,
+  });
 }
 
 export default async function WritingPage({ params }: WritingPageProps) {
@@ -22,15 +47,60 @@ export default async function WritingPage({ params }: WritingPageProps) {
   const typeLabel = isBook ? 'ספר' : 'מאמר';
   const defaultButtonText = isBook ? 'צפייה בספר' : 'קרא מאמר';
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  const pageUrl = `${baseUrl}/writings/${slug}`;
+  const imageUrl = writing.image?.url ? `${process.env.STRAPI_BASE_URL || ''}${writing.image.url}` : undefined;
+
+  // Structured data for the writing
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": isBook ? "Book" : "Article",
+    "name": writing.title,
+    "headline": writing.title,
+    "description": writing.description,
+    "image": imageUrl ? [imageUrl] : undefined,
+    "datePublished": writing.publishedAt,
+    "dateModified": writing.updatedAt,
+    "author": {
+      "@type": "Person",
+      "name": writing.author.name,
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Your Site Name",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${baseUrl}/logo.png`
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": pageUrl
+    },
+    "keywords": writing.categories?.map(cat => cat.name).join(', '),
+    "genre": writing.categories?.[0]?.name,
+    "inLanguage": "he-IL",
+    "url": pageUrl,
+    ...(isBook && {
+      "bookFormat": "EBook",
+      "numberOfPages": undefined, // You can add this if available in your data
+    }),
+  };
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs
-        items={[
-          { label: "בית", href: "/" },
-          { label: "כתבים", href: "/writings" },
-          { label: writing.title },
-        ]}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      <div className="container mx-auto py-8 px-4">
+        <Breadcrumbs
+          items={[
+            { label: "בית", href: "/" },
+            { label: "כתבים", href: "/writings" },
+            { label: writing.title },
+          ]}
+        />
 
       <article className="prose prose-lg max-w-4xl mx-auto">
         <div className="text-center mb-8">
@@ -96,5 +166,6 @@ export default async function WritingPage({ params }: WritingPageProps) {
         )}
       </article>
     </div>
+    </>
   );
 } 
