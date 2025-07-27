@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   verification: {
     google: 'your-google-verification-code', // You'll replace this with actual code
     other: {
-      'google-site-verification': 'your-google-verification-code',
+      'google-site-verification': 'googlebd96454624a0e8f7.html',
       'msvalidate.01': 'your-bing-verification-code',
       'yandex-verification': 'your-yandex-verification-code',
     },
@@ -86,6 +86,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
       <head>
+        {/* Google Tag Manager */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N78GTSCR');`
+          }}
+        />
+        {/* End Google Tag Manager */}
         {/* Critical performance optimizations */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         
@@ -177,6 +188,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="google-site-verification" content="akphSIM1AXruIpEV0G-NUb1PiRu2mzgwEpq3KvxVdIA" />
       </head>
       <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden">
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-N78GTSCR"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+        {/* End Google Tag Manager (noscript) */}
         <Providers>
           <Suspense fallback={
             <nav className="w-full bg-gray-900 text-white py-4 px-8 flex items-center justify-between shadow-md">
