@@ -3,7 +3,7 @@ import { getAllBlogs, getAllPlaylists, getAllWritings } from '@/data/loaders';
 import { Blog, Playlist, Writing } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://beit-midrash-digital.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   
   try {
     // Static pages

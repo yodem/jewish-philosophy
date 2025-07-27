@@ -1,0 +1,69 @@
+# Robots.txt for Jewish Philosophy Platform (פילוסופיה יהודית)
+# Website: https://jewish-philosophy.vercel.app/
+
+User-agent: *
+Allow: /
+
+# Optimize crawling for main content areas
+Allow: /playlists/
+Allow: /writings/
+Allow: /responsa/
+Allow: /blog/
+Allow: /search/
+Allow: /about/
+
+# Static assets
+Allow: /images/
+Allow: /videos/
+Allow: /_next/static/
+Allow: /favicon.ico
+Allow: /sitemap.xml
+Allow: /manifest.json
+
+# Disallow API routes and admin areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /private/
+
+# Disallow duplicate content and filters
+Disallow: /*?*
+Disallow: /*&
+Disallow: /*#
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemaps
+Sitemap: https://jewish-philosophy.vercel.app/sitemap.xml
+Sitemap: https://jewish-philosophy.vercel.app/sitemap-playlists.xml
+Sitemap: https://jewish-philosophy.vercel.app/sitemap-writings.xml
+Sitemap: https://jewish-philosophy.vercel.app/sitemap-videos.xml
+
+# Special directives for search engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Block problematic bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: / 
