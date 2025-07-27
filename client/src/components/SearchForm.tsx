@@ -55,23 +55,24 @@ const SearchForm: React.FC<SearchFormProps> = ({
         </div>
       </div>
 
-      {/* Content Type Filter */}
+      {/* Content Type Filter - Required */}
       <div className="grid gap-2">
         <label className="text-sm font-medium text-right flex items-center gap-2">
           <Filter className="h-4 w-4" />
-          סוג תוכן
+          סוג תוכן *
         </label>
         <div className="flex flex-wrap gap-2 justify-start">
           {CONTENT_TYPES.map((type) => (
             <CategoryBadge
               key={type.value}
-              contentType={type.value.startsWith('writing-') ? 'writing' : type.value}
+              contentType={type.value}
               label={type.label}
               variant={selectedContentType === type.value ? "default" : "outline"}
               onClick={() => onContentTypeChange(type.value)}
             />
           ))}
         </div>
+        <p className="text-xs text-gray-500 text-right">* חובה לבחור סוג תוכן אחד</p>
       </div>
 
       {/* Category Filter */}
@@ -103,7 +104,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
         <Button 
           onClick={onSubmit}
           className="w-full mt-4"
-          disabled={disabled}
+          disabled={disabled || !selectedContentType}
         >
           חיפוש
         </Button>

@@ -38,7 +38,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   
   // Search form state
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
-  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
+  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType);
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
   const sortBy = useMemo(() => filters.sort || ['publishedAt:desc'], [filters.sort]);
 
@@ -124,18 +124,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       params.set('q', searchQuery.trim());
     }
     
-    if (selectedContentType !== 'all') {
-      // Handle writing sub-types
-      if (selectedContentType === 'writing-book') {
-        params.set('type', 'writing');
-        params.set('writingType', 'book');
-      } else if (selectedContentType === 'writing-article') {
-        params.set('type', 'writing');
-        params.set('writingType', 'article');
-      } else {
-        params.set('type', selectedContentType);
-      }
-    }
+    // Content type is always required
+    params.set('type', selectedContentType);
     
     if (selectedCategory !== 'all') {
       params.set('category', selectedCategory);
@@ -227,27 +217,59 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
   if (error) {
     return (
-      <Card className="p-8 text-center">
-        <p className="text-red-600 text-lg">{error}</p>
-        <Button 
-          onClick={() => window.location.reload()} 
-          className="mt-4"
-        >
-          נסה שוב
-        </Button>
-      </Card>
+      <div className="w-full">
+        {/* Search Form */}
+        <Card className="p-6">
+          <SearchForm
+            searchQuery={searchQuery}
+            selectedContentType={selectedContentType}
+            selectedCategory={selectedCategory}
+            onSearchQueryChange={setSearchQuery}
+            onContentTypeChange={setSelectedContentType}
+            onCategoryChange={setSelectedCategory}
+            onSubmit={handleSearch}
+            onKeyPress={handleKeyPress}
+          />
+        </Card>
+
+        <Separator />
+
+        <Card className="p-8 text-center">
+          <p className="text-red-600 text-lg">{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-4"
+          >
+            נסה שוב
+          </Button>
+        </Card>
+      </div>
     );
   }
 
   if (!results || results.data.length === 0) {
     return (
-      <Card className="p-8 text-center">
-        <h3 className="text-xl font-semibold text-gray-900 mb-2">לא נמצאו תוצאות</h3>
-        <p className="text-gray-600 mb-4">נסה לשנות את מונחי החיפוש או הפילטרים</p>
-        <Button onClick={() => router.push('/')}>
-          חזור לעמוד הבית
-        </Button>
-      </Card>
+      <div className="w-full text-center">
+        {/* Search Form */}
+        <Card className="p-6">
+          <SearchForm
+            searchQuery={searchQuery}
+            selectedContentType={selectedContentType}
+            selectedCategory={selectedCategory}
+            onSearchQueryChange={setSearchQuery}
+            onContentTypeChange={setSelectedContentType}
+            onCategoryChange={setSelectedCategory}
+            onSubmit={handleSearch}
+            onKeyPress={handleKeyPress}
+          />
+        </Card>
+
+        <Separator />
+<div className="text-center p-6">
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">לא נמצאו תוצאות</h3>
+          <p className="text-gray-600 mb-4">נסה לשנות את מונחי החיפוש או הפילטרים</p>
+        </div>
+      </div>
     );
   }
 
@@ -273,14 +295,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       <Separator />
 
       {/* Results Summary */}
-      <div className="text-center text-gray-600">
+      <div className="text-center text-gray-600 p-6">
         <p>
-          נמצאו {pagination.total} תוצאות
+          נמצאו {pagination.total} תוצאות:
         </p>
       </div>
 
       {/* Results List */}
-      <div className="space-y-4">
+      <div className="space-y-4 p-6">
         {data.map((result, index) => {
           const config = contentTypeConfig[result.type];
           const Icon = config.icon;
