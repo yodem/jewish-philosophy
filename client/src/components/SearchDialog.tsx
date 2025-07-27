@@ -13,7 +13,7 @@ interface SearchDialogProps {
 const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedContentType, setSelectedContentType] = useState('all');
+  const [selectedContentType, setSelectedContentType] = useState('blog'); // Default to blog
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const handleSearch = () => {
@@ -23,9 +23,8 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
       params.set('q', searchQuery.trim());
     }
     
-    if (selectedContentType !== 'all') {
-      params.set('type', selectedContentType);
-    }
+    // Content type is always required
+    params.set('type', selectedContentType);
     
     if (selectedCategory !== 'all') {
       params.set('category', selectedCategory);
@@ -37,7 +36,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     
     // Reset form
     setSearchQuery('');
-    setSelectedContentType('all');
+    setSelectedContentType('blog');
     setSelectedCategory('all');
   };
 
@@ -57,7 +56,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
             onContentTypeChange={setSelectedContentType}
             onCategoryChange={setSelectedCategory}
             onSubmit={handleSearch}
-            disabled={!searchQuery.trim() && selectedContentType === 'all' && selectedCategory === 'all'}
+            disabled={!searchQuery.trim() && selectedCategory === 'all'}
           />
         </div>
       </DialogContent>

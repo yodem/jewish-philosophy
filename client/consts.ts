@@ -1,8 +1,7 @@
 export const BASE_URL = process.env.NEXT_PUBLIC_STRAPI_BASE_URL || "http://localhost:1337";
 
-// Shared search content types
+// Shared search content types - only single selection allowed
 export const CONTENT_TYPES = [
-  { value: 'all', label: 'הכל' },
   { value: 'blog', label: 'בלוגים' },
   { value: 'video', label: 'סרטונים' },
   { value: 'playlist', label: 'סדרות' },

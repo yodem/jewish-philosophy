@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 import { SearchFilters } from '@/data/services';
 import SearchResults from '@/components/SearchResults';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
@@ -43,10 +44,29 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     sort = resolvedSearchParams.sort.split(',').filter(Boolean);
   }
   
+  // Get content type - redirect to default if not provided
+  const contentType = typeof resolvedSearchParams.type === 'string' ? 
+    resolvedSearchParams.type as SearchFilters['contentType'] : null;
+  
+  if (!contentType || !['blog', 'video', 'playlist', 'responsa', 'writing'].includes(contentType)) {
+    // Redirect to default content type (blog) if none provided or invalid
+    const params = new URLSearchParams();
+    if (typeof resolvedSearchParams.q === 'string') {
+      params.set('q', resolvedSearchParams.q);
+    }
+    params.set('type', 'blog');
+    if (typeof resolvedSearchParams.category === 'string') {
+      params.set('category', resolvedSearchParams.category);
+    }
+    if (typeof resolvedSearchParams.sort === 'string') {
+      params.set('sort', resolvedSearchParams.sort);
+    }
+    redirect(`/search?${params.toString()}`);
+  }
+  
   const filters: SearchFilters = {
     query: typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : undefined,
-    contentType: typeof resolvedSearchParams.type === 'string' ? 
-      resolvedSearchParams.type as SearchFilters['contentType'] : 'all',
+    contentType: contentType,
     category: typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined,
     page: typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page) : 1,
     pageSize: 10,
