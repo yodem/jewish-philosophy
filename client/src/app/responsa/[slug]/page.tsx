@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { notFound, useParams } from "next/navigation";
 import { getResponsaBySlug, getResponsaComments } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -17,7 +17,7 @@ export default function ResponsaPage() {
   const [commentsData, setCommentsData] = useState<CommentType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadResponsa = async () => {
+  const loadResponsa = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getResponsaBySlug(slug);
@@ -28,7 +28,7 @@ export default function ResponsaPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [slug]);
 
   const loadComments = async () => {
     if (!responsa?.id) return;
@@ -42,7 +42,7 @@ export default function ResponsaPage() {
 
   useEffect(() => {
     loadResponsa();
-  }, [slug]);
+  }, [slug, loadResponsa]);
 
   // Callback to refresh only comments after comment submission
   const handleCommentAdded = () => {
