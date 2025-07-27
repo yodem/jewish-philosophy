@@ -174,6 +174,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             })
           }}
         />
+        <meta name="google-site-verification" content="akphSIM1AXruIpEV0G-NUb1PiRu2mzgwEpq3KvxVdIA" />
       </head>
       <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden">
         <Providers>
