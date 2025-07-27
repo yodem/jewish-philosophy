@@ -75,7 +75,7 @@ export default async function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutStructuredData) }}
       />
-      <div className="container mx-auto py-8 px-4">
+      <div className="w-full flex flex-col items-center justify-center gap-4 overflow-hidden">
         <BlockRenderer blocks={blocks} />
         <div className="mt-16 max-w-3xl mx-auto">
           <QuestionFormWrapper />

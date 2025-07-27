@@ -41,6 +41,7 @@ export interface SearchFilters {
   category?: string;
   page?: number;
   pageSize?: number;
+  sort?: string[]; // e.g., ['publishedAt:desc', 'title:asc']
 }
 
 interface CoverImage {
@@ -86,13 +87,25 @@ interface SearchQuery {
   };
   filters?: {
     title?: {
-      $containsi: string;
+      $containsi?: string;
+      $notContainsi?: string;
     };
     categories?: {
       slug: {
         $eq: string;
       };
     };
+    $and?: Array<{
+      title?: {
+        $containsi?: string;
+        $notContainsi?: string;
+      };
+      categories?: {
+        slug: {
+          $eq: string;
+        };
+      };
+    }>;
   };
   populate?: Record<string, unknown> | string;
 }
@@ -116,33 +129,75 @@ interface SearchResultItem {
 }
 
 const buildSearchQuery = (contentType: string, filters: SearchFilters) => {
+  // Use publishedAt if available, fallback to createdAt
+  // Try both publishedAt and published_at as field names
+  const defaultSort = filters.sort || ['publishedAt:desc'];
+  
   const baseQuery: SearchQuery = {
-    sort: ['publishedAt:desc'],
+    sort: defaultSort,
     pagination: {
       page: filters.page || 1,
       pageSize: filters.pageSize || 10
     }
   };
 
+  // Always exclude "Private video" for video content
+  const excludePrivateVideo = contentType === 'video' || contentType === 'playlist';
+  
   // Add search filters if query exists
   if (filters.query) {
+    if (excludePrivateVideo) {
+      baseQuery.filters = {
+        $and: [
+          {
+            title: {
+              $containsi: filters.query
+            }
+          },
+          {
+            title: {
+              $notContainsi: 'Private video'
+            }
+          }
+        ]
+      };
+    } else {
+      baseQuery.filters = {
+        title: {
+          $containsi: filters.query
+        }
+      };
+    }
+  } else if (excludePrivateVideo) {
+    // If no search query but we need to exclude private videos
     baseQuery.filters = {
       title: {
-        $containsi: filters.query
+        $notContainsi: 'Private video'
       }
     };
   }
 
   // Add category filter for blogs, responsa, and writings
   if (filters.category && filters.category !== 'all' && (contentType === 'blog' || contentType === 'responsa' || contentType === 'writing')) {
-    baseQuery.filters = {
-      ...baseQuery.filters,
-      categories: {
-        slug: {
-          $eq: filters.category
+    if (baseQuery.filters && baseQuery.filters.$and) {
+      // If we already have $and filters, add category to the array
+      baseQuery.filters.$and.push({
+        categories: {
+          slug: {
+            $eq: filters.category
+          }
         }
-      }
-    };
+      });
+    } else {
+      baseQuery.filters = {
+        ...baseQuery.filters,
+        categories: {
+          slug: {
+            $eq: filters.category
+          }
+        }
+      };
+    }
   }
 
   // Add populate based on content type
@@ -251,13 +306,45 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
     }
   }
 
-  // Sort combined results by publishedAt
-  allResults.sort((a, b) => {
-    if (!a.publishedAt && !b.publishedAt) return 0;
-    if (!a.publishedAt) return 1;
-    if (!b.publishedAt) return -1;
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-  });
+  // Sort combined results based on the provided sort criteria
+  if (filters.sort && filters.sort.length > 0) {
+    allResults.sort((a, b) => {
+      for (const sortField of filters.sort!) {
+        const [field, direction] = sortField.split(':');
+        const aValue = a[field as keyof SearchResult];
+        const bValue = b[field as keyof SearchResult];
+        
+        if (!aValue && !bValue) continue;
+        if (!aValue) return direction === 'desc' ? 1 : -1;
+        if (!bValue) return direction === 'desc' ? -1 : 1;
+        
+        let comparison = 0;
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          // Handle date strings
+          const aDate = new Date(aValue);
+          const bDate = new Date(bValue);
+          if (!isNaN(aDate.getTime()) && !isNaN(bDate.getTime())) {
+            comparison = aDate.getTime() - bDate.getTime();
+          } else {
+            comparison = aValue.localeCompare(bValue);
+          }
+        }
+        
+        if (comparison !== 0) {
+          return direction === 'desc' ? -comparison : comparison;
+        }
+      }
+      return 0;
+    });
+  } else {
+    // Default sort by publishedAt desc
+    allResults.sort((a, b) => {
+      if (!a.publishedAt && !b.publishedAt) return 0;
+      if (!a.publishedAt) return 1;
+      if (!b.publishedAt) return -1;
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
+  }
 
   // Apply pagination to combined results
   const startIndex = (page - 1) * pageSize;
@@ -288,4 +375,32 @@ export async function getAllCategories(): Promise<Category[]> {
   
   const response = await fetchAPI(url.href, { method: "GET" });
   return response.data || [];
+}
+
+// Infinite scrolling helper function
+export async function loadMoreContent(
+  filters: SearchFilters, 
+  existingResults: SearchResult[] = []
+): Promise<{ newResults: SearchResult[]; hasMore: boolean; total: number }> {
+  const nextPage = Math.floor(existingResults.length / (filters.pageSize || 10)) + 1;
+  
+  const newFilters = {
+    ...filters,
+    page: nextPage
+  };
+  
+  const response = await searchContent(newFilters);
+  
+  // Filter out any duplicates that might exist in existingResults
+  const existingIds = new Set(existingResults.map(result => `${result.type}-${result.id}`));
+  const newResults = response.data.filter(result => !existingIds.has(`${result.type}-${result.id}`));
+  
+  // Check if we have more results
+  const hasMore = newResults.length > 0 && response.meta.pagination.page < response.meta.pagination.pageCount;
+  
+  return {
+    newResults: newResults,
+    hasMore: hasMore,
+    total: response.meta.pagination.total
+  };
 }

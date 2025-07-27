@@ -36,6 +36,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   // Parse search parameters
   const resolvedSearchParams = await searchParams;
+  
+  // Parse sort parameter
+  let sort: string[] = ['publishedAt:desc']; // default sort
+  if (typeof resolvedSearchParams.sort === 'string') {
+    sort = resolvedSearchParams.sort.split(',').filter(Boolean);
+  }
+  
   const filters: SearchFilters = {
     query: typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : undefined,
     contentType: typeof resolvedSearchParams.type === 'string' ? 
@@ -43,6 +50,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     category: typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined,
     page: typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page) : 1,
     pageSize: 10,
+    sort: sort,
   };
 
   return (
