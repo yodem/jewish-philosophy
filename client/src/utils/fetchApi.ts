@@ -32,7 +32,7 @@ export async function fetchAPI(url: string, options: FetchAPIOptions) {
   };
 
   try {
-    const response = await fetch(url, {...requestInit, next: { revalidate: 3600, ...requestInit?.next}});
+    const response = await fetch(url, {...requestInit, next: { revalidate: 10, ...requestInit?.next}});
     const contentType = response.headers.get("content-type");
     if (
       contentType &&

@@ -1,16 +1,16 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { searchContent, SearchFilters, SearchResult, SearchResponse } from '@/data/services';
+import { searchContent, loadMoreContent, SearchFilters, SearchResult, SearchResponse } from '@/data/services';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { StrapiImage } from './StrapiImage';
 import SearchForm from './SearchForm';
-import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare, BookOpen } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare, BookOpen, Loader2 } from 'lucide-react';
 import { CONTENT_TYPE_CONFIG } from '../../consts';
 
 interface SearchResultsProps {
@@ -32,18 +32,24 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastResultRef = useRef<HTMLDivElement | null>(null);
   
   // Search form state
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
   const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
+  const [sortBy, setSortBy] = useState<string[]>(filters.sort || ['publishedAt:desc']);
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await searchContent(filters);
+        setHasMore(true);
+        const response = await searchContent({ ...filters, sort: sortBy });
         setResults(response);
       } catch (err) {
         setError('שגיאה בחיפוש. אנא נסה שוב.');
@@ -54,7 +60,63 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
     };
 
     fetchResults();
-  }, [filters]);
+  }, [filters, sortBy]);
+
+  // Infinite scroll callback
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore || !results) return;
+    
+    try {
+      setLoadingMore(true);
+      const { newResults, hasMore: moreAvailable } = await loadMoreContent(
+        { ...filters, sort: sortBy },
+        results.data
+      );
+      
+      if (newResults.length > 0) {
+        setResults(prev => prev ? {
+          ...prev,
+          data: [...prev.data, ...newResults],
+          meta: {
+            ...prev.meta,
+            pagination: {
+              ...prev.meta.pagination,
+              page: prev.meta.pagination.page + 1
+            }
+          }
+        } : null);
+      }
+      
+      setHasMore(moreAvailable);
+    } catch (err) {
+      console.error('Error loading more results:', err);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, hasMore, results, filters, sortBy]);
+
+  // Intersection observer for infinite scroll
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+    
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          console.log('Infinite scroll triggered'); // Debug log
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '100px' }
+    );
+
+    if (lastResultRef.current) {
+      observerRef.current.observe(lastResultRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) observerRef.current.disconnect();
+    };
+  }, [loadMore, hasMore, loadingMore]);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -80,6 +142,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       params.set('category', selectedCategory);
     }
 
+    // Add sort parameter
+    if (sortBy.length > 0) {
+      params.set('sort', sortBy.join(','));
+    }
+
     // Reset to page 1 when searching
     params.set('page', '1');
 
@@ -93,10 +160,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
     }
   };
 
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams);
-    params.set('page', newPage.toString());
-    router.push(`/search?${params.toString()}`);
+  const handleSortChange = (newSort: string[]) => {
+    setSortBy(newSort);
   };
 
   const formatDate = (dateString?: string) => {
@@ -117,6 +182,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   };
 
   const getResultImage = (result: SearchResult) => {
+    // Check if we're on mobile (you can adjust this logic as needed)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640; // sm breakpoint
+    
+    // Return null on mobile to hide images
+    if (isMobile) {
+      return null;
+    }
+    
     if (result.coverImage?.url) {
       return result.coverImage.url;
     }
@@ -192,9 +265,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
           searchQuery={searchQuery}
           selectedContentType={selectedContentType}
           selectedCategory={selectedCategory}
+          selectedSort={sortBy}
           onSearchQueryChange={setSearchQuery}
           onContentTypeChange={setSelectedContentType}
           onCategoryChange={setSelectedCategory}
+          onSortChange={handleSortChange}
           onSubmit={handleSearch}
           onKeyPress={handleKeyPress}
         />
@@ -206,24 +281,26 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       <div className="text-center text-gray-600">
         <p>
           נמצאו {pagination.total} תוצאות
-          {pagination.pageCount > 1 && (
-            <span> (עמוד {pagination.page} מתוך {pagination.pageCount})</span>
-          )}
         </p>
       </div>
 
       {/* Results List */}
       <div className="space-y-4">
-        {data.map((result) => {
+        {data.map((result, index) => {
           const config = contentTypeConfig[result.type];
           const Icon = config.icon;
           const image = getResultImage(result);
+          const isLastResult = index === data.length - 1;
 
           return (
-            <Card key={`${result.type}-${result.id}`} className="p-6 hover:shadow-lg transition-shadow">
+            <Card 
+              key={`${result.type}-${result.id}-${result.slug}-${index}`} 
+              className="p-4 sm:p-6 hover:shadow-lg transition-shadow"
+              ref={isLastResult ? lastResultRef : null}
+            >
               <Link href={getResultLink(result)} className="block">
-                <div className="flex justify-between items-start gap-6">
-                  <div className="flex-1">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-6">
+                  <div className="flex-1 min-w-0">
                     {/* Content Type and Title */}
                     <div className="flex items-center gap-2 mb-2">
                       <Badge className={config.color}>
@@ -232,47 +309,47 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
                       </Badge>
                     </div>
                     
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors break-words">
                       {result.title}
                     </h3>
 
                     {/* Description */}
                     {result.description && (
-                      <p className="text-gray-600 mb-3 line-clamp-3">
+                      <p className="text-gray-600 mb-3 line-clamp-3 break-words">
                         {result.description}
                       </p>
                     )}
 
                     {/* Metadata */}
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-500">
                       {result.publishedAt && (
                         <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {formatDate(result.publishedAt)}
+                          <Calendar className="w-4 h-4 flex-shrink-0" />
+                          <span className="whitespace-nowrap">{formatDate(result.publishedAt)}</span>
                         </div>
                       )}
                       
                       {result.type === 'writing' && result.author && (
-                        <div className="text-gray-600">
+                        <div className="text-gray-600 break-words">
                           מאת: {result.author.name}
                         </div>
                       )}
                       
                       {result.type === 'writing' && result.writingType && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-xs flex-shrink-0">
                           {result.writingType === 'book' ? 'ספר' : 'מאמר'}
                         </Badge>
                       )}
                       
                       {result.categories && result.categories.length > 0 && (
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-1 sm:gap-2">
                           {result.categories.slice(0, 2).map((category) => (
-                            <Badge key={category.id} variant="outline" className="text-xs">
+                            <Badge key={category.id} variant="outline" className="text-xs flex-shrink-0">
                               {category.name}
                             </Badge>
                           ))}
                           {result.categories.length > 2 && (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs flex-shrink-0">
                               +{result.categories.length - 2}
                             </Badge>
                           )}
@@ -283,13 +360,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
                   {/* Image */}
                   {image && (
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 self-start">
                       <StrapiImage
                         src={image}
                         alt={result.title}
                         width={80}
                         height={80}
-                        className="rounded-lg object-cover"
+                        className="rounded-lg object-cover w-20 h-20"
                       />
                     </div>
                   )}
@@ -300,58 +377,19 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         })}
       </div>
 
-      {/* Pagination */}
-      {pagination.pageCount > 1 && (
-        <>
-          <Separator />
-          <div className="flex justify-center items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(pagination.page - 1)}
-              disabled={pagination.page === 1}
-            >
-              <ChevronRight className="w-4 h-4 mr-1" />
-              הקודם
-            </Button>
-            
-            <div className="flex gap-1">
-              {Array.from({ length: Math.min(5, pagination.pageCount) }, (_, i) => {
-                let pageNum;
-                if (pagination.pageCount <= 5) {
-                  pageNum = i + 1;
-                } else if (pagination.page <= 3) {
-                  pageNum = i + 1;
-                } else if (pagination.page >= pagination.pageCount - 2) {
-                  pageNum = pagination.pageCount - 4 + i;
-                } else {
-                  pageNum = pagination.page - 2 + i;
-                }
+      {/* Loading More Indicator */}
+      {loadingMore && (
+        <div className="flex justify-center items-center py-8">
+          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+          <span>טוען עוד תוצאות...</span>
+        </div>
+      )}
 
-                return (
-                  <Button
-                    key={pageNum}
-                    variant={pagination.page === pageNum ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handlePageChange(pageNum)}
-                  >
-                    {pageNum}
-                  </Button>
-                );
-              })}
-            </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handlePageChange(pagination.page + 1)}
-              disabled={pagination.page === pagination.pageCount}
-            >
-              הבא
-              <ChevronLeft className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-        </>
+      {/* End of Results */}
+      {!hasMore && data.length > 0 && (
+        <div className="text-center text-gray-500 py-8">
+          <p>הגעת לסוף התוצאות</p>
+        </div>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Skeleton } from './ui/skeleton';
 import { CategoryBadge } from './CategoryBadge';
-import { Search, Filter } from 'lucide-react';
+import { Search, Filter, ArrowUpDown } from 'lucide-react';
 import { CONTENT_TYPES } from '../../consts';
 import { useCategories } from '@/hooks/use-categories';
 
@@ -11,9 +11,11 @@ interface SearchFormProps {
   searchQuery: string;
   selectedContentType: string;
   selectedCategory: string;
+  selectedSort: string[];
   onSearchQueryChange: (query: string) => void;
   onContentTypeChange: (type: string) => void;
   onCategoryChange: (category: string) => void;
+  onSortChange: (sort: string[]) => void;
   onSubmit: () => void;
   onKeyPress?: (e: React.KeyboardEvent) => void;
   disabled?: boolean;
@@ -24,9 +26,11 @@ const SearchForm: React.FC<SearchFormProps> = ({
   searchQuery,
   selectedContentType,
   selectedCategory,
+  selectedSort,
   onSearchQueryChange,
   onContentTypeChange,
   onCategoryChange,
+  onSortChange,
   onSubmit,
   onKeyPress,
   disabled = false,
@@ -96,6 +100,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
           )}
         </div>
       </div>
+
 
       {/* Search Button */}
       {showSubmitButton && (

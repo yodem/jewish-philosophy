@@ -68,7 +68,16 @@ export async function getGlobalSettings() {
 }
 
 const allPlaylistsQuery = qs.stringify({
-  populate: '*',
+  populate: {
+    videos: {
+      filters: {
+        title: {
+          $ne: 'Private video'
+        }
+      },
+      populate: '*'
+    }
+  },
 });
 
 export async function getAllPlaylists() {
@@ -82,7 +91,16 @@ export async function getAllPlaylists() {
 
 export async function getPlaylistsPaginated(page: number = 1, pageSize: number = 12) {
   const query = qs.stringify({
-    populate: '*',
+    populate: {
+      videos: {
+        filters: {
+          title: {
+            $ne: 'Private video'
+          }
+        },
+        populate: '*'
+      }
+    },
     pagination: {
       page,
       pageSize
@@ -101,7 +119,16 @@ export async function getPlaylistBySlug(slug: string) {
     filters: {
       slug: { $eq: slug },
     },
-    populate: { videos: { populate: '*' } },
+    populate: { 
+      videos: { 
+        filters: {
+          title: {
+            $ne: 'Private video'
+          }
+        },
+        populate: '*' 
+      } 
+    },
   });
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
@@ -118,6 +145,9 @@ export async function getPlaylistVideosPaginated(playlistId: number, page: numbe
     filters: {
       playlists: {
         id: { $eq: playlistId }
+      },
+      title: {
+        $ne: 'Private video'
       }
     },
     populate: '*',
@@ -140,6 +170,9 @@ export async function getAllPlaylistVideos(playlistId: number) {
     filters: {
       playlists: {
         id: { $eq: playlistId }
+      },
+      title: {
+        $ne: 'Private video'
       }
     },
     populate: '*',
@@ -160,6 +193,9 @@ export async function getVideoBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
       slug: { $eq: slug },
+      title: {
+        $ne: 'Private video'
+      }
     },
     populate: '*',
   });
@@ -174,6 +210,11 @@ export async function getVideoBySlug(slug: string) {
 
 export async function getVideosPaginated(page: number = 1, pageSize: number = 12) {
   const query = qs.stringify({
+    filters: {
+      title: {
+        $ne: 'Private video'
+      }
+    },
     populate: '*',
     pagination: {
       page,

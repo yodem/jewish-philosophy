@@ -198,6 +198,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           />
         </noscript>
         {/* End Google Tag Manager (noscript) */}
+        
         <Providers>
           <Suspense fallback={
             <nav className="w-full bg-gray-900 text-white py-4 px-8 flex items-center justify-between shadow-md">

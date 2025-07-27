@@ -111,18 +111,6 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
                     </Link>
                   ))}
                 </div>
-
-                {/* Mobile CTA */}
-                {header?.cta && (
-                  <div className="mt-auto px-4 pb-6">
-                    <Link
-                      href={header.cta.href}
-                      className="block w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold text-center transition-colors"
-                    >
-                      {header.cta.text}
-                    </Link>
-                  </div>
-                )}
               </div>
             </SheetContent>
           </Sheet>
