@@ -1,48 +1,103 @@
 import { MetadataRoute } from 'next';
 import { getAllBlogs, getAllPlaylists, getAllWritings } from '@/data/loaders';
-import { Blog, Playlist, Writing } from '@/types';
+import { Blog, Playlist, Writing, Video } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   
   try {
-    // Static pages
-    const staticPages = [
+    // Helper function to ensure proper URL formatting
+    const formatUrl = (path: string) => {
+      const cleanPath = path.startsWith('/') ? path : `/${path}`;
+      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+      return `${cleanBaseUrl}${cleanPath}`;
+    };
+
+    // Helper function to get image URL
+    const getImageUrl = (strapiUrl?: string) => {
+      if (!strapiUrl) return undefined;
+      if (strapiUrl.startsWith('http')) return strapiUrl;
+      return `${process.env.STRAPI_BASE_URL || ''}${strapiUrl}`;
+    };
+
+    // Static pages with Hebrew localization support
+    const staticPages: MetadataRoute.Sitemap = [
       {
-        url: baseUrl,
+        url: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 1,
+        alternates: {
+          languages: {
+            'he-IL': baseUrl,
+          },
+        },
       },
       {
-        url: `${baseUrl}/about`,
+        url: formatUrl('/about'),
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.8,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/about'),
+          },
+        },
       },
       {
-        url: `${baseUrl}/blog`,
+        url: formatUrl('/blog'),
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 0.9,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/blog'),
+          },
+        },
       },
       {
-        url: `${baseUrl}/playlists`,
+        url: formatUrl('/playlists'),
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/playlists'),
+          },
+        },
       },
       {
-        url: `${baseUrl}/writings`,
+        url: formatUrl('/writings'),
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/writings'),
+          },
+        },
       },
       {
-        url: `${baseUrl}/search`,
+        url: formatUrl('/search'),
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.5,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/search'),
+          },
+        },
+      },
+      {
+        url: formatUrl('/responsa'),
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+        alternates: {
+          languages: {
+            'he-IL': formatUrl('/responsa'),
+          },
+        },
       },
     ];
 
@@ -53,40 +108,130 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       getAllWritings().catch(() => []),
     ]);
 
-    // Blog pages
-    const blogPages = blogs.map((blog: Blog) => ({
-      url: `${baseUrl}/blog/${blog.slug}`,
+    // Blog pages with image sitemaps
+    const blogPages: MetadataRoute.Sitemap = blogs.map((blog: Blog) => ({
+      url: formatUrl(`/blog/${blog.slug}`),
       lastModified: new Date(blog.publishedAt),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
+      alternates: {
+        languages: {
+          'he-IL': formatUrl(`/blog/${blog.slug}`),
+        },
+      },
+      ...(blog.coverImage && {
+        images: [getImageUrl(blog.coverImage.url)].filter(Boolean) as string[],
+      }),
     }));
 
-    // Playlist pages
-    const playlistPages = playlists.map((playlist: Playlist) => ({
-      url: `${baseUrl}/playlists/${playlist.slug}`,
+    // Playlist pages with image sitemaps
+    const playlistPages: MetadataRoute.Sitemap = playlists.map((playlist: Playlist) => ({
+      url: formatUrl(`/playlists/${playlist.slug}`),
       lastModified: new Date(playlist.updatedAt || playlist.createdAt),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
+      alternates: {
+        languages: {
+          'he-IL': formatUrl(`/playlists/${playlist.slug}`),
+        },
+      },
+      images: [
+        getImageUrl(playlist.imageUrl300x400),
+        getImageUrl(playlist.imageUrlStandard),
+      ].filter(Boolean) as string[],
     }));
 
-    // Writing pages
-    const writingPages = writings.map((writing: Writing) => ({
-      url: `${baseUrl}/writings/${writing.slug}`,
+    // Individual video pages with comprehensive video sitemaps (CRUCIAL for SEO)
+    const videoPages: MetadataRoute.Sitemap = playlists.flatMap((playlist: Playlist) => 
+      (playlist.videos || []).map((video: Video) => ({
+        url: formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
+        lastModified: new Date(playlist.updatedAt || playlist.createdAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8, // High priority for video content
+        alternates: {
+          languages: {
+            'he-IL': formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
+          },
+        },
+        // Video sitemap according to Next.js docs and Google standards
+        videos: [
+          {
+            title: video.title,
+            thumbnail_loc: getImageUrl(video.imageUrl300x400) || getImageUrl(video.imageUrlStandard) || '',
+            description: video.description,
+            content_loc: `https://www.youtube.com/watch?v=${video.videoId}`,
+            player_loc: `https://www.youtube.com/embed/${video.videoId}`,
+            duration: 600, // Default duration in seconds (10 minutes)
+            expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
+            rating: 5.0, // Educational content rating
+            view_count: 0, // Will be populated by YouTube data if available
+            publication_date: new Date(playlist.createdAt).toISOString(),
+            family_friendly: 'yes',
+            restriction: {
+              relationship: 'allow',
+              country_codes: ['IL', 'US', 'CA', 'GB', 'AU'], // Allow in these countries
+            },
+            platform: {
+              relationship: 'allow',
+              platform_types: ['web', 'mobile'],
+            },
+            requires_subscription: 'no',
+            uploader: {
+              name: 'שלום צדיק',
+              info: formatUrl('/about'),
+            },
+            live: 'no',
+            tags: ['פילוסופיה יהודית', 'הרמב״ם', 'הלכה', 'אגדה', 'מוסר יהודי', 'יהדות רציונלית'],
+            category: 'Education',
+          },
+        ],
+        // Also include video thumbnail as image
+        images: [
+          getImageUrl(video.imageUrl300x400),
+          getImageUrl(video.imageUrlStandard),
+        ].filter(Boolean) as string[],
+      }))
+    );
+
+    // Writing pages with image sitemaps
+    const writingPages: MetadataRoute.Sitemap = writings.map((writing: Writing) => ({
+      url: formatUrl(`/writings/${writing.slug}`),
       lastModified: new Date(writing.updatedAt || writing.publishedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
+      alternates: {
+        languages: {
+          'he-IL': formatUrl(`/writings/${writing.slug}`),
+        },
+      },
+      ...(writing.image && {
+        images: [getImageUrl(writing.image.url)].filter(Boolean) as string[],
+      }),
     }));
 
-    return [...staticPages, ...blogPages, ...playlistPages, ...writingPages];
+    // Combine all pages
+    return [
+      ...staticPages, 
+      ...blogPages, 
+      ...playlistPages, 
+      ...videoPages, // Individual video pages with video sitemaps
+      ...writingPages
+    ];
+
   } catch (error) {
     console.error('Error generating sitemap:', error);
     // Return at least static pages if dynamic content fails
     return [
       {
-        url: baseUrl,
+        url: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 1,
+        alternates: {
+          languages: {
+            'he-IL': baseUrl,
+          },
+        },
       },
     ];
   }
