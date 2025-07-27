@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { searchContent, loadMoreContent, SearchFilters, SearchResult, SearchResponse } from '@/data/services';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -10,7 +10,7 @@ import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import { StrapiImage } from './StrapiImage';
 import SearchForm from './SearchForm';
-import { Calendar, ChevronLeft, ChevronRight, FileText, Video, List, MessageSquare, BookOpen, Loader2 } from 'lucide-react';
+import { Calendar, FileText, Video, List, MessageSquare, BookOpen, Loader2 } from 'lucide-react';
 import { CONTENT_TYPE_CONFIG } from '../../consts';
 
 interface SearchResultsProps {
@@ -28,7 +28,6 @@ const contentTypeConfig = {
 
 const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +40,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
   const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
-  const [sortBy, setSortBy] = useState<string[]>(filters.sort || ['publishedAt:desc']);
+  const sortBy = useMemo(() => filters.sort || ['publishedAt:desc'], [filters.sort]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -160,9 +159,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
     }
   };
 
-  const handleSortChange = (newSort: string[]) => {
-    setSortBy(newSort);
-  };
+
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
@@ -265,11 +262,9 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
           searchQuery={searchQuery}
           selectedContentType={selectedContentType}
           selectedCategory={selectedCategory}
-          selectedSort={sortBy}
           onSearchQueryChange={setSearchQuery}
           onContentTypeChange={setSelectedContentType}
           onCategoryChange={setSelectedCategory}
-          onSortChange={handleSortChange}
           onSubmit={handleSearch}
           onKeyPress={handleKeyPress}
         />
