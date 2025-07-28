@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { submitQuestionAction } from "@/data/action";
 import { SnackbarProvider, useSnackbar } from 'notistack';
+import { trackQuestionSubmission } from "@/lib/analytics";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +51,13 @@ function QuestionFormInner() {
     if (state.successMessage) {
       enqueueSnackbar(state.successMessage, { variant: 'success' });
       setDialogOpen(true);
+      
+      // Track successful question submission
+      const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+      const questionTitle = formData.get('title') as string;
+      if (questionTitle) {
+        trackQuestionSubmission(questionTitle);
+      }
     }
     if (state.errorMessage || state.strapiErrors) {
       enqueueSnackbar(state.errorMessage || state.strapiErrors, { variant: 'error' });

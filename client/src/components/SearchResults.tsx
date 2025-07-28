@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { searchContent, loadMoreContent, SearchFilters, SearchResult, SearchResponse } from '@/data/services';
+import { trackSearch } from '@/lib/analytics';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -50,6 +51,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         setHasMore(true);
         const response = await searchContent({ ...filters, sort: sortBy });
         setResults(response);
+        
+        // Track search results
+        if (filters.query) {
+          trackSearch(
+            filters.query,
+            filters.contentType,
+            filters.category,
+            response?.meta?.pagination?.total || 0
+          );
+        }
       } catch (err) {
         setError('שגיאה בחיפוש. אנא נסה שוב.');
         console.error('Search error:', err);
@@ -138,6 +149,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
     // Reset to page 1 when searching
     params.set('page', '1');
+
+    // Track search event
+    trackSearch(
+      searchQuery.trim(),
+      selectedContentType,
+      selectedCategory !== 'all' ? selectedCategory : undefined
+    );
 
     const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
     router.push(searchUrl);

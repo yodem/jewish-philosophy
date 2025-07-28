@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addCommentAction } from "@/data/action";
 import { useActionState } from "react";
+import { trackCommentSubmission } from "@/lib/analytics";
 
 const initialState = {
   zodErrors: null,
@@ -35,6 +36,14 @@ export default function CommentForm({
       formRef.current?.reset();
       // Show success notification
       setShowSuccessNotification(true);
+      
+      // Track successful comment submission
+      const formData = new FormData(formRef.current as HTMLFormElement);
+      const commentText = formData.get('comment') as string;
+      if (commentText) {
+        trackCommentSubmission('Responsa Comment', commentText.length);
+      }
+      
       // Hide notification after 3 seconds
       const timer = setTimeout(() => {
         setShowSuccessNotification(false);

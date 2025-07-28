@@ -37,8 +37,8 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
   if (!response.data) {
     return {
       ...prevState,
-      strapiErrors: response.error.message || "Unknown error",
-      errorMessage: "Oops! Something went wrong. Please try again.",
+      strapiErrors: response.error.message || "בעיה בהרשמה לניוזלטר",
+      errorMessage: "בעיה בהרשמה לניוזלטר, אנא נסו שנית מאוחר יותר.",
       successMessage: "",
     };
   }
@@ -46,15 +46,15 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
   if (response.data.error) {
     return {
       ...prevState,
-      strapiErrors: response.data.error.message || "Unknown error",
-      errorMessage: "Oops! Something went wrong. Please try again.",
+      strapiErrors: response.data.error.message || "בעיה בהרשמה לניוזלטר",
+      errorMessage: "בעיה בהרשמה לניוזלטר, אנא נסו שנית מאוחר יותר.",
       successMessage: "",
     };
   }
 
   return {
     ...prevState,
-    successMessage: "You've been added to the newsletter!",
+    successMessage: "הרשמתך התקבלה בהצלחה!",
     zodErrors: null,
     strapiErrors: "",
     errorMessage: "",

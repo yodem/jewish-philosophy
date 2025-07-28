@@ -9,13 +9,15 @@ interface PlaylistVideoGridWrapperProps {
   playlistId: number;
   baseUrl: string;
   className?: string;
+  playlistTitle?: string;
 }
 
 export default function PlaylistVideoGridWrapper({ 
   initialVideos, 
   playlistId,
   baseUrl, 
-  className 
+  className,
+  playlistTitle
 }: PlaylistVideoGridWrapperProps) {
   const loadMore = async (playlistId: number, page: number) => {
     // Load 10 videos per page on mobile, 12 on desktop
@@ -31,6 +33,7 @@ export default function PlaylistVideoGridWrapper({
       baseUrl={baseUrl}
       loadMore={loadMore}
       className={className}
+      playlistTitle={playlistTitle}
     />
   );
 } 

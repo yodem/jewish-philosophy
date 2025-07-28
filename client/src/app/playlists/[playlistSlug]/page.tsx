@@ -8,6 +8,7 @@ import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import PlaylistGrid from "@/components/PlaylistGrid";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, generateStructuredData, getImageUrl } from "@/lib/metadata";
+import PlaylistViewTracker from "@/components/PlaylistViewTracker";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
@@ -43,6 +44,8 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
   if (!playlist) {
     return notFound();
   }
+
+
 
   // Fetch other playlists with error handling
   let otherPlaylists: Playlist[] = [];
@@ -87,6 +90,9 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(playlistStructuredData) }}
       />
       <div className="w-full max-w-full overflow-hidden">
+        {/* Track playlist view */}
+        <PlaylistViewTracker playlistTitle={playlist.title} videoCount={videos.length} />
+        
         <Breadcrumbs
           items={[
             { label: "בית", href: "/" },
@@ -122,6 +128,7 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
             initialVideos={restVideos} 
             playlistId={playlist.id}
             baseUrl={`/playlists/${playlistSlug}`}
+            playlistTitle={playlist.title}
           />
         </div>
       )}

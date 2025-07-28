@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Video } from "@/types";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { trackVideoFromPlaylist } from "@/lib/analytics";
 
 interface PlaylistVideoGridProps {
   initialVideos: Video[];
@@ -13,6 +14,7 @@ interface PlaylistVideoGridProps {
   baseUrl: string;
   className?: string;
   loadMore: (playlistId: number, page: number) => Promise<Video[]>;
+  playlistTitle?: string;
 }
 
 export default function PlaylistVideoGrid({ 
@@ -20,7 +22,8 @@ export default function PlaylistVideoGrid({
   playlistId,
   baseUrl, 
   className,
-  loadMore 
+  loadMore,
+  playlistTitle = 'Unknown Playlist'
 }: PlaylistVideoGridProps) {
   const [videos, setVideos] = useState<Video[]>(initialVideos);
   const [loading, setLoading] = useState(false);
@@ -90,7 +93,11 @@ export default function PlaylistVideoGrid({
               ref={isLastVideo ? lastVideoElementRef : undefined}
               className="w-full"
             >
-              <Link href={`${baseUrl}/${video.slug}`} className="no-underline h-full w-full flex items-center justify-center">
+              <Link 
+                href={`${baseUrl}/${video.slug}`} 
+                className="no-underline h-full w-full flex items-center justify-center"
+                onClick={() => trackVideoFromPlaylist(video.title, playlistTitle, index + 1)}
+              >
                 <MediaCard
                   image={video.imageUrl300x400 || video.imageUrlStandard || ''}
                   title={video.title}
