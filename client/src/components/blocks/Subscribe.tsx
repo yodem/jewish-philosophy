@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardTitle, CardDescription } from "../ui/card";
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import React from "react";
+import { trackNewsletterSignup } from "@/lib/analytics";
 
 interface SubscribeState {
   zodErrors: Record<string, string[]> | null;
@@ -41,6 +42,12 @@ function SubscribeInner({
   React.useEffect(() => {
     if (successMessage) {
       enqueueSnackbar(successMessage, { variant: 'success' });
+      // Track successful newsletter signup
+      const formData = new FormData(document.querySelector('form') as HTMLFormElement);
+      const email = formData.get('email') as string;
+      if (email) {
+        trackNewsletterSignup(email);
+      }
     }
     if (errorMessage) {
       enqueueSnackbar(errorMessage, { variant: 'error' });
@@ -78,7 +85,7 @@ function SubscribeInner({
 
 export function Subscribe(props: Readonly<SubscribeProps>) {
   return (
-    <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+    <SnackbarProvider maxSnack={3} preventDuplicate transitionDuration={2000} autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
       <SubscribeInner {...props} />
     </SnackbarProvider>
   );

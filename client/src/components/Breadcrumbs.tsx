@@ -1,6 +1,9 @@
+'use client';
+
 import Link from "next/link";
 import React from "react";
 import { generateBreadcrumbStructuredData } from "@/lib/metadata";
+import { trackBreadcrumbClick } from "@/lib/analytics";
 
 export interface BreadcrumbItem {
   label: string;
@@ -54,6 +57,7 @@ export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
                   className="text-blue-600 hover:underline hover:text-blue-800 transition-colors duration-200"
                   itemProp="item"
                   title={`עבור ל${item.label}`}
+                  onClick={() => trackBreadcrumbClick(item.label, item.href!)}
                 >
                   <span itemProp="name">{item.label}</span>
                 </Link>

@@ -1,7 +1,5 @@
-import { fetchAPI } from "@/utils/fetchApi";
-import { BASE_URL } from "../../consts";
-import qs from "qs";
 import { Metadata } from "next";
+import { BASE_URL } from "../../consts";
 
 /**
  * Official Strapi SEO Plugin Integration
@@ -95,79 +93,9 @@ export interface ContentWithSEO {
   };
 }
 
-/**
- * Enhanced query builder that includes the official Strapi SEO plugin component
- * Following the plugin's data structure from the article
- */
-export const buildSEOPluginQuery = (additionalFields: string[] = []) => {
-  return qs.stringify({
-    populate: {
-      // Official Strapi SEO Plugin component
-      seo: {
-        populate: {
-          metaImage: {
-            populate: '*'
-          },
-          metaSocial: {
-            populate: {
-              image: {
-                populate: '*'
-              }
-            }
-          }
-        }
-      },
-      // Standard content relationships
-      author: {
-        populate: '*'
-      },
-      categories: {
-        populate: '*'
-      },
-      coverImage: {
-        populate: '*'
-      },
-      // Additional fields
-      ...additionalFields.reduce((acc, field) => {
-        acc[field] = { populate: '*' };
-        return acc;
-      }, {} as Record<string, unknown>)
-    }
-  });
-};
 
-/**
- * Fetch content with SEO plugin data
- */
-export async function fetchContentWithSEO(
-  endpoint: string, 
-  slug?: string,
-  additionalFields: string[] = []
-): Promise<ContentWithSEO | ContentWithSEO[] | null> {
-  try {
-    const query = slug 
-      ? qs.stringify({
-          filters: { slug: { $eq: slug } },
-          ...JSON.parse(buildSEOPluginQuery(additionalFields).replace('populate=', ''))
-        })
-      : buildSEOPluginQuery(additionalFields);
 
-    const path = `/api/${endpoint}${slug ? '' : 's'}`;
-    const url = new URL(path, BASE_URL);
-    url.search = query;
 
-    const response = await fetchAPI(url.href, { method: "GET" });
-    
-    if (slug) {
-      return response.data?.[0] || null;
-    }
-    
-    return response.data || [];
-  } catch (error) {
-    console.error(`Error fetching SEO content from ${endpoint}:`, error);
-    return null;
-  }
-}
 
 /**
  * Convert official Strapi SEO plugin data to Next.js Metadata

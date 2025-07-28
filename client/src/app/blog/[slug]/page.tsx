@@ -1,19 +1,13 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { getBlogBySlug } from "@/data/loaders";
-import { Category } from "@/types";
+import { Category, Blog } from "@/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import ReactMarkdown from "react-markdown";
-import { 
-  fetchContentWithSEO, 
-  strapiSEOPluginToMetadata, 
-  generateSEOPluginStructuredData,
-  validateSEOPluginContent,
-  type ContentWithSEO 
-} from "@/lib/strapi-seo-plugin";
+import { WritingViewTracker } from "@/components/WritingTracker";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -24,18 +18,53 @@ interface BlogPostPageProps {
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
   
-  // Fetch blog content with official Strapi SEO plugin data
-  const blogContent = await fetchContentWithSEO('blog', slug) as ContentWithSEO | null;
+  // Fetch blog content using standard getBlogBySlug
+  const blog = await getBlogBySlug(slug) as Blog | null;
   
-  if (!blogContent) {
+  if (!blog) {
     return {
-      title: "Blog Post Not Found | פילוסופיה יהודית",
+      title: "הפוסט לא נמצא | פילוסופיה יהודית",
       description: "הפוסט המבוקש לא נמצא במערכת פילוסופיה יהודית",
     };
   }
 
-  // Use official Strapi SEO plugin to generate metadata
-  return strapiSEOPluginToMetadata(blogContent);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const pageUrl = `${baseUrl}/blog/${slug}`;
+  const imageUrl = blog.coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${blog.coverImage.url}` : undefined;
+
+  return {
+    title: `${blog.title} | בלוג - פילוסופיה יהודית`,
+    description: blog.description || blog.content.slice(0, 160),
+    keywords: blog.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה יהודית, בלוג',
+    authors: [{ name: blog.author.name }],
+    openGraph: {
+      title: blog.title,
+      description: blog.description || blog.content.slice(0, 160),
+      url: pageUrl,
+      siteName: 'פילוסופיה יהודית',
+      locale: 'he_IL',
+      type: 'article',
+      publishedTime: blog.publishedAt,
+      authors: [blog.author.name],
+      images: imageUrl ? [{
+        url: imageUrl,
+        width: 1200,
+        height: 630,
+        alt: blog.title
+      }] : undefined,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+  };
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
@@ -54,28 +83,48 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     day: 'numeric',
   });
 
-  // Fetch the same content with SEO plugin data for structured data
-  const blogWithSEO = await fetchContentWithSEO('blog', slug) as ContentWithSEO | null;
+  // Generate structured data for the blog post
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const pageUrl = `${baseUrl}/blog/${slug}`;
+  const imageUrl = coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${coverImage.url}` : undefined;
   
-  // Generate structured data using the official Strapi SEO plugin
-  const structuredData = blogWithSEO 
-    ? generateSEOPluginStructuredData(blogWithSEO, 'Article')
-    : {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": title,
-        "description": description || content.slice(0, 160),
-        "inLanguage": "he-IL"
-      };
-
-  // Optional: Validate SEO content for debugging
-  if (blogWithSEO && process.env.NODE_ENV === 'development') {
-    const validation = validateSEOPluginContent(blogWithSEO);
-    console.log(`SEO Score for "${title}": ${validation.seoScore}/100`, {
-      warnings: validation.warnings,
-      errors: validation.errors
-    });
-  }
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": title,
+    "description": description || content.slice(0, 160),
+    "url": pageUrl,
+    "datePublished": publishedAt,
+    "inLanguage": "he-IL",
+    "author": {
+      "@type": "Person",
+      "name": author?.name || 'Unknown'
+    },
+    "publisher": {
+      "@type": "EducationalOrganization",
+      "name": "פילוסופיה יהודית",
+      "url": baseUrl,
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${baseUrl}/logo.png`
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": pageUrl
+    },
+    ...(imageUrl && {
+      "image": [{
+        "@type": "ImageObject",
+        "url": imageUrl,
+        "width": 1200,
+        "height": 630
+      }]
+    }),
+    ...(categories && categories.length > 0 && {
+      "keywords": categories.map((cat: Category) => cat.name).join(', ')
+    })
+  };
   
   return (
     <>
@@ -84,6 +133,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
+        {/* Track blog post view */}
+        <WritingViewTracker 
+          writingTitle={title}
+          writingType="blog"
+          author={author?.name || 'Unknown'}
+        />
+        
         <Breadcrumbs items={[
           { label: 'בית', href: '/' },
           { label: 'בלוג', href: '/blog' },

@@ -9,6 +9,7 @@ import { Comment as CommentType, Category, Responsa } from "@/types";
 import CommentForm from "./CommentForm";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
+import { trackContentView } from "@/lib/analytics";
 
 export default function ResponsaPage() {
   const params = useParams();
@@ -43,6 +44,13 @@ export default function ResponsaPage() {
   useEffect(() => {
     loadResponsa();
   }, [slug, loadResponsa]);
+
+  // Track responsa view when data is loaded
+  useEffect(() => {
+    if (responsa && !isLoading) {
+      trackContentView(responsa.title, 'responsa', 'שלום צדיק');
+    }
+  }, [responsa, isLoading]);
 
   // Callback to refresh only comments after comment submission
   const handleCommentAdded = () => {

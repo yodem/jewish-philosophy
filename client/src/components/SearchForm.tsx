@@ -6,6 +6,7 @@ import { CategoryBadge } from './CategoryBadge';
 import { Search, Filter } from 'lucide-react';
 import { CONTENT_TYPES } from '../../consts';
 import { useCategories } from '@/hooks/use-categories';
+import { trackContentTypeFilter, trackCategoryFilter } from '@/lib/analytics';
 
 interface SearchFormProps {
   searchQuery: string;
@@ -68,7 +69,10 @@ const SearchForm: React.FC<SearchFormProps> = ({
               contentType={type.value}
               label={type.label}
               variant={selectedContentType === type.value ? "default" : "outline"}
-              onClick={() => onContentTypeChange(type.value)}
+              onClick={() => {
+                trackContentTypeFilter(type.value, selectedContentType);
+                onContentTypeChange(type.value);
+              }}
             />
           ))}
         </div>
@@ -91,7 +95,10 @@ const SearchForm: React.FC<SearchFormProps> = ({
                 key={category.value}
                 label={category.label}
                 variant={selectedCategory === category.value ? "default" : "outline"}
-                onClick={() => onCategoryChange(category.value)}
+                onClick={() => {
+                  trackCategoryFilter(category.value, selectedContentType);
+                  onCategoryChange(category.value);
+                }}
               />
             ))
           )}

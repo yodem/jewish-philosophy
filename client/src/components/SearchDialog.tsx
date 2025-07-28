@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import SearchForm from './SearchForm';
+import { trackSearch } from '@/lib/analytics';
 
 interface SearchDialogProps {
   open: boolean;
@@ -29,6 +30,13 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     if (selectedCategory !== 'all') {
       params.set('category', selectedCategory);
     }
+
+    // Track search event
+    trackSearch(
+      searchQuery.trim(),
+      selectedContentType,
+      selectedCategory !== 'all' ? selectedCategory : undefined
+    );
 
     const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
     router.push(searchUrl);

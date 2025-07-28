@@ -7,6 +7,7 @@ import { StrapiImage } from "@/components/StrapiImage";
 import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
+import { WritingViewTracker, WritingButtonTracker } from "@/components/WritingTracker";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -94,6 +95,13 @@ export default async function WritingPage({ params }: WritingPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
       <div className="container mx-auto py-8 px-4">
+        {/* Track writing page view */}
+        <WritingViewTracker 
+          writingTitle={writing.title}
+          writingType={writing.type}
+          author={writing.author.name}
+        />
+        
         <Breadcrumbs
           items={[
             { label: "בית", href: "/" },
@@ -145,23 +153,30 @@ export default async function WritingPage({ params }: WritingPageProps) {
 
         {writing.linkToWriting?.href && (
           <div className="text-center mt-8">
-            <Link
-              href={writing.linkToWriting.href}
-              target={writing.linkToWriting.isExternal ? "_blank" : "_self"}
-              rel={writing.linkToWriting.isExternal ? "noopener noreferrer" : undefined}
+            <WritingButtonTracker
+              writingTitle={writing.title}
+              writingType={writing.type}
+              author={writing.author.name}
+              isExternal={writing.linkToWriting.isExternal || false}
             >
-              <Button
-                variant="default"
-                className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+              <Link
+                href={writing.linkToWriting.href}
+                target={writing.linkToWriting.isExternal ? "_blank" : "_self"}
+                rel={writing.linkToWriting.isExternal ? "noopener noreferrer" : undefined}
               >
-                {writing.linkToWriting?.text || defaultButtonText}
-                {writing.linkToWriting?.isExternal && (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                )}
-              </Button>
-            </Link>
+                <Button
+                  variant="default"
+                  className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+                >
+                  {writing.linkToWriting?.text || defaultButtonText}
+                  {writing.linkToWriting?.isExternal && (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  )}
+                </Button>
+              </Link>
+            </WritingButtonTracker>
           </div>
         )}
       </article>

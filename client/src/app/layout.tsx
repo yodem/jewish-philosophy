@@ -4,10 +4,10 @@ import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
 import Providers from './providers';
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from "@vercel/analytics/next"
 import { Metadata } from 'next';
-import Script from 'next/script';
+
 
 export const metadata: Metadata = {
   title: {
@@ -88,30 +88,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
       <head>
         {/* Google Tag Manager */}
-        <Script
-          id="google-tag-manager"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-N78GTSCR');`
-          }}
-        />
+
         {/* End Google Tag Manager */}
+        <meta name="google-site-verification" content="mkgxgziw2zNrQENhBwVYlslKiXH8qTGKB8rAFtm7t9w" />
         {/* Critical performance optimizations */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        
-        {/* IMMEDIATE INDEXING META TAGS */}
-        <meta name="google-site-verification" content="your-google-verification-code" />
-        <meta name="msvalidate.01" content="your-bing-verification-code" />
-        <meta name="yandex-verification" content="your-yandex-verification-code" />
-        
+                
         {/* Force Google to crawl immediately */}
-        <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
-        <meta name="bingbot" content="index,follow" />
-        
+        <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />        
         {/* Preload critical resources */}
         <link rel="preload" href="/fonts/inter-hebrew.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/og-default.jpg" as="image" />
@@ -220,6 +204,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         
         {/* Load analytics asynchronously */}
         <GoogleAnalytics gaId="G-72NSRCMH08" />
+        <GoogleTagManager gtmId="GTM-N78GTSCR" />
         <Analytics />
       </body>
     </html>

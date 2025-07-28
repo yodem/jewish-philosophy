@@ -126,7 +126,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
           </header>
 
           {/* Video player */}
-          <YoutubePlayer videoId={video.videoId} title={video.title} />
+          <YoutubePlayer videoId={video.videoId} title={video.title} playlistTitle={playlist.title} />
           
           {/* Video description section with proper heading hierarchy */}
           <article className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md mt-6 sm:mt-8">
@@ -135,19 +135,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
             </h3>
             <div className="prose prose-lg max-w-none">
               <p className="text-gray-700 leading-relaxed text-justify mb-4">{video.description}</p>
-              
-              {/* Additional SEO content */}
-              <div className="bg-blue-50 p-4 rounded-lg mt-4">
-                <h4 className="text-lg font-semibold text-blue-900 mb-2">
-                  על מה מדובר בשיעור הזה?
-                </h4>
-                <p className="text-blue-800 text-sm leading-relaxed">
-                  שיעור זה עוסק ב{video.title} במסגרת סדרת השיעורים &ldquo;{playlist.title}&rdquo;. 
-                  השיעור מועבר על ידי שלום צדיק ומתמקד בנושאים מרכזיים בפילוסופיה יהודית, 
-                  כולל לימוד הרמב&quot;ם, הלכה, אגדה ומחשבה יהודית. השיעור מיועד לכל המעוניינים 
-                  בהעמקת הידע היהודי והפילוסופי.
-                </p>
-              </div>
+
             </div>
           </article>
 
@@ -161,15 +149,8 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
           </section>
 
           {/* Question form section */}
-          <section className="mt-10 border-t pt-8">
-            <h3 className="text-xl font-semibold mb-4 text-center text-gray-800">
-              יש לכם שאלות על השיעור?
-            </h3>
-            <p className="text-gray-600 text-center mb-6">
-              שלחו לנו את השאלות שלכם ונענה בהקדם. אנחנו כאן כדי לעזור לכם להעמיק בלימוד.
-            </p>
+
             <QuestionFormWrapper />
-          </section>
 
           {/* Related videos section */}
           {playlist.videos && playlist.videos.length > 0 && (
@@ -184,6 +165,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
                 initialVideos={playlist.videos} 
                 playlistId={playlist.id}
                 baseUrl={`/playlists/${playlistSlug}`}
+                playlistTitle={playlist.title}
               />
             </section>
           )}
