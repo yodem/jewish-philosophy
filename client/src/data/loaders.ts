@@ -299,7 +299,11 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
   const query = qs.stringify({
     populate: {
       categories: true,
-      comments: true
+      comments: {
+        filters: {
+          publishedAt: { $notNull: true }
+        }
+      }
     },
     sort: ['createdAt:desc'],
     pagination: {
@@ -334,6 +338,9 @@ export async function getResponsaBySlug(slug: string) {
     populate: {
       categories: true,
       comments: {
+        filters: {
+          publishedAt: { $notNull: true }
+        },
         sort: ['createdAt:asc']
       }
     },
@@ -344,26 +351,7 @@ export async function getResponsaBySlug(slug: string) {
   const res = await fetchAPI(url.href, { method: "GET" });
   if (res.data.length === 0) return null;
   
-  const responsa = res.data[0];
-  
-  // If comments are not populated, fetch them separately
-  if (!responsa.comments || responsa.comments.length === 0) {
-    const commentsQuery = qs.stringify({
-      filters: {
-        responsa: { id: { $eq: responsa.id } }
-      },
-      sort: ['createdAt:asc']
-    });
-    const commentsUrl = new URL("/api/comments", BASE_URL);
-    commentsUrl.search = commentsQuery;
-    const commentsRes = await fetchAPI(commentsUrl.href, { method: "GET" });
-    
-    if (commentsRes.data) {
-      responsa.comments = commentsRes.data;
-    }
-  }
-  
-  return responsa;
+  return res.data[0];
 }
 
 export async function createComment(data: { answer: string; answerer: string; responsa: number }) {
@@ -381,7 +369,8 @@ export async function createComment(data: { answer: string; answerer: string; re
 export async function getResponsaComments(responsaId: number) {
   const query = qs.stringify({
     filters: {
-      responsa: { id: { $eq: responsaId } }
+      responsa: { id: { $eq: responsaId } },
+      publishedAt: { $notNull: true }
     },
     sort: ['createdAt:asc']
   });

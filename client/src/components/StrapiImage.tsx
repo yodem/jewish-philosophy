@@ -33,7 +33,10 @@ export function StrapiImage({
     quality = 85,
     ...rest
 }: Readonly<StrapiImageProps>) {
+    
+    // Construct the full image URL using the getStrapiMedia function
     const imageUrl = getStrapiMedia(src);
+    
     if (!imageUrl) return null;
 
     // Enhanced alt text for better SEO and accessibility
@@ -137,20 +140,13 @@ export function generateResponsiveImageSizes(
     baseWidth: number,
     breakpoints: number[] = [640, 768, 1024, 1280, 1536]
 ): string {
-    const sizes = breakpoints
-        .map((bp, index) => {
-            const nextBp = breakpoints[index + 1];
-            const percentage = Math.round((baseWidth / bp) * 100);
-            
-            if (nextBp) {
-                return `(max-width: ${bp}px) ${Math.min(percentage, 100)}vw`;
-            } else {
-                return `${Math.min(percentage, 50)}vw`;
-            }
+    return breakpoints
+        .map((breakpoint, index) => {
+            const width = Math.round(baseWidth * (breakpoints.length - index) / breakpoints.length);
+            return `(max-width: ${breakpoint}px) ${width}px`;
         })
+        .concat(`${baseWidth}px`)
         .join(", ");
-    
-    return sizes;
 }
 
 // Utility for placeholder generation

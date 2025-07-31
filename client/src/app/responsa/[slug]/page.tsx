@@ -31,7 +31,7 @@ export default function ResponsaPage() {
     }
   }, [slug]);
 
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     if (!responsa?.id) return;
     try {
       const updatedComments = await getResponsaComments(responsa.id);
@@ -39,11 +39,11 @@ export default function ResponsaPage() {
     } catch (error) {
       console.error("Error loading comments:", error);
     }
-  };
+  }, [responsa?.id]);
 
   useEffect(() => {
     loadResponsa();
-  }, [slug, loadResponsa]);
+  }, [loadResponsa]);
 
   // Track responsa view when data is loaded
   useEffect(() => {
@@ -52,10 +52,10 @@ export default function ResponsaPage() {
     }
   }, [responsa, isLoading]);
 
-  // Callback to refresh only comments after comment submission
-  const handleCommentAdded = () => {
+  // Callback to refresh comments after comment submission
+  const handleCommentAdded = useCallback(() => {
     loadComments();
-  };
+  }, [loadComments]);
 
   if (isLoading) {
     return (
