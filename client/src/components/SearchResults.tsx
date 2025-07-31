@@ -112,7 +112,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
     observerRef.current = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          console.log('Infinite scroll triggered'); // Debug log
           loadMore();
         }
       },

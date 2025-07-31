@@ -48,13 +48,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const contentType = typeof resolvedSearchParams.type === 'string' ? 
     resolvedSearchParams.type as SearchFilters['contentType'] : null;
   
-  if (!contentType || !['blog', 'video', 'playlist', 'responsa', 'writing'].includes(contentType)) {
-    // Redirect to default content type (blog) if none provided or invalid
+  if (!contentType || !['video', 'playlist', 'blog', 'responsa', 'writing'].includes(contentType)) {
+    // Redirect to default content type (video) if none provided or invalid
     const params = new URLSearchParams();
     if (typeof resolvedSearchParams.q === 'string') {
       params.set('q', resolvedSearchParams.q);
     }
-    params.set('type', 'blog');
+    params.set('type', 'video');
     if (typeof resolvedSearchParams.category === 'string') {
       params.set('category', resolvedSearchParams.category);
     }

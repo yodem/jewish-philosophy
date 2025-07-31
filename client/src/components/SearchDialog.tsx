@@ -14,7 +14,7 @@ interface SearchDialogProps {
 const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedContentType, setSelectedContentType] = useState('blog'); // Default to blog
+  const [selectedContentType, setSelectedContentType] = useState('video'); // Default to blog
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const handleSearch = () => {
@@ -41,18 +41,23 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
     router.push(searchUrl);
     onOpenChange(false);
-    
-    // Reset form
-    setSearchQuery('');
-    setSelectedContentType('blog');
-    setSelectedCategory('all');
+  };
+
+  // Reset form when dialog closes
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setSearchQuery('');
+      setSelectedContentType('blog');
+      setSelectedCategory('all');
+    }
+    onOpenChange(open);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[350px] mx-auto">
-        <DialogHeader>
-          <DialogTitle className="text-right">חיפוש תוכן</DialogTitle>
+        <DialogHeader className="pb-4">
+          <DialogTitle className="text-right pr-8">חיפוש תוכן</DialogTitle>
         </DialogHeader>
         
         <div className="py-4">
