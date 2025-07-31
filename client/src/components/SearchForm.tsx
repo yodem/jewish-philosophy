@@ -50,6 +50,12 @@ const SearchForm: React.FC<SearchFormProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
             onKeyPress={onKeyPress}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !disabled) {
+                e.preventDefault();
+                onSubmit();
+              }
+            }}
             className="pl-10 text-right"
             dir="rtl"
           />

@@ -24,7 +24,18 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
   return (
     <nav className="w-full bg-gray-900 text-white py-4 px-4 sm:px-8 flex items-center justify-between shadow-md">
       <div className="flex justify-between items-center gap-6">
-
+         {/* Logo */}
+         {header?.logo?.image?.url && (
+          <Link href="/" className="flex items-center">
+            <StrapiImage 
+              src={header.logo.image.url} 
+              alt={header.logo.logoText} 
+              width={200} 
+              height={60} 
+              className='cursor-pointer' 
+            />
+          </Link>
+        )}
         {/* Desktop Navigation */}
         {!isMobile && navLinks && (
           <div className="hidden sm:flex items-center gap-6">
@@ -41,18 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
             ))}
           </div>
         )}
-         {/* Logo */}
-         {header?.logo?.image?.url && (
-          <Link href="/" className="flex items-center">
-            <StrapiImage 
-              src={header.logo.image.url} 
-              alt={header.logo.logoText} 
-              width={200} 
-              height={60} 
-              className='cursor-pointer' 
-            />
-          </Link>
-        )}
+        
 
        
       </div>
@@ -63,7 +63,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="text-white hover:text-blue-400" 
+          className="text-white hover:text-blue-400 hover:bg-gray-800" 
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="size-6" />
@@ -74,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         {isMobile && (
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-white">
+              <Button variant="ghost" size="icon" className="text-white hover:text-blue-400 hover:bg-gray-800">
                 <MenuIcon className="size-6" />
                 <span className="sr-only">Open menu</span>
               </Button>

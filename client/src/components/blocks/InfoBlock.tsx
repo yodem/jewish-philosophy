@@ -10,7 +10,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
   return (
     <Card className={`flex flex-col ${reversed ? "md:flex-row-reverse" : "md:flex-row"} gap-6 md:gap-10 p-4 md:p-8 items-center rounded-2xl shadow-lg border-0 bg-white/90 max-w-4xl mx-auto my-6`}>
       {image && (
-        <div className="flex-shrink-0 w-full md:w-[400px] h-[250px] md:h-[300px] mb-4 md:mb-0">
+        <div className="flex-shrink-0 w-full md:w-[400px] h-[250px] md:h-[300px] mb-4 md:mb-0 order-1 md:order-none">
           <StrapiImage 
             src={image.url} 
             alt={image.alternativeText} 
@@ -21,13 +21,13 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
           />
         </div>
       )}
-      <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0">
-        <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900">{heading}</CardTitle>
+      <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0 order-2 md:order-none">
+        <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900 text-center md:text-right">{heading}</CardTitle>
         <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg text-justify">
           <ReactMarkdown>{content}</ReactMarkdown>
         </CardDescription>
         {cta && (
-          <Button asChild className="mt-2 md:mt-4">
+          <Button asChild className="mt-2 md:mt-4 w-full md:w-auto">
             <a href={cta.href}>{cta.text}</a>
           </Button>
         )}
