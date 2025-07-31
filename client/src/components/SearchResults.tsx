@@ -285,7 +285,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         <Separator />
 <div className="text-center p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-2">לא נמצאו תוצאות</h3>
-          <p className="text-gray-600 mb-4">נסה לשנות את מונחי החיפוש או הפילטרים</p>
+          <p className="text-gray-600 mb-4">נסו לשנות את סוג התוכן או את הפילטרים</p>
         </div>
       </div>
     );

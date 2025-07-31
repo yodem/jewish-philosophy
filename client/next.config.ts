@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 // Get Strapi URL from environment variable or fallback to localhost
-const strapiUrl = process.env.STRAPI_BASE_URL || "http://localhost:1337";
+// Use NEXT_PUBLIC_ prefix to match consts.ts
+const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_BASE_URL || "http://localhost:1337";
 const strapiUrlObject = new URL(strapiUrl);
 
 // Build remote patterns dynamically based on the Strapi URL
@@ -17,6 +18,13 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       strapiRemotePattern,
+      // Add specific pattern for Strapi Cloud media URLs
+      {
+        protocol: "https",
+        hostname: "*.media.strapiapp.com",
+        pathname: "/**",
+      },
+      // Generic HTTPS pattern as fallback
       {
         protocol: "https",
         hostname: "**",

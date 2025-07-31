@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const getImageUrl = (strapiUrl?: string) => {
       if (!strapiUrl) return undefined;
       if (strapiUrl.startsWith('http')) return strapiUrl;
-      return `${process.env.STRAPI_BASE_URL || ''}${strapiUrl}`;
+      return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${strapiUrl}`;
     };
 
     // Static pages with Hebrew localization support
