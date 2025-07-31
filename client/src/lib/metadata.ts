@@ -33,7 +33,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
   } = seoData;
 
   const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
-  const imageUrl = image?.startsWith('http') ? image : `${process.env.STRAPI_BASE_URL || ''}${image}`;
+  const imageUrl = image?.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${image}`;
 
   return {
     title,
@@ -207,7 +207,7 @@ export function getImageUrl(strapiImageUrl?: string): string {
     return strapiImageUrl;
   }
   
-  return `${process.env.STRAPI_BASE_URL || ''}${strapiImageUrl}`;
+  return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${strapiImageUrl}`;
 } 
 
 // Additional SEO utilities
