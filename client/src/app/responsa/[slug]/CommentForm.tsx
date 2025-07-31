@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addCommentAction } from "@/data/action";
@@ -22,27 +21,22 @@ export default function CommentForm({
   responsaId: number;
   onCommentAdded?: () => void;
 }) {
-  const router = useRouter();
   const [state, formAction] = useActionState(addCommentAction, initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessNotification, setShowSuccessNotification] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-  // Watch for successful comment submission
+  // Handle successful comment submission
   useEffect(() => {
     if (state.successMessage && !isSubmitting) {
+      // Call the callback to refresh comments
       onCommentAdded?.();
-      // Reset form after successful submission
-      formRef.current?.reset();
+      
       // Show success notification
       setShowSuccessNotification(true);
       
       // Track successful comment submission
-      const formData = new FormData(formRef.current as HTMLFormElement);
-      const commentText = formData.get('comment') as string;
-      if (commentText) {
-        trackCommentSubmission('Responsa Comment', commentText.length);
-      }
+      trackCommentSubmission('Responsa Comment', 0);
       
       // Hide notification after 3 seconds
       const timer = setTimeout(() => {
@@ -52,11 +46,17 @@ export default function CommentForm({
     }
   }, [state.successMessage, isSubmitting, onCommentAdded]);
 
+  // Reset form when submission is successful
+  useEffect(() => {
+    if (state.successMessage) {
+      formRef.current?.reset();
+    }
+  }, [state.successMessage]);
+
   const handleSubmit = async (formData: FormData) => {
     setIsSubmitting(true);
     try {
       await formAction(formData);
-      router.refresh();
     } finally {
       setIsSubmitting(false);
     }
