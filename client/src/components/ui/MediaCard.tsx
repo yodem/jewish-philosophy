@@ -28,11 +28,11 @@ export default function MediaCard({
 }: MediaCardProps) {
   // Dicts for background color and button text by type
   const bgColorMap: Record<MediaCardType, string> = {
-    playlist: 'bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-gray-950',
-    video: 'bg-gradient-to-br from-orange-50 to-white dark:from-orange-950/30 dark:to-gray-950',
-    blog: 'bg-gradient-to-br from-green-50 to-white dark:from-green-950/30 dark:to-gray-950',
-    book: 'bg-gradient-to-br from-purple-50 to-white dark:from-purple-950/30 dark:to-gray-950',
-    article: 'bg-gradient-to-br from-teal-50 to-white dark:from-teal-950/30 dark:to-gray-950',
+    playlist: 'bg-gradient-to-br from-blue-100 to-white dark:from-blue-950/30 dark:to-gray-950',
+    video: 'bg-gradient-to-br from-orange-100 to-white dark:from-orange-950/30 dark:to-gray-950',
+    blog: 'bg-gradient-to-br from-green-100 to-white dark:from-green-950/30 dark:to-gray-950',
+    book: 'bg-gradient-to-br from-purple-100 to-white dark:from-purple-950/30 dark:to-gray-950',
+    article: 'bg-gradient-to-br from-teal-100 to-white dark:from-teal-950/30 dark:to-gray-950',
   };
   const buttonTextMap: Record<MediaCardType, string> = {
     playlist: 'צפייה בסדרה',
@@ -51,17 +51,37 @@ export default function MediaCard({
         className
       )}
     >
-      <div className="w-full ">
-        <StrapiImage
-          src={image}
-          alt={title}
-          width={isLarge ? 1200 : 400}
-          height={isLarge ? 900 : 300}
-          quality={isLarge ? 100 : 50}
-          className={cn(
-            "object-contain rounded-lg w-full h-full")}
-          priority
-        />
+      {/* Image container: fixed aspect ratio for regular cards, flexible for large */}
+      <div
+        className={cn(
+          "w-full overflow-hidden rounded-t-lg",
+          !isLarge && "relative aspect-[4/3]"
+        )}
+      >
+        {!isLarge ? (
+          // Regular card – use fill so image fully covers the aspect ratio box
+          <StrapiImage
+            src={image}
+            alt={title}
+            fill
+            quality={50}
+            objectFit={`${type === 'blog' ? 'cover' : 'contain'}`}
+            className="w-full h-full object-contain"
+            priority
+          />
+        ) : (
+          // Large card – keep original behaviour
+          <StrapiImage
+            src={image}
+            alt={title}
+            width={800}
+            height={600}
+            quality={100}
+            objectFit="contain"
+            className="w-full h-auto object-contain"
+            priority
+          />
+        )}
       </div>
       <div className="flex flex-col items-center p-4 w-full">
         <h3 className="font-bold mb-1 text-center text-lg line-clamp-2">{title}</h3>
