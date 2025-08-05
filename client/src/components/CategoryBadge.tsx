@@ -5,6 +5,11 @@ import React from "react";
 // Define the color mapping for categories
 export const CATEGORY_COLORS: Record<string, string> = {
   philosophy: "bg-blue-600 text-white dark:bg-blue-700",
+  evil: "bg-red-700 text-white dark:bg-red-800",
+  religion: "bg-yellow-600 text-white dark:bg-yellow-700",
+  soul: "bg-indigo-600 text-white dark:bg-indigo-700",
+  mimonidies: "bg-green-700 text-white dark:bg-green-800",
+  
   // Add more categories here as needed
 };
 
