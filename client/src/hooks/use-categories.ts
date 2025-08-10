@@ -6,6 +6,7 @@ export const useCategories = () => {
   const [categories, setCategories] = useState<{ value: string; label: string }[]>([
     { value: 'all', label: 'כל הקטגוריות' }
   ]);
+  const [fullCategories, setFullCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
 
   useEffect(() => {
@@ -14,13 +15,13 @@ export const useCategories = () => {
       try {
         const categoriesData = await getAllCategories();
         const formattedCategories = [
-          { value: 'all', label: 'כל הקטגוריות' },
           ...categoriesData.map((cat: Category) => ({
             value: cat.slug,
             label: cat.name
           }))
         ];
         setCategories(formattedCategories);
+        setFullCategories(categoriesData);
       } catch (error) {
         console.error('Error loading categories:', error);
       } finally {
@@ -31,5 +32,5 @@ export const useCategories = () => {
     loadCategories();
   }, []);
 
-  return { categories, loadingCategories };
+  return { categories, fullCategories, loadingCategories };
 }; 

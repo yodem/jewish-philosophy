@@ -9,6 +9,9 @@ export const CATEGORY_COLORS: Record<string, string> = {
   religion: "bg-yellow-600 text-white dark:bg-yellow-700",
   soul: "bg-indigo-600 text-white dark:bg-indigo-700",
   mimonidies: "bg-green-700 text-white dark:bg-green-800",
+  hazal: "bg-pink-700 text-white dark:bg-pink-800",
+  family: "bg-teal-700 text-white dark:bg-teal-800",
+  torah: "bg-purple-700 text-white dark:bg-purple-800",
   
   // Add more categories here as needed
 };
@@ -32,6 +35,9 @@ interface CategoryBadgeProps {
   className?: string;
   variant?: "default" | "outline";
   onClick?: () => void;
+  isSelected?: boolean;
+  isDisabled?: boolean;
+  showRemoveIcon?: boolean;
 }
 
 export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ 
@@ -40,7 +46,10 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
   label,
   className,
   variant = "default",
-  onClick
+  onClick,
+  isSelected = false,
+  isDisabled = false,
+  showRemoveIcon = false
 }) => {
   let colorClass = "";
   let displayLabel = "";
@@ -61,13 +70,41 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
     ? className 
     : `${colorClass} ${className || ""}`.trim();
 
+  // Add selection and disabled states
+  const selectionClass = isSelected 
+    ? 'ring-2 ring-primary/20 shadow-md' 
+    : '';
+  
+  const disabledClass = isDisabled 
+    ? 'opacity-50 cursor-not-allowed' 
+    : 'cursor-pointer hover:scale-105 transition-transform duration-200';
+
   return (
     <Badge 
-      className={`${finalClassName} ${onClick ? 'cursor-pointer' : ''}`.trim()}
+      className={`
+        ${finalClassName} 
+        ${selectionClass}
+        ${disabledClass}
+        ${onClick ? '' : ''}
+        inline-flex items-center gap-2 text-[16px]
+      `.trim()}
       variant={variant}
-      onClick={onClick}
+      onClick={isDisabled ? undefined : onClick}
     >
-      {displayLabel}
+      <span>{displayLabel}</span>
+      {isSelected && showRemoveIcon && (
+        <svg 
+          className="w-4 h-4 hover:scale-125 transition-transform duration-200" 
+          fill="currentColor" 
+          viewBox="0 0 20 20"
+        >
+          <path 
+            fillRule="evenodd" 
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+            clipRule="evenodd" 
+          />
+        </svg>
+      )}
     </Badge>
   );
 };
