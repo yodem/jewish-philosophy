@@ -57,7 +57,7 @@ function QuestionFormInner() {
     questioneer: ''
   });
   const { enqueueSnackbar } = useSnackbar();
-  const { categories, fullCategories, loadingCategories } = useCategories();
+  const { fullCategories, loadingCategories } = useCategories();
 
   // Show notifications on submit
   useEffect(() => {
