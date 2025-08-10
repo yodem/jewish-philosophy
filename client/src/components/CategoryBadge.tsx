@@ -86,7 +86,7 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
         ${selectionClass}
         ${disabledClass}
         ${onClick ? '' : ''}
-        inline-flex items-center gap-2 text-[16px]
+        inline-flex items-center gap-2 text-sm
       `.trim()}
       variant={variant}
       onClick={isDisabled ? undefined : onClick}
