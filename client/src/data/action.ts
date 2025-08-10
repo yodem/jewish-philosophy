@@ -139,6 +139,11 @@ const questionSchema = z.object({
   questioneer: z.string().min(2, {
     message: "שם השואל חייב להכיל לפחות 2 תווים",
   }),
+  categories: z.array(z.string()).min(1, {
+    message: "יש לבחור לפחות קטגוריה אחת",
+  }).max(3, {
+    message: "ניתן לבחור עד 3 קטגוריות בלבד",
+  }),
 });
 
 interface QuestionState {
@@ -150,10 +155,14 @@ interface QuestionState {
 }
 
 export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
+  // Get categories from form data (multiple values with same name)
+  const categories = formData.getAll("categories") as string[];
+  
   const validatedFields = questionSchema.safeParse({
     title: formData.get("title"),
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
+    categories,
   });
 
   if (!validatedFields.success) {
@@ -167,7 +176,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
   }
 
   try {
-    const { title, content, questioneer } = validatedFields.data;
+    const { title, content, questioneer, categories } = validatedFields.data;
     
     // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
     // Transliterate Hebrew characters to Latin or use timestamp as fallback
@@ -196,6 +205,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
           content,
           questioneer,
           slug,
+          categories: categories.map(categorySlug => ({ slug: categorySlug }))
         }
       }),
     });

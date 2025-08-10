@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input";
 import { submitQuestionAction } from "@/data/action";
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { trackQuestionSubmission } from "@/lib/analytics";
+import { useCategories } from "@/hooks/use-categories";
+import { CategoryBadge } from "@/components/CategoryBadge";
 import {
   Dialog,
   DialogContent,
@@ -25,13 +27,17 @@ const initialState = {
   errorMessage: "",
 };
 
-function SubmitButton() {
+function SubmitButton({ 
+  isFormValid 
+}: { 
+  isFormValid: boolean 
+}) {
   const { pending } = useFormStatus();
   
   return (
     <Button 
       type="submit" 
-      disabled={pending} 
+      disabled={pending || !isFormValid} 
       className="w-auto text-white"
     >
       {pending ? "שולח שאלה..." : "שלח שאלה"}
@@ -44,7 +50,14 @@ function QuestionFormInner() {
   const [state, formAction] = useActionState(submitQuestionAction, initialState);
   const [showForm, setShowForm] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [formValues, setFormValues] = useState({
+    title: '',
+    content: '',
+    questioneer: ''
+  });
   const { enqueueSnackbar } = useSnackbar();
+  const { categories, fullCategories, loadingCategories } = useCategories();
 
   // Show notifications on submit
   useEffect(() => {
@@ -64,12 +77,57 @@ function QuestionFormInner() {
     }
   }, [state.successMessage, state.errorMessage, state.strapiErrors, enqueueSnackbar]);
 
+  // Reset form when form is shown/hidden
+  useEffect(() => {
+    if (!showForm) {
+      setSelectedCategories([]);
+      setFormValues({
+        title: '',
+        content: '',
+        questioneer: ''
+      });
+    }
+  }, [showForm]);
+
+  // Form validation
+  const isFormValid = () => {
+    return (
+      formValues.title.trim().length >= 3 &&
+      formValues.content.trim().length >= 10 &&
+      formValues.questioneer.trim().length >= 2 &&
+      selectedCategories.length >= 1 &&
+      selectedCategories.length <= 3
+    );
+  };
+
   // Dialog confirm handler
   const handleDialogConfirm = () => {
     setDialogOpen(false);
     if (state.slug) {
       router.push(`/responsa/${state.slug}`);
     }
+  };
+
+  // Handle category selection
+  const handleCategoryChange = (categoryValue: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(categoryValue)) {
+        return prev.filter(cat => cat !== categoryValue);
+      } else {
+        if (prev.length >= 3) {
+          return prev;
+        }
+        return [...prev, categoryValue];
+      }
+    });
+  };
+
+  // Handle form input changes
+  const handleInputChange = (field: 'title' | 'content' | 'questioneer', value: string) => {
+    setFormValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   return (
@@ -100,13 +158,24 @@ function QuestionFormInner() {
         <>
           <h3 className="text-xl font-semibold mb-6">שאל שאלה חדשה</h3>
           <form action={formAction} className="space-y-4">
+            {/* Hidden inputs for selected categories */}
+            {selectedCategories.map((category) => (
+              <input
+                key={category}
+                type="hidden"
+                name="categories"
+                value={category}
+              />
+            ))}
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-1">
-                כותרת השאלה
+                כותרת
               </label>
               <Input
                 id="title"
                 name="title"
+                value={formValues.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="הכנס כותרת קצרה ומתומצתת"
                 className={state.zodErrors?.title ? "border-red-500" : ""}
               />
@@ -121,6 +190,8 @@ function QuestionFormInner() {
               <Input
                 id="questioneer"
                 name="questioneer"
+                value={formValues.questioneer}
+                onChange={(e) => handleInputChange('questioneer', e.target.value)}
                 placeholder="הכנס את שמך"
                 className={state.zodErrors?.questioneer ? "border-red-500" : ""}
               />
@@ -135,6 +206,8 @@ function QuestionFormInner() {
               <textarea
                 id="content"
                 name="content"
+                value={formValues.content}
+                onChange={(e) => handleInputChange('content', e.target.value)}
                 rows={6}
                 placeholder="הסבר את השאלה שלך בפירוט"
                 className={`w-full rounded-md border ${
@@ -145,6 +218,40 @@ function QuestionFormInner() {
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.content[0]}</p>
               )}
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                קטגוריות (1-3 קטגוריות) {selectedCategories.length > 0 && `(${selectedCategories.length}/3)`}
+              </label>
+              {loadingCategories ? (
+                <div className="text-gray-500 text-sm">טוען קטגוריות...</div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-3">
+                    {fullCategories.map((category) => {
+                      const isSelected = selectedCategories.includes(category.slug);
+                      const isDisabled = !isSelected && selectedCategories.length >= 3;
+                      
+                      return (
+                        <CategoryBadge
+                          key={category.slug}
+                          category={category}
+                          isSelected={isSelected}
+                          isDisabled={isDisabled}
+                          showRemoveIcon={isSelected}
+                          onClick={() => handleCategoryChange(category.slug)}
+                        />
+                      );
+                    })}
+                  </div>
+                  {selectedCategories.length >= 3 && (
+                    <p className="text-blue-600 text-sm">נבחרו 3 קטגוריות מקסימום</p>
+                  )}
+                  {state.zodErrors?.categories && (
+                    <p className="text-red-500 text-sm">{state.zodErrors.categories[0]}</p>
+                  )}
+                </div>
+              )}
+            </div>
             <div className="flex justify-between items-center gap-4">
               <Button 
                 type="button" 
@@ -153,7 +260,8 @@ function QuestionFormInner() {
               >
                 ביטול
               </Button>
-              <SubmitButton />
+              <SubmitButton isFormValid={isFormValid()} />
+  
             </div>
           </form>
         </>
