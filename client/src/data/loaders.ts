@@ -17,7 +17,7 @@ export async function getHomePage() {
   const url = new URL(path, BASE_URL);
   url.search = homePageQuery;
 
-  return await fetchAPI(url.href, { method: "GET" });
+  return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 14 } });
 }
 
 const pageBySlugQuery = (slug: string) =>
@@ -38,7 +38,7 @@ export async function getPageBySlug(slug: string) {
   const path = "/api/pages";
   const url = new URL(path, BASE_URL);
   url.search = pageBySlugQuery(slug);
-  return await fetchAPI(url.href, { method: "GET" });
+  return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
 }
 
 const globalSettingQuery = qs.stringify({
@@ -64,7 +64,7 @@ export async function getGlobalSettings() {
   const path = "/api/global";
   const url = new URL(path, BASE_URL);
   url.search = globalSettingQuery;
-  return fetchAPI(url.href, { method: "GET" });
+  return fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
 }
 
 const allPlaylistsQuery = qs.stringify({
@@ -84,7 +84,7 @@ export async function getAllPlaylists() {
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = allPlaylistsQuery;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data
 }
@@ -109,7 +109,7 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data || [];
 }
@@ -133,7 +133,7 @@ export async function getPlaylistBySlug(slug: string) {
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   if (res.data.length === 0) return null;
   
   const item = res.data?.[0]
@@ -160,7 +160,7 @@ export async function getPlaylistVideosPaginated(playlistId: number, page: numbe
   const path = "/api/videos";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data || [];
 }
@@ -184,7 +184,7 @@ export async function getAllPlaylistVideos(playlistId: number) {
   const path = "/api/videos";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data || [];
 }
@@ -202,7 +202,7 @@ export async function getVideoBySlug(slug: string) {
   const path = "/api/videos";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   if (res.data.length === 0) return null;
   const item = res.data[0]
   return item
@@ -224,7 +224,7 @@ export async function getVideosPaginated(page: number = 1, pageSize: number = 12
   const path = "/api/videos";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data || [];
 }
@@ -239,7 +239,7 @@ export async function getAllBlogs(): Promise<Blog[]> {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = allBlogsQuery;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data
 }
@@ -256,7 +256,7 @@ export async function getBlogsPaginated(page: number = 1, pageSize: number = 12)
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   
   return res.data || [];
 }
@@ -271,7 +271,7 @@ export async function getBlogBySlug(slug: string) {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   if (res.data.length === 0) return null;
   
   return res.data[0]
@@ -292,7 +292,7 @@ export async function getResponsaPage() {
   const path = "/api/responsa-page";
   const url = new URL(path, BASE_URL);
   url.search = responsaPageQuery;
-  return await fetchAPI(url.href, { method: "GET" });
+  return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 3 } });
 }
 
 export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
@@ -322,7 +322,7 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
   
   return {
     data: res.data,
@@ -377,7 +377,7 @@ export async function getResponsaComments(responsaId: number) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 2 } });
   
   return res.data || [];
 }
@@ -392,7 +392,7 @@ export async function getAllWritings(): Promise<Writing[]> {
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);
   url.search = allWritingsQuery;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   
   return res.data || [];
 }
@@ -409,7 +409,7 @@ export async function getWritingsPaginated(page: number = 1, pageSize: number = 
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   
   return res.data || [];
 }
@@ -431,7 +431,7 @@ export async function getWritingsByType(type: 'book' | 'article', page: number =
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   console.log(res.data);
   
   return res.data || [];
@@ -447,7 +447,7 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   if (res.data.length === 0) return null;
   
   return res.data[0];
