@@ -12,8 +12,9 @@ export const CATEGORY_COLORS: Record<string, string> = {
   hazal: "bg-pink-700 text-white dark:bg-pink-800",
   family: "bg-teal-700 text-white dark:bg-teal-800",
   torah: "bg-purple-700 text-white dark:bg-purple-800",
-  
-  // Add more categories here as needed
+  "free-will": "bg-orange-600 text-white dark:bg-orange-700",
+  mind: "bg-cyan-700 text-white dark:bg-cyan-800",
+  aristotle: "bg-lime-700 text-white dark:bg-lime-800",
 };
 
 // Define colors for content types

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAllTerms } from "@/data/loaders";
 import { Term } from "@/types";
@@ -165,6 +165,7 @@ export default function TermsPage() {
                     <div className="flex flex-wrap gap-1 justify-end">
                       {term.categories.map((category) => (
                         <CategoryBadge 
+                          isSelected={false}
                           key={category.id} 
                           category={category}
                           className="text-xs"
