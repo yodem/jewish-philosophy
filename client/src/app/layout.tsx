@@ -1,5 +1,6 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
+import WhatsappButton from '../components/WhatsappButton';
 import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
@@ -200,8 +201,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               {children}
             </Card>
           </main>
+
+          {/* WhatsApp Floating Button */}
+          <WhatsappButton />
         </Providers>
-        
+
         {/* Load analytics asynchronously */}
         <GoogleAnalytics gaId="G-72NSRCMH08" />
         <GoogleTagManager gtmId="GTM-N78GTSCR" />

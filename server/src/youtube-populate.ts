@@ -3,33 +3,20 @@ import fetch from 'node-fetch';
 // Helper function to add delay between API calls
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
+const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'AIzaSyBs29YdmqhmaiPPwV4jmm2uEvUr5O41mHY';
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCCveJN9rRmW22wHRcce68ng';
 
-async function deleteAll(endpoint: string) {
-  console.log(`Deleting all ${endpoint}...`);
-  const res = await fetch(`${STRAPI_URL}/${endpoint}?pagination[pageSize]=1000`);
-  const data: any = await res.json();
-  console.log(`Found ${data.data?.length || 0} ${endpoint} to delete`);
-  for (const item of data.data || []) {
-    console.log(`Deleting ${endpoint} with ID: ${item.id}`);
-    await fetch(`${STRAPI_URL}/${endpoint}/${item.id}`, { method: 'DELETE' });
-    await delay(50); // Small delay between deletions
-  }
-  console.log(`Finished deleting all ${endpoint}`);
-}
-
 async function fetchPlaylists() {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=20`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=30`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
 }
 
 async function fetchPlaylistItems(playlistId: string) {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=20`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=30`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
