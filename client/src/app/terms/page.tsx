@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAllTerms } from "@/data/loaders";
 import { Term } from "@/types";
@@ -10,7 +10,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GridSkeleton } from "@/components/ui/skeleton";
+import { TermsGridSkeleton } from "@/components/ui/skeleton";
 
 export default function TermsPage() {
   const searchParams = useSearchParams();
@@ -21,15 +21,44 @@ export default function TermsPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Debounced search effect
+  useEffect(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearchTerm(search);
+    }, 300); // 300ms debounce delay
+
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [search]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Fetch data when debounced search or page changes
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getAllTerms(page, pageSize, search);
+        const result = await getAllTerms(page, pageSize, debouncedSearchTerm);
         setTerms(result.data);
         setMeta(result.meta);
       } catch (error) {
@@ -40,15 +69,27 @@ export default function TermsPage() {
     }
 
     fetchData();
-  }, [page, search]);
+  }, [page, debouncedSearchTerm]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    // Update URL immediately on form submission
     router.push(`/terms?search=${encodeURIComponent(search)}`);
   };
 
+  const handleSearchInputChange = (value: string) => {
+    setSearch(value);
+    // If search is cleared, update URL immediately
+    if (value === '') {
+      router.replace('/terms');
+    }
+  };
+
   const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams();
+    if (debouncedSearchTerm) {
+      params.set("search", debouncedSearchTerm);
+    }
     params.set("page", newPage.toString());
     router.push(`/terms?${params.toString()}`);
   };
@@ -72,7 +113,7 @@ export default function TermsPage() {
           <Input
             placeholder="חפש מושג..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchInputChange(e.target.value)}
             className="flex-1 text-right"
             dir="rtl"
           />
@@ -81,7 +122,7 @@ export default function TermsPage() {
       </div>
 
       {isLoading ? (
-        <GridSkeleton count={12} />
+        <TermsGridSkeleton count={12} />
       ) : terms?.length === 0 ? (
         <div className="text-center py-20">
           <h2 className="text-xl text-gray-500 mb-4">לא נמצאו מושגים</h2>
