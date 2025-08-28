@@ -68,9 +68,11 @@ const commentSchema = z.object({
   answerer: z.string().min(1, {
     message: "Please enter your name",
   }),
-  responsaSlug: z.string().min(1, {
-    message: "Responsa slug is required",
-  }),
+  responsaSlug: z.string().optional(),
+  blogSlug: z.string().optional(),
+}).refine((data) => data.responsaSlug || data.blogSlug, {
+  message: "Either responsa slug or blog slug is required",
+  path: ["responsaSlug"],
 });
 
 interface CommentState {
@@ -84,7 +86,8 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
   const validatedFields = commentSchema.safeParse({
     answer: formData.get("answer"),
     answerer: formData.get("answerer"),
-    responsaSlug: formData.get("responsaSlug"),
+    responsaSlug: formData.get("responsaSlug") || undefined,
+    blogSlug: formData.get("blogSlug") || undefined,
   });
 
   if (!validatedFields.success) {
@@ -98,11 +101,12 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
   }
 
   try {
-    const { answer, answerer, responsaSlug } = validatedFields.data;
+    const { answer, answerer, responsaSlug, blogSlug } = validatedFields.data;
     const response = await createComment({
       answer,
       answerer,
-      responsaSlug
+      responsaSlug,
+      blogSlug
     });
 
     if (!response.data) {
@@ -116,7 +120,7 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
 
     return {
       ...prevState,
-      successMessage: "תשובתך התקבלה!",
+      successMessage: blogSlug ? "תגובתך התקבלה!" : "תשובתך התקבלה!",
       zodErrors: null,
       strapiErrors: "",
       errorMessage: "",

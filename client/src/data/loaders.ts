@@ -354,7 +354,7 @@ export async function getResponsaBySlug(slug: string) {
   return res.data[0];
 }
 
-export async function createComment(data: { answer: string; answerer: string; responsaSlug: string }) {
+export async function createComment(data: { answer: string; answerer: string; responsaSlug?: string; blogSlug?: string }) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   
@@ -364,6 +364,22 @@ export async function createComment(data: { answer: string; answerer: string; re
   });
   
   return result;
+}
+
+export async function getBlogCommentsBySlug(slug: string) {
+  const query = qs.stringify({
+    filters: {
+      blogSlug: { $eq: slug },
+      publishedAt: { $notNull: true }
+    },
+    sort: ['createdAt:asc']
+  });
+  const path = "/api/comments";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 2 } });
+  
+  return res.data || [];
 }
 
 export async function getResponsaComments(responsaId: number) {
@@ -385,7 +401,7 @@ export async function getResponsaComments(responsaId: number) {
 export async function getResponsaCommentsBySlug(responsaSlug: string) {
   const query = qs.stringify({
     filters: {
-      responsa: { slug: { $eq: responsaSlug } },
+      responsaSlug: { $eq: responsaSlug },
       publishedAt: { $notNull: true }
     },
     sort: ['createdAt:asc']

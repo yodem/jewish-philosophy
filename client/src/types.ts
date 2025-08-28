@@ -123,6 +123,9 @@ export type Comment = {
   updatedAt: string;
   publishedAt: string;
   responsa?: number | Responsa;
+  blog?: number | Blog;
+  responsaSlug?: string;
+  blogSlug?: string;
 }
 
 export type Responsa = {

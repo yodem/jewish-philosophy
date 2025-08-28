@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { getBlogBySlug } from "@/data/loaders";
+import { getBlogBySlug, getBlogCommentsBySlug } from "@/data/loaders";
 import { Category, Blog } from "@/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -8,6 +8,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import ReactMarkdown from "react-markdown";
 import { WritingViewTracker } from "@/components/WritingTracker";
+import BlogCommentSection from "./BlogCommentSection";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -69,7 +70,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const blog = await getBlogBySlug(slug);
+  const [blog, comments] = await Promise.all([
+    getBlogBySlug(slug),
+    getBlogCommentsBySlug(slug)
+  ]);
   
   if (!blog) {
     notFound();
@@ -195,6 +199,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <ReactMarkdown>{content}</ReactMarkdown>
         </article>
       </div>
+      
+      {/* Comments Section */}
+      <div className="mt-10 border-t pt-8 mx-auto w-full max-w-3xl px-2 sm:px-4">
+        <BlogCommentSection 
+          initialComments={comments}
+          blogSlug={slug}
+        />
+      </div>
+      
       <div className="mt-10 border-t pt-8 mx-auto w-full max-w-xl sm:max-w-2xl px-2 sm:px-4">
         <QuestionFormWrapper />
       </div>

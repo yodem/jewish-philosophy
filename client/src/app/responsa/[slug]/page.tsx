@@ -6,7 +6,7 @@ import { getResponsaBySlug, getResponsaCommentsBySlug } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Comment as CommentType, Category, Responsa } from "@/types";
-import CommentForm from "./CommentForm";
+import CommentSection from "@/components/CommentSection";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import { trackContentView } from "@/lib/analytics";
@@ -31,16 +31,6 @@ export default function ResponsaPage() {
     }
   }, [slug]);
 
-  const loadComments = useCallback(async () => {
-    if (!slug) return;
-    try {
-      const updatedComments = await getResponsaCommentsBySlug(slug);
-      setCommentsData(updatedComments);
-    } catch (error) {
-      console.error("Error loading comments:", error);
-    }
-  }, [slug]);
-
   useEffect(() => {
     loadResponsa();
   }, [loadResponsa]);
@@ -51,11 +41,6 @@ export default function ResponsaPage() {
       trackContentView(responsa.title, 'responsa', 'שלום צדיק');
     }
   }, [responsa, isLoading]);
-
-  // Callback to refresh comments after comment submission
-  const handleCommentAdded = useCallback(() => {
-    loadComments();
-  }, [loadComments]);
 
   if (isLoading) {
     return (
@@ -157,33 +142,12 @@ export default function ResponsaPage() {
           </div>
         </div>
         
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">תשובות ({commentsData?.length || 0})</h2>
-          
-          {commentsData && commentsData.length > 0 ? (
-            <div className="space-y-8">
-              {commentsData.map((comment: CommentType) => (
-                <div key={comment.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
-                  <div className="flex items-center text-gray-500 mb-4 text-sm">
-                    <span className="font-medium">{comment.answerer}</span>
-                    <span className="mx-2">•</span>
-                    <span>{formatDate(comment.createdAt)}</span>
-                  </div>
-                  <div className="prose prose-md dark:prose-invert text-justify">
-                    <ReactMarkdown>{comment.answer}</ReactMarkdown>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500 mb-8">אין תשובות עדיין. היה הראשון להשיב!</p>
-          )}
-          
-          <div className="mt-12">
-            <h3 className="text-xl font-bold mb-4">הוסף תשובה</h3>
-            <CommentForm responsaSlug={responsa.slug} onCommentAdded={handleCommentAdded} />
-          </div>
-        </div>
+        <CommentSection 
+          initialComments={commentsData}
+          responsaSlug={responsa.slug}
+          commentType="responsa"
+          onCommentsRefresh={getResponsaCommentsBySlug}
+        />
       </div>
     </div>
   );

@@ -422,6 +422,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
+    comments: Schema.Attribute.Relation<'oneToMany', 'api::comment.comment'>;
     content: Schema.Attribute.RichText & Schema.Attribute.Required;
     coverImage: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
@@ -491,6 +492,8 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
   attributes: {
     answer: Schema.Attribute.RichText & Schema.Attribute.Required;
     answerer: Schema.Attribute.String & Schema.Attribute.Required;
+    blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
+    blogSlug: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -502,6 +505,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     responsa: Schema.Attribute.Relation<'manyToOne', 'api::responsa.responsa'>;
+    responsaSlug: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
