@@ -139,7 +139,7 @@ const questionSchema = z.object({
   questioneer: z.string().min(2, {
     message: "שם השואל חייב להכיל לפחות 2 תווים",
   }),
-  categories: z.array(z.string()).min(1, {
+  categories: z.array(z.number()).min(1, {
     message: "יש לבחור לפחות קטגוריה אחת",
   }).max(3, {
     message: "ניתן לבחור עד 3 קטגוריות בלבד",
@@ -155,14 +155,13 @@ interface QuestionState {
 }
 
 export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
-  // Get categories from form data (multiple values with same name)
-  const categories = formData.getAll("categories") as string[];
-  
+  // Get categories from form data (multiple values with same name) - now as IDs
+  const categoryIds = formData.getAll("categories").map(id => parseInt(id as string, 10));
   const validatedFields = questionSchema.safeParse({
     title: formData.get("title"),
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
-    categories,
+    categories: categoryIds,
   });
 
   if (!validatedFields.success) {
@@ -177,7 +176,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
 
   try {
     const { title, content, questioneer, categories } = validatedFields.data;
-    
+
     // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
     // Transliterate Hebrew characters to Latin or use timestamp as fallback
     const timestamp = Date.now();
@@ -185,7 +184,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       .toLowerCase()
       .replace(/[^\w\s-]/g, '')
       .replace(/\s+/g, '-');
-    
+
     // If slug is empty or very short (likely because of Hebrew chars), use a timestamp prefix
     if (slug.length < 3) {
       slug = `question-${timestamp}`;
@@ -193,7 +192,9 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       // Otherwise, append timestamp to ensure uniqueness
       slug = `${slug}-${timestamp}`;
     }
-            
+
+    // Categories are already IDs from form data, no need to fetch again
+
     const response = await fetch(`${BASE_URL}/api/responsas`, {
       method: 'POST',
       headers: {
@@ -205,10 +206,12 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
           content,
           questioneer,
           slug,
-          categories: categories.map(categorySlug => ({ slug: categorySlug }))
+          categories: categories
         }
       }),
     });
+
+    console.log(response);
 
     const responseData = await response.json();
 
@@ -224,11 +227,10 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
 
     // Extract the slug from the response data
     // Check both possible response structures
-    const createdSlug = 
-      responseData.data?.attributes?.slug || // Format 1
-      responseData.data?.slug ||            // Format 2
+    const createdSlug =
+      responseData.data?.slug ||            // Format 1
       slug;                                // Fallback to submitted slug
-      
+
     // Return the slug for redirection
     return {
       ...prevState,

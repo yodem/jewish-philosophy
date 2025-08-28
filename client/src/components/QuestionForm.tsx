@@ -11,6 +11,7 @@ import { SnackbarProvider, useSnackbar } from 'notistack';
 import { trackQuestionSubmission } from "@/lib/analytics";
 import { useCategories } from "@/hooks/use-categories";
 import { CategoryBadge } from "@/components/CategoryBadge";
+import { Category } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +51,7 @@ function QuestionFormInner() {
   const [state, formAction] = useActionState(submitQuestionAction, initialState);
   const [showForm, setShowForm] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [formValues, setFormValues] = useState({
     title: '',
     content: '',
@@ -109,15 +110,16 @@ function QuestionFormInner() {
   };
 
   // Handle category selection
-  const handleCategoryChange = (categoryValue: string) => {
+  const handleCategoryChange = (category: Category) => {
     setSelectedCategories(prev => {
-      if (prev.includes(categoryValue)) {
-        return prev.filter(cat => cat !== categoryValue);
+      const isSelected = prev.some(cat => cat.id === category.id);
+      if (isSelected) {
+        return prev.filter(cat => cat.id !== category.id);
       } else {
         if (prev.length >= 3) {
           return prev;
         }
-        return [...prev, categoryValue];
+        return [...prev, category];
       }
     });
   };
@@ -161,10 +163,10 @@ function QuestionFormInner() {
             {/* Hidden inputs for selected categories */}
             {selectedCategories.map((category) => (
               <input
-                key={category}
+                key={category.id}
                 type="hidden"
                 name="categories"
-                value={category}
+                value={category.id.toString()}
               />
             ))}
             <div>
@@ -228,17 +230,17 @@ function QuestionFormInner() {
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-3">
                     {fullCategories.map((category) => {
-                      const isSelected = selectedCategories.includes(category.slug);
+                      const isSelected = selectedCategories.some(cat => cat.id === category.id);
                       const isDisabled = !isSelected && selectedCategories.length >= 3;
-                      
+
                       return (
                         <CategoryBadge
-                          key={category.slug}
+                          key={category.id}
                           category={category}
                           isSelected={isSelected}
                           isDisabled={isDisabled}
                           showRemoveIcon={isSelected}
-                          onClick={() => handleCategoryChange(category.slug)}
+                          onClick={() => handleCategoryChange(category)}
                         />
                       );
                     })}
