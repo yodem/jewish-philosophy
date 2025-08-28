@@ -55,7 +55,8 @@ function QuestionFormInner() {
   const [formValues, setFormValues] = useState({
     title: '',
     content: '',
-    questioneer: ''
+    questioneer: '',
+    questioneerEmail: ''
   });
   const { enqueueSnackbar } = useSnackbar();
   const { fullCategories, loadingCategories } = useCategories();
@@ -85,17 +86,20 @@ function QuestionFormInner() {
       setFormValues({
         title: '',
         content: '',
-        questioneer: ''
+        questioneer: '',
+        questioneerEmail: ''
       });
     }
   }, [showForm]);
 
   // Form validation
   const isFormValid = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return (
       formValues.title.trim().length >= 3 &&
       formValues.content.trim().length >= 10 &&
       formValues.questioneer.trim().length >= 2 &&
+      emailRegex.test(formValues.questioneerEmail) &&
       selectedCategories.length >= 1 &&
       selectedCategories.length <= 3
     );
@@ -125,7 +129,7 @@ function QuestionFormInner() {
   };
 
   // Handle form input changes
-  const handleInputChange = (field: 'title' | 'content' | 'questioneer', value: string) => {
+  const handleInputChange = (field: 'title' | 'content' | 'questioneer' | 'questioneerEmail', value: string) => {
     setFormValues(prev => ({
       ...prev,
       [field]: value
@@ -200,6 +204,24 @@ function QuestionFormInner() {
               {state.zodErrors?.questioneer && (
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.questioneer[0]}</p>
               )}
+            </div>
+            <div>
+              <label htmlFor="questioneerEmail" className="block text-sm font-medium mb-1">
+                כתובת אימייל
+              </label>
+              <Input
+                id="questioneerEmail"
+                name="questioneerEmail"
+                type="email"
+                value={formValues.questioneerEmail}
+                onChange={(e) => handleInputChange('questioneerEmail', e.target.value)}
+                placeholder="הכנס את כתובת האימייל שלך"
+                className={state.zodErrors?.questioneerEmail ? "border-red-500" : ""}
+              />
+              {state.zodErrors?.questioneerEmail && (
+                <p className="text-red-500 text-sm mt-1">{state.zodErrors.questioneerEmail[0]}</p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">נשלח אליך אימייל כאשר תתקבל תשובה לשאלה</p>
             </div>
             <div>
               <label htmlFor="content" className="block text-sm font-medium mb-1">

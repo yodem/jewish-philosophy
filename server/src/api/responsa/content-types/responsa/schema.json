@@ -24,6 +24,10 @@
       "type": "string",
       "required": true
     },
+    "questioneerEmail": {
+      "type": "email",
+      "required": true
+    },
     "slug": {
       "type": "uid",
       "targetField": "title",

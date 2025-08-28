@@ -15,10 +15,10 @@ const initialState = {
 };
 
 export default function CommentForm({ 
-  responsaId, 
+  responsaSlug, 
   onCommentAdded 
 }: { 
-  responsaId: number;
+  responsaSlug: string;
   onCommentAdded?: () => void;
 }) {
   const [state, formAction] = useActionState(addCommentAction, initialState);
@@ -77,7 +77,7 @@ export default function CommentForm({
       )}
       
       <form ref={formRef} action={handleSubmit} className="space-y-4">
-        <input type="hidden" name="responsaId" value={responsaId} />
+        <input type="hidden" name="responsaSlug" value={responsaSlug} />
         
         <div>
           <label htmlFor="answerer" className="block text-sm font-medium mb-1">

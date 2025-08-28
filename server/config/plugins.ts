@@ -4,4 +4,18 @@ export default ({ env }: { env: (key: string) => string }) => ({
   seo: {
     enabled: true,
   },
+  // Email configuration for Resend
+  email: {
+    config: {
+      provider: 'strapi-provider-email-resend-strapi',
+      providerOptions: {
+        apiKey: env('RESEND_API_KEY'),
+      },
+      settings: {
+        defaultFrom: env('RESEND_DEFAULT_FROM_EMAIL') || 'noreply@example.com',
+        defaultReplyTo: env('RESEND_DEFAULT_REPLY_TO_EMAIL') || 'support@example.com',
+        testAddress: env('RESEND_TEST_ADDRESS') || 'test@example.com',
+      },
+    },
+  },
 });
