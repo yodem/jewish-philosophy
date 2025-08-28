@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Writing } from "@/types";
+import { Blog, Writing, Term } from "@/types";
 
 
 const homePageQuery = qs.stringify({
@@ -484,3 +484,56 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   
   return res.data[0];
 }
+
+// Term queries
+export async function getAllTerms(page = 1, pageSize = 12, search = '') {
+  const query = qs.stringify({
+    populate: {
+      author: true,
+      categories: true
+    },
+    sort: ['createdAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    },
+    ...(search ? {
+      filters: {
+        title: {
+          $containsi: search
+        }
+      }
+    } : {})
+  });
+  
+  const path = "/api/terms";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
+  
+  return {
+    data: res.data,
+    meta: res.meta
+  };
+}
+
+export async function getTermsPaginated(page: number = 1, pageSize: number = 12): Promise<Term[]> {
+  const query = qs.stringify({
+    populate: {
+      author: true,
+      categories: true
+    },
+    sort: ['createdAt:desc'],
+    pagination: {
+      page,
+      pageSize
+    }
+  });
+  const path = "/api/terms";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
+  
+  return res.data || [];
+}
+

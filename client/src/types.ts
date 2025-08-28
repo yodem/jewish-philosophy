@@ -159,3 +159,15 @@ export type Writing = {
   responsas: Responsa[];
   image?: ImageProps;
 }
+
+export type Term = {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  author: Autor;
+  categories: Category[];
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
