@@ -1,4 +1,6 @@
 import { getGlobalSettings } from '@/data/loaders';
+import { generateMetadata, SEOData } from '@/lib/metadata';
+import { Metadata } from 'next';
 
 export interface SiteConfig {
   siteName: string;
@@ -200,4 +202,61 @@ export function generateBreadcrumbStructuredData(breadcrumbs: Array<{ name: stri
       ...(crumb.url && { "item": crumb.url })
     }))
   };
+}
+
+export interface GenerateSEOMetadataParams {
+  title: string;
+  description: string;
+  path?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  authors?: string[];
+  section?: string;
+  tags?: string[];
+  keywords?: string[];
+}
+
+export function generateSEOMetadata(params: GenerateSEOMetadataParams): Metadata {
+  const {
+    title,
+    description,
+    path = '',
+    image,
+    type = 'article',
+    publishedTime,
+    modifiedTime,
+    authors,
+    section,
+    tags,
+    keywords
+  } = params;
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://beit-midrash-digital.com';
+  const url = path ? `${baseUrl}${path}` : baseUrl;
+  
+  // Generate contextual keywords
+  const allKeywords = [
+    ...getCommonKeywords().slice(0, 10), // First 10 base keywords
+    ...(keywords || []),
+    ...(tags || []),
+    ...(section ? [section] : [])
+  ];
+
+  const seoData: SEOData = {
+    title,
+    description,
+    url,
+    image,
+    type,
+    publishedTime,
+    modifiedTime,
+    authors,
+    tags,
+    keywords: [...new Set(allKeywords)].join(', '),
+    locale: 'he_IL'
+  };
+
+  return generateMetadata(seoData);
 } 

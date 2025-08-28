@@ -18,7 +18,7 @@ export default function WritingsLoading() {
       <div className="w-full">
         <div className="flex flex-col items-center mt-4 sm:mt-8">
           <Skeleton className="h-6 w-32 bg-gray-200 mb-4" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 w-full">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="space-y-4">
                 {/* Chip */}

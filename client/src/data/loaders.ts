@@ -537,3 +537,24 @@ export async function getTermsPaginated(page: number = 1, pageSize: number = 12)
   return res.data || [];
 }
 
+export async function getTermBySlug(slug: string): Promise<Term | null> {
+  const query = qs.stringify({
+    filters: {
+      slug: {
+        $eq: slug,
+      },
+    },
+    populate: {
+      author: true,
+      categories: true
+    }
+  });
+  
+  const path = "/api/terms";
+  const url = new URL(path, BASE_URL);
+  url.search = query;
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
+  
+  return res.data?.[0] || null;
+}
+
