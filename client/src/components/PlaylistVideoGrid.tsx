@@ -84,7 +84,7 @@ export default function PlaylistVideoGrid({
   return (
     <div className={cn("w-full max-w-full", className)}>
       {/* Mobile: Single column, Desktop: 3 columns grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
         {videos.map((video, index) => {
           const isLastVideo = index === videos.length - 1;
           return (

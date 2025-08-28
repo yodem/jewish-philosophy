@@ -12,7 +12,7 @@ export default function Loading() {
             {/* Content skeleton */}
             <div className="space-y-4">
                 <Skeleton className="h-40 w-full bg-blue-200 rounded-lg" />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
                     <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />
                     <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />
                     <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />

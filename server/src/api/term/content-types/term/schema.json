@@ -20,6 +20,11 @@
       "type": "text",
       "required": true
     },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
     "author": {
       "type": "relation",
       "relation": "manyToOne",

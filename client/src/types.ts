@@ -165,6 +165,7 @@ export type Term = {
   documentId: string;
   title: string;
   description: string;
+  slug: string;
   author: Autor;
   categories: Category[];
   createdAt: string;
