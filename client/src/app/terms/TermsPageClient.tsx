@@ -107,12 +107,7 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
       <BlockRenderer blocks={blocks} />
       <div className="space-y-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4 text-right">מושגים</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-right">
-            אוסף מושגים בפילוסופיה יהודית, הלכה ומחשבת ישראל.
-          </p>
-
-        <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+          <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <Input
             placeholder="חפש מושג..."
             value={search}
