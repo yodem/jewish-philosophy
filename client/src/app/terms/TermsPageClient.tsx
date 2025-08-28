@@ -143,7 +143,7 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
             {terms?.map((term) => (
               <Card
                 key={term.id}
-                className="h-full flex flex-col"
+                className="h-full flex flex-col bg-gradient-to-br from-white via-white to-cyan-100 dark:from-gray-900 dark:to-green-200/20"
               >
                 <CardHeader className="flex-shrink-0 pb-3">
                   <CardTitle className="text-lg font-semibold text-right leading-tight line-clamp-2">
