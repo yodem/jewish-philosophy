@@ -736,6 +736,39 @@ export interface ApiResponsaResponsa extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiTermTerm extends Struct.CollectionTypeSchema {
+  collectionName: 'terms';
+  info: {
+    displayName: 'Term';
+    pluralName: 'terms';
+    singularName: 'term';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.Relation<'manyToOne', 'api::author.author'>;
+    categories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::category.category'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::term.term'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiVideoVideo extends Struct.CollectionTypeSchema {
   collectionName: 'videos';
   info: {
@@ -1330,6 +1363,7 @@ declare module '@strapi/strapi' {
       'api::page.page': ApiPagePage;
       'api::playlist.playlist': ApiPlaylistPlaylist;
       'api::responsa.responsa': ApiResponsaResponsa;
+      'api::term.term': ApiTermTerm;
       'api::video.video': ApiVideoVideo;
       'api::writing.writing': ApiWritingWriting;
       'plugin::content-releases.release': PluginContentReleasesRelease;
