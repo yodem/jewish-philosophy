@@ -69,19 +69,12 @@ export default async function TermPage({ params }: TermPageProps) {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-blue-950/30 rounded-xl p-8 shadow-sm border">
-            <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap">
+          <div className="bg-gradient-to-br from-white via-white to-cyan-100 dark:from-gray-900 dark:via-gray-900 dark:to-cyan-200/20 rounded-xl p-8 shadow-sm border">
+            <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap text-justify">
               {term.description}
             </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-            <p>עודכן לאחרונה: {new Date(term.updatedAt).toLocaleDateString('he-IL')}</p>
-          </div>
-        </footer>
       </article>
     </div>
   );
