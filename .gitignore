@@ -3,3 +3,6 @@ settings.json
 .DS_Store
 .cursorrules
 .cursor
+.env
+client/.env
+server/.env
