@@ -92,4 +92,4 @@ exports
 dist
 build
 .strapi-updater.json
-
+.env
