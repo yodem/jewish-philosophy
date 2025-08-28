@@ -15,7 +15,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   "free-will": "bg-orange-600 text-white dark:bg-orange-700",
   mind: "bg-cyan-700 text-white dark:bg-cyan-800",
   aristotle: "bg-lime-700 text-white dark:bg-lime-800",
-  god: "bg-gradient-to-r from-white via-blue-100 to-blue-200 text-white dark:from-blue-100 dark:via-blue-200 dark:to-blue-300 dark:text-white",
+  god: "bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 text-blue-900 dark:from-blue-800 dark:via-blue-900 dark:to-blue-800 dark:text-white",
 };
 
 // Define colors for content types
