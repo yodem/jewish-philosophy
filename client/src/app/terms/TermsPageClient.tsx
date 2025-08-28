@@ -171,7 +171,7 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
                         <CategoryBadge
                           key={category.id}
                           category={category}
-                          isSelected={false}
+                          isSelectable={false}
                           className="text-xs"
                         />
                       ))}

@@ -120,7 +120,7 @@ export default function ResponsaPage() {
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {responsa.categories?.map((category) => (
-                        <CategoryBadge key={category.id} category={category} />
+                        <CategoryBadge key={category.id} category={category} isSelectable={false} />
                       ))}
                     </div>
                   </TableCell>

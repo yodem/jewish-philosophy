@@ -15,7 +15,7 @@ export const CATEGORY_COLORS: Record<string, string> = {
   "free-will": "bg-orange-600 text-white dark:bg-orange-700",
   mind: "bg-cyan-700 text-white dark:bg-cyan-800",
   aristotle: "bg-lime-700 text-white dark:bg-lime-800",
-  god: "bg-gradient-to-r from-blue-200 via-blue-300 to-blue-400 text-blue-900 dark:from-blue-800 dark:via-blue-900 dark:to-blue-800 dark:text-white",
+  god: "bg-blue-400 text-white dark:from-blue-800",
 };
 
 // Define colors for content types
@@ -39,18 +39,20 @@ interface CategoryBadgeProps {
   onClick?: () => void;
   isSelected?: boolean;
   isDisabled?: boolean;
+  isSelectable?: boolean;
   showRemoveIcon?: boolean;
 }
 
-export const CategoryBadge: React.FC<CategoryBadgeProps> = ({ 
-  category, 
-  contentType, 
+export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
+  category,
+  contentType,
   label,
   className,
   variant = "default",
   onClick,
   isSelected = false,
   isDisabled = false,
+  isSelectable = true,
   showRemoveIcon = false
 }) => {
   let colorClass = "";
@@ -73,13 +75,15 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
     : `${colorClass} ${className || ""}`.trim();
 
   // Add selection and disabled states
-  const selectionClass = isSelected 
-    ? 'ring-2 ring-primary/20 shadow-md' 
+  const selectionClass = isSelected
+    ? 'ring-2 ring-primary/20 shadow-md'
     : '';
-  
-  const disabledClass = isDisabled 
-    ? 'opacity-50 cursor-not-allowed' 
-    : 'cursor-pointer hover:scale-105 transition-transform duration-200';
+
+  const disabledClass = isDisabled
+    ? 'opacity-50 cursor-not-allowed'
+    : isSelectable
+    ? 'cursor-pointer hover:scale-105 transition-transform duration-200'
+    : '';
 
   return (
     <Badge 
