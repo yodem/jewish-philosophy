@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { GridSkeleton } from "@/components/ui/skeleton";
+import { TermsGridSkeleton } from "@/components/ui/skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function TermsLoading() {
@@ -21,7 +21,7 @@ export default function TermsLoading() {
         </div>
       </div>
 
-      <GridSkeleton count={12} />
+      <TermsGridSkeleton count={12} />
     </div>
   );
 }

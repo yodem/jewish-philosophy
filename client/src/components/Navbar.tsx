@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
               <Link
                 key={link.id}
                 href={link.href}
-                className={`text-lg font-semibold px-3 py-1 rounded transition-colors hover:text-blue-400 ${
+                className={`text-[16px] font-semibold px-3 py-1 rounded transition-colors hover:text-blue-400 ${
                   pathname === link.href ? 'text-blue-400 underline' : 'text-white'
                 }`}
               >
