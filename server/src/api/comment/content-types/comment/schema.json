@@ -25,6 +25,18 @@
       "relation": "manyToOne",
       "target": "api::responsa.responsa",
       "inversedBy": "comments"
+    },
+    "blog": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::blog.blog",
+      "inversedBy": "comments"
+    },
+    "responsaSlug": {
+      "type": "string"
+    },
+    "blogSlug": {
+      "type": "string"
     }
   }
 }
