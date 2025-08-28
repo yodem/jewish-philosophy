@@ -68,7 +68,9 @@ const commentSchema = z.object({
   answerer: z.string().min(1, {
     message: "Please enter your name",
   }),
-  responsaId: z.string().transform(val => parseInt(val, 10)),
+  responsaSlug: z.string().min(1, {
+    message: "Responsa slug is required",
+  }),
 });
 
 interface CommentState {
@@ -82,7 +84,7 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
   const validatedFields = commentSchema.safeParse({
     answer: formData.get("answer"),
     answerer: formData.get("answerer"),
-    responsaId: formData.get("responsaId"),
+    responsaSlug: formData.get("responsaSlug"),
   });
 
   if (!validatedFields.success) {
@@ -96,11 +98,11 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
   }
 
   try {
-    const { answer, answerer, responsaId } = validatedFields.data;
+    const { answer, answerer, responsaSlug } = validatedFields.data;
     const response = await createComment({
       answer,
       answerer,
-      responsa: responsaId
+      responsaSlug
     });
 
     if (!response.data) {
@@ -139,6 +141,9 @@ const questionSchema = z.object({
   questioneer: z.string().min(2, {
     message: "שם השואל חייב להכיל לפחות 2 תווים",
   }),
+  questioneerEmail: z.string().email({
+    message: "נא להזין כתובת אימייל תקינה",
+  }),
   categories: z.array(z.number()).min(1, {
     message: "יש לבחור לפחות קטגוריה אחת",
   }).max(3, {
@@ -161,6 +166,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
     title: formData.get("title"),
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
+    questioneerEmail: formData.get("questioneerEmail"),
     categories: categoryIds,
   });
 
@@ -175,7 +181,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
   }
 
   try {
-    const { title, content, questioneer, categories } = validatedFields.data;
+    const { title, content, questioneer, questioneerEmail, categories } = validatedFields.data;
 
     // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
     // Transliterate Hebrew characters to Latin or use timestamp as fallback
@@ -205,13 +211,12 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
           title,
           content,
           questioneer,
+          questioneerEmail,
           slug,
           categories: categories
         }
       }),
     });
-
-    console.log(response);
 
     const responseData = await response.json();
 

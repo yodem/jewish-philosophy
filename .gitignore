@@ -1,3 +1,5 @@
 youtube-integ/**/* 
 settings.json
 .DS_Store
+.cursorrules
+.cursor

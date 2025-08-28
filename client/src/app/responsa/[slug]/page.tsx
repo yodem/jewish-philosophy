@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { notFound, useParams } from "next/navigation";
-import { getResponsaBySlug, getResponsaComments } from "@/data/loaders";
+import { getResponsaBySlug, getResponsaCommentsBySlug } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import { Comment as CommentType, Category, Responsa } from "@/types";
@@ -32,14 +32,14 @@ export default function ResponsaPage() {
   }, [slug]);
 
   const loadComments = useCallback(async () => {
-    if (!responsa?.id) return;
+    if (!slug) return;
     try {
-      const updatedComments = await getResponsaComments(responsa.id);
+      const updatedComments = await getResponsaCommentsBySlug(slug);
       setCommentsData(updatedComments);
     } catch (error) {
       console.error("Error loading comments:", error);
     }
-  }, [responsa?.id]);
+  }, [slug]);
 
   useEffect(() => {
     loadResponsa();
@@ -181,7 +181,7 @@ export default function ResponsaPage() {
           
           <div className="mt-12">
             <h3 className="text-xl font-bold mb-4">הוסף תשובה</h3>
-            <CommentForm responsaId={responsa.id} onCommentAdded={handleCommentAdded} />
+            <CommentForm responsaSlug={responsa.slug} onCommentAdded={handleCommentAdded} />
           </div>
         </div>
       </div>
