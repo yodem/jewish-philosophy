@@ -70,6 +70,7 @@ export const metadata: Metadata = {
     'msapplication-TileColor': '#3b82f6',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
+    'google-site-verification': 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs'
   },
   // Enhanced verification for immediate indexing
   verification: {
