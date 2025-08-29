@@ -73,12 +73,7 @@ export const metadata: Metadata = {
   },
   // Enhanced verification for immediate indexing
   verification: {
-    google: 'your-google-verification-code', // You'll replace this with actual code
-    other: {
-      'google-site-verification': 'googlebd96454624a0e8f7.html',
-      'msvalidate.01': 'your-bing-verification-code',
-      'yandex-verification': 'your-yandex-verification-code',
-    },
+    google: 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs',
   },
 };
 
@@ -142,7 +137,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Google Tag Manager */}
 
         {/* End Google Tag Manager */}
-        <meta name="google-site-verification" content="mkgxgziw2zNrQENhBwVYlslKiXH8qTGKB8rAFtm7t9w" />
+
         {/* Critical performance optimizations */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                 
@@ -168,7 +163,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         
         {/* Enhanced structured data for organization */}
-        <meta name="google-site-verification" content="akphSIM1AXruIpEV0G-NUb1PiRu2mzgwEpq3KvxVdIA" />
+
       </head>
       <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden">
         {/* Google Tag Manager (noscript) */}

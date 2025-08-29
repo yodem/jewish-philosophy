@@ -3,7 +3,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { getHomePage } from "@/data/loaders";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
 
@@ -28,18 +27,10 @@ export default async function HomeRoute() {
   const blocks = homeRes?.data?.blocks || [];
   
   return (
-    <>
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <BlockRenderer blocks={blocks} />
         </Suspense>
       </ErrorBoundary>
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-3xl mx-auto">
-          <QuestionFormWrapper />
-        </div>
-      </div>
-    </>
   );
 }
