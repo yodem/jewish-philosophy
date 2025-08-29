@@ -38,12 +38,12 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         )}
         {/* Desktop Navigation */}
         {!isMobile && navLinks && (
-          <div className="hidden sm:flex items-center gap-6">
+          <div className="hidden sm:flex items-center gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.id}
                 href={link.href}
-                className={`text-[16px] font-semibold px-3 py-1 rounded transition-colors hover:text-blue-400 ${
+                className={`text-[16px] font-semibold p-1 rounded transition-colors hover:text-blue-400 ${
                   pathname === link.href ? 'text-blue-400 underline' : 'text-white'
                 }`}
               >

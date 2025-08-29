@@ -172,3 +172,16 @@ export type Term = {
   updatedAt: string;
   publishedAt: string;
 }
+
+export type EmailIssueCategory = {
+  id: number;
+  documentId: string;
+  name: string;
+  prefix: string;
+  description?: string;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}

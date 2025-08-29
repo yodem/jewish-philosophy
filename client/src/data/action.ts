@@ -135,6 +135,98 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
   }
 }
 
+const contactSchema = z.object({
+  name: z.string().min(2, {
+    message: "שם חייב להכיל לפחות 2 תווים",
+  }),
+  email: z.string().email({
+    message: "נא להזין כתובת אימייל תקינה",
+  }),
+  subject: z.string().min(3, {
+    message: "נושא חייב להכיל לפחות 3 תווים",
+  }),
+  message: z.string().min(10, {
+    message: "הודעה חייבת להכיל לפחות 10 תווים",
+  }),
+  category: z.string().min(1, {
+    message: "יש לבחור סוג פנייה",
+  }),
+});
+
+interface ContactState {
+  zodErrors: Record<string, string[]> | null;
+  strapiErrors: string;
+  successMessage: string;
+  errorMessage: string;
+}
+
+export async function submitContactAction(prevState: ContactState, formData: FormData) {
+  const validatedFields = contactSchema.safeParse({
+    name: formData.get("name"),
+    email: formData.get("email"),
+    subject: formData.get("subject"),
+    message: formData.get("message"),
+    category: formData.get("category"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
+
+  try {
+    const { name, email, subject, message, category } = validatedFields.data;
+
+    // Send email via Strapi API
+    const response = await fetch(`${BASE_URL}/api/contact-email/send`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name,
+        email,
+        subject,
+        message,
+        category: parseInt(category, 10)
+      }),
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      console.error('Error sending email:', responseData);
+      return {
+        ...prevState,
+        strapiErrors: responseData.error?.message || "Unknown error",
+        errorMessage: "שגיאה בשליחת ההודעה. אנא נסה שוב.",
+        successMessage: "",
+      };
+    }
+
+    return {
+      ...prevState,
+      successMessage: "ההודעה נשלחה בהצלחה! נחזור אליך בהקדם האפשרי.",
+      zodErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+    };
+  } catch (error) {
+    console.error('Contact form error:', error);
+    return {
+      ...prevState,
+      strapiErrors: "",
+      errorMessage: "שגיאה בשליחת ההודעה. אנא נסה שוב.",
+      successMessage: "",
+    };
+  }
+}
+
 const questionSchema = z.object({
   title: z.string().min(3, {
     message: "כותרת חייבת להכיל לפחות 3 תווים",
