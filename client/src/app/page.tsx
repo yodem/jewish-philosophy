@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
+import { Subscribe } from "@/components/blocks/Subscribe";
 
 export const metadata: Metadata = generateMetadata({
   title: "פילוסופיה יהודית | לימוד פילוסופיה יהודית מקוונת",
@@ -27,10 +28,21 @@ export default async function HomeRoute() {
   const blocks = homeRes?.data?.blocks || [];
   
   return (
+    <>
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <BlockRenderer blocks={blocks} />
         </Suspense>
       </ErrorBoundary>
+       <div className="w-full">
+       <Subscribe
+         id={1}
+         headline="הירשמו לניוזלטר"
+         content="קבלו עדכונים על תכנים חדשים, שיעורים ותשובות לשאלות"
+         placeholder="הכניסו את כתובת האימייל שלכם"
+         buttonText="הירשמו"
+       />
+     </div>
+    </>
   );
 }

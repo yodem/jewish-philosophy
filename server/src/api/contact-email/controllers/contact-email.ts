@@ -35,7 +35,7 @@ export default {
 ${message}
 
 ---
-נשלח דרך טופס צור קשר באתר פילוסופיה יהודית
+נשלח דרך טופס צרו קשר באתר פילוסופיה יהודית
       `.trim();
 
       // Send the email using Strapi's email service (Strapi v5 syntax)

@@ -7,13 +7,14 @@ import BlockRenderer from '@/components/blocks/BlockRenderer';
 import { getPageBySlug } from '@/data/loaders';
 import { Block } from '@/types';
 import { generateMetadata } from '@/lib/metadata';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = generateMetadata({
-  title: 'חיפוש תכנים | פילוסופיה יהודית - מנוע חיפוש בלימודי יהדות',
-  description: 'חפש בכל התכנים בפילוסופיה יהודית - מאמרים, שיעורי וידאו, ספרים, כתבים ושאלות ותשובות. מצא את התכנים הרלוונטיים ללימוד שלך.',
+  title: 'חפשו תכנים | פילוסופיה יהודית - מנוע חיפוש בלימודי יהדות',
+  description: 'חפשו בכל התכנים בפילוסופיה יהודית - מאמרים, שיעורי וידאו, ספרים, כתבים ושאלות ותשובות. מצאו את התכנים הרלוונטיים ללימוד שלכם.',
   url: '/search',
   type: 'website',
   keywords: 'חיפוש פילוסופיה יהודית, מנוע חיפוש יהודי, חיפוש הרמב"ם, חיפוש מושגים פילוסופיים, חיפוש מאמרים, פילוסופיה דתית, מבוא לפילוסופיה יהודית, מורה נבוכים, כוזרי, שלום צדיק',
@@ -76,6 +77,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   return (
     <div className='flex flex-col w-full'>
         <BlockRenderer blocks={blocks} />
+        <div className="container mx-auto px-4">
+          <Breadcrumbs
+            items={[
+              { label: "בית", href: "/" },
+              { label: "חיפוש" }
+            ]}
+          />
+        </div>
     <div className="w-full max-w-4xl mx-auto">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">תוצאות חיפוש</h1>

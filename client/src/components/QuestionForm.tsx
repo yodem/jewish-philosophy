@@ -41,7 +41,7 @@ function SubmitButton({
       disabled={pending || !isFormValid} 
       className="w-auto text-white"
     >
-      {pending ? "שולח שאלה..." : "שלח שאלה"}
+      {pending ? "שולחים שאלה..." : "שלחו שאלה"}
     </Button>
   );
 }
@@ -143,20 +143,20 @@ function QuestionFormInner() {
           <DialogHeader>
             <DialogTitle>לעבור לעמוד השאלה?</DialogTitle>
             <DialogDescription>
-              השאלה נשלחה בהצלחה! האם תרצה לעבור לעמוד השאלה?
+              השאלה נשלחה בהצלחה! האם תרצו לעבור לעמוד השאלה?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>לא, תודה</Button>
-            <Button onClick={handleDialogConfirm}>כן, עבור לעמוד השאלה</Button>
+            <Button onClick={handleDialogConfirm}>כן, עברו לעמוד השאלה</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
       {!showForm ? (
         <div className="text-center">
-          <h3 className="text-xl font-semibold mb-4">יש לך שאלה?</h3>
+          <h3 className="text-xl font-semibold mb-4">יש לכם שאלה?</h3>
           <p className="mb-6 text-gray-600 dark:text-gray-300">
-            שתף את השאלה שלך, ואנחנו נענה עליה בהקדם האפשרי.
+            שתפו את השאלה שלכם, ואנחנו נענה עליה בהקדם האפשרי.
           </p>
           <Button onClick={() => setShowForm(true)}>שאל שאלה חדשה</Button>
         </div>
@@ -182,7 +182,7 @@ function QuestionFormInner() {
                 name="title"
                 value={formValues.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                placeholder="הכנס כותרת קצרה ומתומצתת"
+                placeholder="הכניסו כותרת קצרה ומתומצתת"
                 className={state.zodErrors?.title ? "border-red-500" : ""}
               />
               {state.zodErrors?.title && (
@@ -198,7 +198,7 @@ function QuestionFormInner() {
                 name="questioneer"
                 value={formValues.questioneer}
                 onChange={(e) => handleInputChange('questioneer', e.target.value)}
-                placeholder="הכנס את שמך"
+                placeholder="הכניסו את שמכם"
                 className={state.zodErrors?.questioneer ? "border-red-500" : ""}
               />
               {state.zodErrors?.questioneer && (
@@ -215,13 +215,13 @@ function QuestionFormInner() {
                 type="email"
                 value={formValues.questioneerEmail}
                 onChange={(e) => handleInputChange('questioneerEmail', e.target.value)}
-                placeholder="הכנס את כתובת האימייל שלך"
+                placeholder="הכניסו את כתובת האימייל שלכם"
                 className={state.zodErrors?.questioneerEmail ? "border-red-500" : ""}
               />
               {state.zodErrors?.questioneerEmail && (
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.questioneerEmail[0]}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1">נשלח אליך אימייל כאשר תתקבל תשובה לשאלה</p>
+              <p className="text-xs text-gray-500 mt-1">נשלח אליכם אימייל כאשר תתקבל תשובה לשאלה</p>
             </div>
             <div>
               <label htmlFor="content" className="block text-sm font-medium mb-1">
@@ -233,7 +233,7 @@ function QuestionFormInner() {
                 value={formValues.content}
                 onChange={(e) => handleInputChange('content', e.target.value)}
                 rows={6}
-                placeholder="הסבר את השאלה שלך בפירוט"
+                placeholder="הסבירו את השאלה שלכם בפירוט"
                 className={`w-full rounded-md border ${
                   state.zodErrors?.content ? "border-red-500" : "border-gray-300"
                 } p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -247,7 +247,7 @@ function QuestionFormInner() {
                 קטגוריות (1-3 קטגוריות) {selectedCategories.length > 0 && `(${selectedCategories.length}/3)`}
               </label>
               {loadingCategories ? (
-                <div className="text-gray-500 text-sm">טוען קטגוריות...</div>
+                <div className="text-gray-500 text-sm">טוענים קטגוריות...</div>
               ) : (
                 <div className="space-y-3">
                   <div className="flex flex-wrap gap-3">

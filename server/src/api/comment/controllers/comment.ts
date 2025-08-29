@@ -114,13 +114,13 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         try {
           await strapi.service("api::email.email").sendStyledEmail({
             to: contentData.questioneerEmail,
-            subject: `תשובה לשאלה שלך: ${contentData.title}`,
+            subject: `תשובה לשאלתכם: ${contentData.title}`,
             template: 'questionResponse',
             data: {
               questioneer: contentData.questioneer,
               questionTitle: contentData.title,
               questionLink,
-              plainText: `שלום ${contentData.questioneer}, קיבלת תשובה לשאלה שלך: "${contentData.title}". ניתן לראות את התשובה המלאה בקישור הבא: ${questionLink}`
+              plainText: `שלום ${contentData.questioneer}, קיבלתם תשובה לשאלתכם: "${contentData.title}". ניתן לראות את התשובה המלאה בקישור הבא: ${questionLink}`
             }
           });
 
@@ -140,14 +140,14 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         try {
           await strapi.service("api::email.email").sendStyledEmail({
             to: contentData.author.email,
-            subject: `תגובה חדשה לפוסט שלך: ${contentData.title}`,
+            subject: `תגובה חדשה לפוסט שלכם: ${contentData.title}`,
             template: 'blogComment',
             data: {
               authorName: contentData.author.name,
               blogTitle: contentData.title,
               blogLink,
               commenterName: answerer,
-              plainText: `שלום ${contentData.author.name}, קיבלת תגובה חדשה לפוסט שלך: "${contentData.title}". ניתן לראות את התגובה בקישור הבא: ${blogLink}`
+              plainText: `שלום ${contentData.author.name}, קיבלתם תגובה חדשה לפוסט שלכם: "${contentData.title}". ניתן לראות את התגובה בקישור הבא: ${blogLink}`
             }
           });
 

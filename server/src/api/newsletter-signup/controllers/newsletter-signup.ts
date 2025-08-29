@@ -22,7 +22,7 @@ export default factories.createCoreController('api::newsletter-signup.newsletter
           data: {
             subscriberCount: '1,000+',
             siteUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
-            plainText: `ברוכים הבאים לניוזלטר הפילוסופיה היהודית! תודה שהצטרפת לקהילה שלנו. מעתה תקבל עדכונים על מאמרים חדשים, שיעורים, תשובות לשאלות ועוד. בקר באתר: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`
+            plainText: `ברוכים הבאים לניוזלטר הפילוסופיה היהודית! תודה שהצטרפתם לקהילה שלנו. מעתה תקבלו עדכונים על מאמרים חדשים, שיעורים, תשובות לשאלות ועוד. בקרו באתר: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`
           }
         });
 

@@ -4,6 +4,7 @@ import type { Playlist } from "@/types";
 import PlaylistGrid from "@/components/PlaylistGrid";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = generateMetadata({
   title: "סדרות שיעורים | פילוסופיה יהודית - שיעורי וידאו ברצף",
@@ -21,6 +22,14 @@ export default async function PlaylistsPage() {
 
   return (
       <div className="w-full flex flex-col items-center justify-center gap-4 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <Breadcrumbs
+            items={[
+              { label: "בית", href: "/" },
+              { label: "סדרות" }
+            ]}
+          />
+        </div>
         <BlockRenderer blocks={blocks} />
         {playlists.length > 0 && (
           <div className="w-full flex flex-col items-center justify-center mt-8 sm:mt-16">

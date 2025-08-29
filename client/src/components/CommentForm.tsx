@@ -71,19 +71,19 @@ export default function CommentForm({
   const labels = {
     responsa: {
       nameLabel: "שם",
-      namePlaceholder: "הכנס את שמך",
+      namePlaceholder: "הכניסו את שמכם",
       contentLabel: "תשובה",
-      contentPlaceholder: "הכנס את תשובתך",
-      submitButton: "שלח תשובה",
-      submittingButton: "שולח...",
+      contentPlaceholder: "הכניסו את תשובתכם",
+      submitButton: "שלחו תשובה",
+      submittingButton: "שולחים...",
     },
     blog: {
       nameLabel: "שם",
-      namePlaceholder: "הכנס את שמך",
+      namePlaceholder: "הכניסו את שמכם",
       contentLabel: "תגובה",
-      contentPlaceholder: "הכנס את תגובתך",
-      submitButton: "שלח תגובה",
-      submittingButton: "שולח...",
+      contentPlaceholder: "הכניסו את תגובתכם",
+      submitButton: "שלחו תגובה",
+      submittingButton: "שולחים...",
     }
   };
 

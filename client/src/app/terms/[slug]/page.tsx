@@ -19,12 +19,12 @@ export default async function TermPage({ params }: TermPageProps) {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs 
+      <Breadcrumbs
         items={[
-          { label: 'בית', href: '/' },
-          { label: 'מושגים', href: '/terms' },
+          { label: "בית", href: "/" },
+          { label: "מושגים", href: "/terms" },
           { label: term.title }
-        ]} 
+        ]}
       />
       
       <article className="max-w-4xl mx-auto">

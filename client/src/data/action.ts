@@ -54,7 +54,7 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
 
   return {
     ...prevState,
-    successMessage: "הרשמתך התקבלה בהצלחה!",
+    successMessage: "הרשמתכם התקבלה בהצלחה!",
     zodErrors: null,
     strapiErrors: "",
     errorMessage: "",

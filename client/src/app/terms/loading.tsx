@@ -6,8 +6,8 @@ export default function TermsLoading() {
   return (
     <div className="container mx-auto py-8 px-4">
       <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'מושגים' }
+        { label: "בית", href: "/" },
+        { label: "מושגים" }
       ]} />
 
       <div className="mb-8">

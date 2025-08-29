@@ -101,21 +101,21 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
   return (
     <div className="container mx-auto py-8 px-4">
       <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'מושגים' }
+        { label: "בית", href: "/" },
+        { label: "מושגים" }
       ]} />
       <BlockRenderer blocks={blocks} />
       <div className="space-y-8">
         <div className="mb-8">
           <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <Input
-            placeholder="חפש מושג..."
+            placeholder="חפשו מושג..."
             value={search}
             onChange={(e) => handleSearchInputChange(e.target.value)}
             className="flex-1 text-right"
             dir="rtl"
           />
-          <Button type="submit">חפש</Button>
+          <Button type="submit">חפשו</Button>
         </form>
       </div>
 
@@ -126,7 +126,7 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
           <h2 className="text-xl text-gray-500 mb-4">לא נמצאו מושגים</h2>
           {search && (
             <p className="text-gray-400">
-              נסה חיפוש עם מילות מפתח אחרות
+              נסו חיפוש עם מילות מפתח אחרות
             </p>
           )}
         </div>

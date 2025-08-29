@@ -86,7 +86,7 @@ export default function CommentForm({
           <Input
             id="answerer"
             name="answerer"
-            placeholder="הכנס את שמך"
+            placeholder="הכניסו את שמכם"
             className={state.zodErrors?.answerer ? "border-red-500" : ""}
           />
           {state.zodErrors?.answerer && (
@@ -102,7 +102,7 @@ export default function CommentForm({
             id="answer"
             name="answer"
             rows={6}
-            placeholder="הכנס את תשובתך"
+            placeholder="הכניסו את תשובתכם"
             className={`w-full rounded-md border ${
               state.zodErrors?.answer ? "border-red-500" : "border-gray-300"
             } p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -126,7 +126,7 @@ export default function CommentForm({
         
         <div>
           <Button type="submit" disabled={isSubmitting} className="w-full">
-            {isSubmitting ? "שולח..." : "שלח תשובה"}
+            {isSubmitting ? "שולחים..." : "שלחו תשובה"}
           </Button>
         </div>
       </form>

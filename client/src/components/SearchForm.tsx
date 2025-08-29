@@ -40,13 +40,13 @@ const SearchForm: React.FC<SearchFormProps> = ({
       {/* Search Input */}
       <div className="grid gap-2">
         <label htmlFor="search" className="text-sm font-medium text-right">
-          מה תרצה לחפש?
+          מה תרצו לחפש?
         </label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             id="search"
-            placeholder="הקלד כאן..."
+            placeholder="הקלידו כאן..."
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
             onKeyPress={onKeyPress}
@@ -114,12 +114,12 @@ const SearchForm: React.FC<SearchFormProps> = ({
 
       {/* Search Button */}
       {showSubmitButton && (
-        <Button 
+        <Button
           onClick={onSubmit}
           className="w-full mt-4"
           disabled={disabled || !selectedContentType}
         >
-          חיפוש
+          חפשו
         </Button>
       )}
     </div>

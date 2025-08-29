@@ -31,7 +31,7 @@ function SubmitButton({
       disabled={pending || !isFormValid}
       className="w-full sm:w-auto text-white"
     >
-      {pending ? "שולח..." : "שלח הודעה"}
+      {pending ? "שולחים..." : "שלחו הודעה"}
     </Button>
   );
 }
@@ -107,7 +107,7 @@ function ContactFormInner() {
               options={categoryOptions}
               value={formValues.category}
               onValueChange={handleCategoryChange}
-              placeholder={loadingEmailCategories ? "טוען קטגוריות..." : "בחר סוג פנייה"}
+              placeholder={loadingEmailCategories ? "טוענים קטגוריות..." : "בחרו סוג פנייה"}
               emptyMessage="לא נמצאו קטגוריות"
               disabled={loadingEmailCategories}
               className={state.zodErrors?.category ? "border-red-500" : ""}
@@ -126,7 +126,7 @@ function ContactFormInner() {
               name="name"
               value={formValues.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="הכנס את שמך המלא"
+              placeholder="הכניסו את שמכם המלא"
               className={state.zodErrors?.name ? "border-red-500" : ""}
             />
             {state.zodErrors?.name && (
@@ -144,7 +144,7 @@ function ContactFormInner() {
               type="email"
               value={formValues.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
-              placeholder="הכנס את כתובת האימייל שלך"
+              placeholder="הכניסו את כתובת האימייל שלכם"
               className={state.zodErrors?.email ? "border-red-500" : ""}
             />
             {state.zodErrors?.email && (
@@ -162,7 +162,7 @@ function ContactFormInner() {
               name="subject"
               value={formValues.subject}
               onChange={(e) => handleInputChange('subject', e.target.value)}
-              placeholder="מה נושא ההודעה שלך?"
+              placeholder="מה נושא ההודעה שלכם?"
               className={state.zodErrors?.subject ? "border-red-500" : ""}
             />
             {state.zodErrors?.subject && (
@@ -180,7 +180,7 @@ function ContactFormInner() {
               value={formValues.message}
               onChange={(e) => handleInputChange('message', e.target.value)}
               rows={6}
-              placeholder="כתוב את ההודעה שלך כאן..."
+              placeholder="כתבו את ההודעה שלכם כאן..."
               className={`w-full rounded-md border ${
                 state.zodErrors?.message ? "border-red-500" : "border-gray-300"
               } p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary`}
@@ -198,16 +198,12 @@ function ContactFormInner() {
 
       {/* Newsletter Subscription */}
       <div className="w-full">
-        <h3 className="text-xl font-semibold text-center mb-4">הישאר מעודכן</h3>
-        <p className="text-gray-600 dark:text-gray-300 text-center mb-6">
-          הירשם לניוזלטר שלנו כדי לקבל עדכונים על תכנים חדשים ותשובות לשאלות
-        </p>
         <Subscribe
           id={1}
-          headline="הירשם לניוזלטר"
-          content="קבל עדכונים על תכנים חדשים, שיעורים ותשובות לשאלות"
-          placeholder="הכנס את כתובת האימייל שלך"
-          buttonText="הירשם"
+          headline="הירשמו לניוזלטר"
+          content="קבלו עדכונים על תכנים חדשים, שיעורים ותשובות לשאלות"
+          placeholder="הכניסו את כתובת האימייל שלכם"
+          buttonText="הירשמו"
         />
       </div>
     </div>

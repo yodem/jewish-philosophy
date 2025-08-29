@@ -40,7 +40,7 @@ export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
                 <Link
                   href={item.href}
                   className="text-blue-600 hover:underline hover:text-blue-800 transition-colors duration-200"
-                  title={`עבור ל${item.label}`}
+                  title={`עברו ל${item.label}`}
                   onClick={() => trackBreadcrumbClick(item.label, item.href!)}
                 >
                   <span>{item.label}</span>

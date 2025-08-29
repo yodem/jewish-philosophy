@@ -144,8 +144,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         />
         
         <Breadcrumbs items={[
-          { label: 'בית', href: '/' },
-          { label: 'בלוג', href: '/blog' },
+          { label: "בית", href: "/" },
+          { label: "בלוג", href: "/blog" },
           { label: title }
         ]} />
       

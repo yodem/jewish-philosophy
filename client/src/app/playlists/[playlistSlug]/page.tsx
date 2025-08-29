@@ -98,7 +98,7 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
         <Breadcrumbs
           items={[
             { label: "בית", href: "/" },
-            { label: "סדרות", href: "/playlists" },
+            { label: "סדרות שיעורים", href: "/playlists" },
             { label: playlist.title },
           ]}
         />
