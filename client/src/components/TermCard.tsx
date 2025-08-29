@@ -24,15 +24,6 @@ export default function TermCard({ term, className }: TermCardProps) {
             {term.description}
           </p>
 
-          {/* Author */}
-          {term.author && (
-            <div className="mb-3">
-              <p className="text-xs text-gray-500 text-right">
-                מאת: {term.author.name}
-              </p>
-            </div>
-          )}
-
           {/* Categories */}
           {term.categories && term.categories.length > 0 && (
             <div className="flex flex-wrap gap-1 justify-end">
