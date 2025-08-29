@@ -162,27 +162,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             content_loc: `https://www.youtube.com/watch?v=${video.videoId}`,
             player_loc: `https://www.youtube.com/embed/${video.videoId}`,
             duration: 600, // Default duration in seconds (10 minutes)
-            expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // 1 year from now
-            rating: 5.0, // Educational content rating
-            view_count: 0, // Will be populated by YouTube data if available
             publication_date: new Date(playlist.createdAt).toISOString(),
             family_friendly: 'yes',
-            restriction: {
-              relationship: 'allow',
-              country_codes: ['IL', 'US', 'CA', 'GB', 'AU'], // Allow in these countries
-            },
-            platform: {
-              relationship: 'allow',
-              platform_types: ['web', 'mobile'],
-            },
             requires_subscription: 'no',
-            uploader: {
-              name: 'שלום צדיק',
-              info: formatUrl('/about'),
-            },
             live: 'no',
-            tags: ['פילוסופיה יהודית', 'הרמב״ם', 'הלכה', 'אגדה', 'מוסר יהודי', 'יהדות רציונלית'],
-            category: 'Education',
           },
         ],
         // Also include video thumbnail as image
