@@ -1,7 +1,7 @@
 import { Metadata } from "next";
-import ContactForm from "@/components/ContactForm";
 import { generateMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import ContactPageClient from "./ContactPageClient";
 
 export const metadata: Metadata = generateMetadata({
   title: "צרו קשר | פילוסופיה יהודית",
@@ -28,7 +28,7 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <ContactForm />
+      <ContactPageClient />
     </div>
   );
 }

@@ -19,6 +19,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { TableRowSkeleton } from "@/components/ui/skeleton";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function ResponsaPage() {
   const searchParams = useSearchParams();
@@ -62,17 +63,18 @@ export default function ResponsaPage() {
   };
 
   return (
-    <div className="container mx-auto py-8">
-      <Breadcrumbs items={[
-        { label: "בית", href: "/" },
-        { label: "שו״ת" }
-      ]} />
+    <ErrorBoundary>
+      <div className="container mx-auto py-8">
+        <Breadcrumbs items={[
+          { label: "בית", href: "/" },
+          { label: "שו״ת" }
+        ]} />
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">שאלות ותשובות</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          חפשו בארכיון השאלות והתשובות או הוסיפו שאלה משלכם.
-        </p>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-4">שאלות ותשובות</h1>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            חפשו בארכיון השאלות והתשובות או הוסיפו שאלה משלכם.
+          </p>
         
         <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <Input
@@ -142,11 +144,12 @@ export default function ResponsaPage() {
         </div>
       )}
       
-      <div className="mt-12">
-        <div className="max-w-3xl mx-auto">
-          <QuestionFormWrapper />
+        <div className="mt-12">
+          <div className="max-w-3xl mx-auto">
+            <QuestionFormWrapper />
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 } 

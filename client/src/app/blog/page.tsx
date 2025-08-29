@@ -1,11 +1,14 @@
 import { getBlogsPaginated, getPageBySlug } from "@/data/loaders";
 import Link from "next/link";
 import MediaCard from "@/components/ui/MediaCard";
-import BlogGrid from "@/components/BlogGrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
+import BlogPageClient from "./BlogPageClient";
 
 export const metadata: Metadata = generateMetadata({
   title: "בלוג | פילוסופיה יהודית - מאמרים בלימודי יהדות",
@@ -14,6 +17,14 @@ export const metadata: Metadata = generateMetadata({
   type: "website",
   keywords: "בלוג פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מאמרי פילוסופיה, מושגים בפילוסופיה יהודית, מבוא לפילוסופיה יהודית, מורה נבוכים, משנה תורה, כוזרי, שלום צדיק, יהדות רציונלית, פילוסופיה דתית מתונה",
 });
+
+function LoadingFallback() {
+  return (
+    <div className="flex h-[60vh] items-center justify-center">
+      <Skeleton className="w-32 h-32 rounded-full bg-blue-200" />
+    </div>
+  );
+}
 
 export default async function BlogListPage() {
   const pageRes = await getPageBySlug("blog");
@@ -30,7 +41,11 @@ export default async function BlogListPage() {
             { label: "בלוג" },
           ]}
         />
-      <BlockRenderer blocks={blocks} />
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <BlockRenderer blocks={blocks} />
+        </Suspense>
+      </ErrorBoundary>
       {firstBlog && (
         <div className="mb-8 sm:mb-12 flex flex-col items-center px-2 border-b border-gray-200 pb-8 w-full">
           <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">מאמר אחרון</h3>
@@ -53,17 +68,7 @@ export default async function BlogListPage() {
 
         </div>
       )}
-      <div className="w-full">
-      {restBlogs.length > 0 && (
-        <div className="flex flex-col items-center mt-4 sm:mt-8">
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">מאמרים נוספים</h3>
-          <BlogGrid 
-            initialBlogs={restBlogs} 
-            baseUrl="/blog"
-          />
-        </div>
-      )}
-      </div>
+      <BlogPageClient initialBlogs={restBlogs} />
 
     </div>
   );

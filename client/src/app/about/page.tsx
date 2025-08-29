@@ -1,9 +1,12 @@
 import { Metadata } from "next";
 import { getPageBySlug } from "@/data/loaders";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
-import QuestionFormWrapper from "@/components/QuestionFormWrapper";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import AboutPageClient from "./AboutPageClient";
 
 export const metadata: Metadata = generateMetadata({
   title: "אודות | פילוסופיה יהודית - החזון והמשימה שלנו",
@@ -13,11 +16,19 @@ export const metadata: Metadata = generateMetadata({
   keywords: "שלום צדיק, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, חזון, ערכי יהדות, הנגשת תורה, פילוסופיה דתית מתונה, מבוא לפילוסופיה יהודית",
 });
 
+function LoadingFallback() {
+  return (
+    <div className="flex h-[60vh] items-center justify-center">
+      <Skeleton className="w-32 h-32 rounded-full bg-blue-200" />
+    </div>
+  );
+}
+
 export default async function AboutPage() {
   const pageRes = await getPageBySlug("about");
   const data = pageRes?.data;
   const blocks = data?.[0]?.blocks || [];
-  
+
   // If no data is available yet, show a placeholder
   if (!data) {
     return (
@@ -44,7 +55,12 @@ export default async function AboutPage() {
           { label: "אודות" }
         ]}
       />
-      <BlockRenderer blocks={blocks} />
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <BlockRenderer blocks={blocks} />
+        </Suspense>
+      </ErrorBoundary>
+      <AboutPageClient />
     </div>
   );
 } 
