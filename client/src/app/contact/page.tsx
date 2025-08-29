@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
-import { generateMetadata, generateStructuredData } from "@/lib/metadata";
+import { generateMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateMetadata({
   title: "צור קשר | פילוסופיה יהודית",
@@ -11,51 +11,17 @@ export const metadata: Metadata = generateMetadata({
 });
 
 export default function ContactPage() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-
-  // Structured data for the contact page
-  const contactStructuredData = generateStructuredData({
-    type: 'WebPage',
-    name: 'צור קשר - פילוסופיה יהודית',
-    description: 'דף יצירת קשר עם צוות פילוסופיה יהודית. אנו כאן לעזור לך בלימוד התורה והפילוסופיה היהודית.',
-    url: `${baseUrl}/contact`,
-    additionalProperties: {
-      "@type": "ContactPage",
-      "mainEntity": {
-        "@type": "Organization",
-        "name": "פילוסופיה יהודית",
-        "description": "פלטפורמה ללימוד יהודי מקוון",
-        "url": baseUrl,
-        "contactPoint": {
-          "@type": "ContactPoint",
-          "contactType": "customer service",
-          "availableLanguage": ["Hebrew", "he"],
-          "contactOption": "TollFree",
-          "areaServed": "IL"
-        }
-      }
-    }
-  });
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactStructuredData) }}
-      />
-      <div className="container mx-auto py-12 px-4">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">צור קשר</h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            יש לך שאלה על התכנים? רוצה להציע שיתוף פעולה? או שיש לך משוב חשוב?
-            אנו כאן כדי לשמוע ממך ולעזור בכל דרך אפשרית.
-          </p>
-        </div>
+    <div className="container mx-auto py-12 px-4">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold mb-4">צור קשר</h1>
+        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          יש לך שאלה על התכנים? רוצה להציע שיתוף פעולה? או שיש לך משוב חשוב?
+          אנו כאן כדי לשמוע ממך ולעזור בכל דרך אפשרית.
+        </p>
+      </div>
 
-        <ContactForm />
-
-          </div>
-      
-    </>
+      <ContactForm />
+    </div>
   );
 }

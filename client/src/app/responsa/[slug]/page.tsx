@@ -10,6 +10,8 @@ import CommentSection from "@/components/CommentSection";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
 import { trackContentView } from "@/lib/analytics";
+import { JsonLd } from "@/lib/json-ld";
+import { QAPage, WithContext } from "schema-dts";
 
 export default function ResponsaPage() {
   const params = useParams();
@@ -110,9 +112,41 @@ export default function ResponsaPage() {
       day: 'numeric',
     });
   };
+
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const pageUrl = `${baseUrl}/responsa/${slug}`;
+
+  const structuredData: WithContext<QAPage> = {
+    '@context': 'https://schema.org',
+    '@type': 'QAPage',
+    mainEntity: {
+      '@type': 'Question',
+      name: title,
+      text: title,
+      answerCount: 1,
+      upvoteCount: 0, 
+      dateCreated: publishedAt,
+      author: {
+        '@type': 'Person',
+        name: questioneer,
+      },
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: content,
+        url: pageUrl,
+        upvoteCount: 0,
+        dateCreated: publishedAt,
+        author: {
+          '@type': 'Person',
+          name: 'שלום צדיק', 
+        },
+      },
+    },
+  };
   
   return (
     <div className="container mx-auto py-8">
+      <JsonLd data={structuredData} />
       <Breadcrumbs items={[
         { label: 'בית', href: '/' },
         { label: 'שו״ת', href: '/responsa' },

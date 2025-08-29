@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import { WritingViewTracker, WritingButtonTracker } from "@/components/WritingTracker";
+import { JsonLd } from "@/lib/json-ld";
+import { Article, Book, WithContext } from "schema-dts";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -53,7 +55,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
   const imageUrl = writing.image?.url ? `${process.env.STRAPI_BASE_URL || ''}${writing.image.url}` : undefined;
 
   // Structured data for the writing
-  const structuredData = {
+  const structuredData: WithContext<Article | Book> = {
     "@context": "https://schema.org",
     "@type": isBook ? "Book" : "Article",
     "name": writing.title,
@@ -68,7 +70,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Your Site Name",
+      "name": "פילוסופיה יהודית",
       "logo": {
         "@type": "ImageObject",
         "url": `${baseUrl}/logo.png`
@@ -90,10 +92,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLd data={structuredData} />
       <div className="container mx-auto py-8 px-4">
         {/* Track writing page view */}
         <WritingViewTracker 

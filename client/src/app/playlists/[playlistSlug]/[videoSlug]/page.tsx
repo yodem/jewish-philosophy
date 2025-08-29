@@ -8,7 +8,9 @@ import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import SocialShare from "@/components/SocialShare";
 import { Metadata } from "next";
-import { generateMetadata as createMetadata, generateStructuredData, getImageUrl } from "@/lib/metadata";
+import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
+import { JsonLd } from "@/lib/json-ld";
+import { VideoObject, WithContext } from "schema-dts";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
@@ -58,49 +60,39 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
   
   // Enhanced structured data for the video with more comprehensive SEO
-  const videoStructuredData = generateStructuredData({
-    type: 'Video',
+  const videoStructuredData: WithContext<VideoObject> = {
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
     name: video.title,
     description: video.description,
     url: `${baseUrl}/playlists/${playlistSlug}/${videoSlug}`,
-    image: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
-    datePublished: new Date().toISOString(),
-    author: { name: "שלום צדיק" },
-    publisher: { name: "פילוסופיה יהודית", logo: `${baseUrl}/logo.png` },
-    keywords: `פילוסופיה יהודית, ${video.title}, ${playlist.title}, הרמב"ם, שיעורי וידאו`,
-    additionalProperties: {
-      "@type": "VideoObject",
-      "embedUrl": `https://www.youtube.com/embed/${video.videoId}`,
-      "uploadDate": new Date().toISOString(),
-      "duration": "PT10M",
-      "thumbnailUrl": video.imageUrl300x400 || video.imageUrlStandard,
-      "contentUrl": `https://www.youtube.com/watch?v=${video.videoId}`,
-      "interactionStatistic": {
-        "@type": "InteractionCounter",
-        "interactionType": { "@type": "WatchAction" },
-        "userInteractionCount": 0
+    thumbnailUrl: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
+    uploadDate: new Date().toISOString(),
+    duration: "PT10M", // Placeholder, consider adding actual duration from data
+    contentUrl: `https://www.youtube.com/watch?v=${video.videoId}`,
+    embedUrl: `https://www.youtube.com/embed/${video.videoId}`,
+    publisher: {
+      '@type': 'Organization',
+      name: 'פילוסופיה יהודית',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseUrl}/logo.png`,
       },
-      "partOfSeries": {
-        "@type": "VideoSeries",
-        "name": playlist.title,
-        "description": playlist.description,
-        "url": `${baseUrl}/playlists/${playlistSlug}`
-      },
-      "educationalAlignment": {
-        "@type": "AlignmentObject",
-        "alignmentType": "teaches",
-        "educationalFramework": "פילוסופיה יהודית",
-        "targetName": "לימוד פילוסופיה יהודית ודת"
-      }
-    }
-  });
+    },
+    author: {
+      '@type': 'Person',
+      name: 'שלום צדיק',
+    },
+    interactionStatistic: {
+      '@type': "InteractionCounter",
+      interactionType: { "@type": "WatchAction" },
+      userInteractionCount: 0 // Placeholder
+    },
+  };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(videoStructuredData) }}
-      />
+      <JsonLd data={videoStructuredData} />
       
       <div className="container mx-auto px-2 my-4 sm:my-8 flex flex-col items-center justify-center w-full">
         <Card className="flex-1 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">

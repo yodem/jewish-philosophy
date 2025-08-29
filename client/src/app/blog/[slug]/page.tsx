@@ -9,6 +9,8 @@ import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import ReactMarkdown from "react-markdown";
 import { WritingViewTracker } from "@/components/WritingTracker";
 import BlogCommentSection from "./BlogCommentSection";
+import { JsonLd } from "@/lib/json-ld";
+import { Article as ArticleSchema, WithContext } from "schema-dts";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -92,7 +94,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const pageUrl = `${baseUrl}/blog/${slug}`;
   const imageUrl = coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${coverImage.url}` : undefined;
   
-  const structuredData = {
+  const structuredData: WithContext<ArticleSchema> = {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": title,
@@ -118,12 +120,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       "@id": pageUrl
     },
     ...(imageUrl && {
-      "image": [{
+      "image": {
         "@type": "ImageObject",
         "url": imageUrl,
         "width": 1200,
         "height": 630
-      }]
+      }
     }),
     ...(categories && categories.length > 0 && {
       "keywords": categories.map((cat: Category) => cat.name).join(', ')
@@ -132,10 +134,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
+      <JsonLd data={structuredData} />
       <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
         {/* Track blog post view */}
         <WritingViewTracker 
