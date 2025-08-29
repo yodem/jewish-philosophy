@@ -95,11 +95,14 @@ function QuestionFormInner() {
   // Form validation
   const isFormValid = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailValid = formValues.questioneerEmail.trim().length === 0 ||
+                      emailRegex.test(formValues.questioneerEmail);
+
     return (
       formValues.title.trim().length >= 3 &&
       formValues.content.trim().length >= 10 &&
       formValues.questioneer.trim().length >= 2 &&
-      emailRegex.test(formValues.questioneerEmail) &&
+      emailValid &&
       selectedCategories.length >= 1 &&
       selectedCategories.length <= 3
     );
@@ -207,7 +210,7 @@ function QuestionFormInner() {
             </div>
             <div>
               <label htmlFor="questioneerEmail" className="block text-sm font-medium mb-1">
-                כתובת אימייל
+                כתובת אימייל <span className="text-gray-500">(אופציונלי)</span>
               </label>
               <Input
                 id="questioneerEmail"
@@ -215,13 +218,13 @@ function QuestionFormInner() {
                 type="email"
                 value={formValues.questioneerEmail}
                 onChange={(e) => handleInputChange('questioneerEmail', e.target.value)}
-                placeholder="הכניסו את כתובת האימייל שלכם"
+                placeholder="הכניסו את כתובת האימייל שלכם (אופציונלי)"
                 className={state.zodErrors?.questioneerEmail ? "border-red-500" : ""}
               />
-              {state.zodErrors?.questioneerEmail && (
+              {state.zodErrors?.questioneerEmail && formValues.questioneerEmail.trim().length > 0 && (
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.questioneerEmail[0]}</p>
               )}
-              <p className="text-xs text-gray-500 mt-1">נשלח אליכם אימייל כאשר תתקבל תשובה לשאלה</p>
+              <p className="text-xs text-gray-500 mt-1">אם תזינו כתובת אימייל, נשלח אליכם התראה כאשר תתקבל תשובה לשאלה</p>
             </div>
             <div>
               <label htmlFor="content" className="block text-sm font-medium mb-1">
