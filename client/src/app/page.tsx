@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { Metadata } from "next";
-import { generateMetadata, generateStructuredData } from "@/lib/metadata";
+import { generateMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateMetadata({
   title: "פילוסופיה יהודית | לימוד פילוסופיה יהודית מקוונת",
@@ -27,61 +27,14 @@ export default async function HomeRoute() {
   const homeRes = await getHomePage();  
   const blocks = homeRes?.data?.blocks || [];
   
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-  
-  // Structured data for the organization
-  const organizationStructuredData = generateStructuredData({
-    type: 'Organization',
-    name: 'פילוסופיה יהודית',
-    description: 'פלטפורמה מובילה ללימוד יהודי מקוון המציעה תכנים איכותיים בהלכה, אגדה, פילוסופיה יהודית ועוד.',
-    url: baseUrl,
-    image: `${baseUrl}/logo.png`,
-    additionalProperties: {
-      "@type": "EducationalOrganization",
-      "url": baseUrl,
-      "logo": `${baseUrl}/logo.png`,
-      "foundingDate": "2025",
-      "description": "מוסד דיגיטלי המתמחה בהוראה ולימוד יהודי מקוון",
-      "educationalCredentialAwarded": "תעודות השלמה בלימודי יהדות",
-      "hasOfferCatalog": {
-        "@type": "OfferCatalog",
-        "name": "קטלוג הקורסים והתכנים",
-        "itemListElement": [
-          {
-            "@type": "Course",
-            "name": "לימודי הלכה",
-            "description": "קורסים מקיפים בהלכה יהודית"
-          },
-          {
-            "@type": "Course", 
-            "name": "פילוסופיה יהודית",
-            "description": "לימוד מחשבת ישראל ופילוסופיה יהודית"
-          }
-        ]
-      },
-      "sameAs": [
-        // Add your social media URLs here
-      ],
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "contactType": "customer service",
-        "availableLanguage": ["Hebrew", "he"]
-      }
-    }
-  });
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationStructuredData) }}
-      />
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <BlockRenderer blocks={blocks} />
         </Suspense>
       </ErrorBoundary>
-      
+
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <QuestionFormWrapper />

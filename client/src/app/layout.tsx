@@ -8,6 +8,7 @@ import Providers from './providers';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from "@vercel/analytics/next"
 import { Metadata } from 'next';
+import { JsonLd, Schema } from '@/lib/json-ld';
 
 
 export const metadata: Metadata = {
@@ -85,9 +86,59 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const globalRes = await getGlobalSettings();
   const header = globalRes?.data?.header;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const logoUrl = `${siteUrl}logo.png`;
+
+  const organizationSchema: Schema = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: 'פילוסופיה יהודית',
+    alternateName: 'Jewish Philosophy Platform',
+    url: siteUrl,
+    logo: logoUrl,
+    description: 'פלטפורמה מובילה ללימוד פילוסופיה יהודית מקוונת',
+    foundingDate: '2024',
+    founder: {
+      '@type': 'Person',
+      name: 'שלום צדיק',
+    },
+    sameAs: [
+      'https://www.facebook.com/jewish.philosophy',
+      'https://www.youtube.com/c/jewish-philosophy',
+      'https://www.instagram.com/jewish_philosophy',
+    ],
+    address: {
+      '@type': 'PostalAddress',
+      addressCountry: 'IL',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      availableLanguage: 'Hebrew',
+    },
+  };
+
+  const websiteSchema: Schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'פילוסופיה יהודית',
+    url: siteUrl,
+    description: 'פלטפורמה מובילה ללימוד פילוסופיה יהודית מקוונת',
+    inLanguage: 'he-IL',
+          potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${siteUrl}search?q={search_term_string}`,
+        },
+      },
+  };
+
   return (
     <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
       <head>
+        <JsonLd data={organizationSchema} />
+        <JsonLd data={websiteSchema} />
         {/* Google Tag Manager */}
 
         {/* End Google Tag Manager */}
@@ -117,62 +168,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         
         {/* Enhanced structured data for organization */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "EducationalOrganization",
-              "name": "פילוסופיה יהודית",
-              "alternateName": "Jewish Philosophy Platform",
-              "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/',
-              "logo": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/'}/logo.png`,
-              "description": "פלטפורמה מובילה ללימוד פילוסופיה יהודית מקוונת",
-              "foundingDate": "2024",
-              "founder": {
-                "@type": "Person",
-                "name": "שלום צדיק"
-              },
-              "sameAs": [
-                "https://www.facebook.com/jewish.philosophy",
-                "https://www.youtube.com/c/jewish-philosophy",
-                "https://www.instagram.com/jewish_philosophy"
-              ],
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "IL"
-              },
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "customer service",
-                "availableLanguage": "Hebrew"
-              }
-            })
-          }}
-        />
-        
-        {/* Additional schema for website */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "פילוסופיה יהודית",
-              "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/',
-              "description": "פלטפורמה מובילה ללימוד פילוסופיה יהודית מקוונת",
-              "inLanguage": "he-IL",
-              "potentialAction": {
-                "@type": "SearchAction",
-                "target": {
-                  "@type": "EntryPoint",
-                  "urlTemplate": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/'}/search?q={search_term_string}`
-                },
-                "query-input": "required name=search_term_string"
-              }
-            })
-          }}
-        />
         <meta name="google-site-verification" content="akphSIM1AXruIpEV0G-NUb1PiRu2mzgwEpq3KvxVdIA" />
       </head>
       <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden">

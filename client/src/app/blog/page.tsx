@@ -5,7 +5,7 @@ import BlogGrid from "@/components/BlogGrid";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import { Metadata } from "next";
-import { generateMetadata, generateStructuredData } from "@/lib/metadata";
+import { generateMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = generateMetadata({
   title: "בלוג | פילוסופיה יהודית - מאמרים בלימודי יהדות",
@@ -22,48 +22,7 @@ export default async function BlogListPage() {
   const blogs = await getBlogsPaginated(1, 10); // Get first 10 for mobile, will show 12 on desktop
   const [firstBlog, ...restBlogs] = blogs;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-  
-  // Structured data for the blog collection
-  const blogCollectionStructuredData = generateStructuredData({
-    type: 'WebPage',
-    name: 'בלוג פילוסופיה יהודית - מאמרים בלימודי יהדות',
-    description: 'מאמרים מעמיקים ורלוונטיים בנושאי הלכה, אגדה, פילוסופיה יהודית, פרשת השבוע ועוד. כתבי עת איכותיים מאת רבנים וחוקרים מובילים.',
-    url: `${baseUrl}/blog`,
-    additionalProperties: {
-      "mainEntity": {
-        "@type": "Blog",
-        "name": "בלוג פילוסופיה יהודית",
-        "description": "פלטפורמה לפרסום מאמרים איכותיים בלימודי יהדות, הלכה, אגדה ופילוסופיה יהודית",
-        "url": `${baseUrl}/blog`,
-        "inLanguage": "he-IL",
-        "about": [
-          {
-            "@type": "Thing",
-            "name": "הלכה יהודית",
-            "description": "לימוד ופסיקה הלכתית"
-          },
-          {
-            "@type": "Thing", 
-            "name": "פילוסופיה יהודית",
-            "description": "מחשבת ישראל ופילוסופיה יהודית"
-          },
-          {
-            "@type": "Thing",
-            "name": "פרשת השבוע",
-            "description": "פירושים ודרשות על פרשיות התורה"
-          }
-        ]
-      }
-    }
-  });
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogCollectionStructuredData) }}
-      />
       <div className="container mx-auto py-8 px-4">
         <Breadcrumbs
           items={[
@@ -105,8 +64,7 @@ export default async function BlogListPage() {
         </div>
       )}
       </div>
-      
+
     </div>
-    </>
   );
 } 

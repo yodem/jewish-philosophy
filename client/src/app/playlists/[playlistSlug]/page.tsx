@@ -7,8 +7,10 @@ import MediaCard from "@/components/ui/MediaCard";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import PlaylistGrid from "@/components/PlaylistGrid";
 import { Metadata } from "next";
-import { generateMetadata as createMetadata, generateStructuredData, getImageUrl } from "@/lib/metadata";
+import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import PlaylistViewTracker from "@/components/PlaylistViewTracker";
+import { JsonLd } from "@/lib/json-ld";
+import { CreativeWorkSeries, ItemList, WithContext } from "schema-dts";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
@@ -62,33 +64,33 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
   
-  // Structured data for the playlist
-  const playlistStructuredData = generateStructuredData({
-    type: 'Course',
+  // Structured data for the playlist as a series and item list
+  const playlistStructuredData: WithContext<CreativeWorkSeries | ItemList> = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWorkSeries',
     name: playlist.title,
     description: playlist.description,
     url: `${baseUrl}/playlists/${playlistSlug}`,
-    image: getImageUrl(playlist.imageUrl300x400 || playlist.imageUrlStandard),
-    additionalProperties: {
-      "@type": "Course",
-      "courseCode": playlistSlug,
-      "numberOfCredits": videos.length,
-      "timeRequired": `PT${videos.length * 10}M`,
-      "hasCourseInstance": videos.map((video) => ({
-        "@type": "CourseInstance",
-        "name": video.title,
-        "description": video.description,
-        "url": `${baseUrl}/playlists/${playlistSlug}/${video.slug}`
-      }))
-    }
-  });
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: videos.map((video, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'VideoObject',
+          name: video.title,
+          description: video.description,
+          url: `${baseUrl}/playlists/${playlistSlug}/${video.slug}`,
+          thumbnailUrl: getImageUrl(video.imageUrlStandard || video.imageUrl300x400),
+          uploadDate: new Date().toISOString(),
+        },
+      })),
+    },
+  };
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(playlistStructuredData) }}
-      />
+      <JsonLd data={playlistStructuredData} />
       <div className="w-full max-w-full overflow-hidden">
         {/* Track playlist view */}
         <PlaylistViewTracker playlistTitle={playlist.title} videoCount={videos.length} />
