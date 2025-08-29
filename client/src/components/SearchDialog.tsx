@@ -26,7 +26,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     
     // Content type is always required
     params.set('type', selectedContentType);
-    
+
     if (selectedCategory !== 'all') {
       params.set('category', selectedCategory);
     }
@@ -47,7 +47,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setSearchQuery('');
-      setSelectedContentType('blog');
+      setSelectedContentType('video'); // Keep consistent with initial state
       setSelectedCategory('all');
     }
     onOpenChange(open);
@@ -69,7 +69,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
             onContentTypeChange={setSelectedContentType}
             onCategoryChange={setSelectedCategory}
             onSubmit={handleSearch}
-            disabled={!searchQuery.trim() && selectedCategory === 'all'}
+            disabled={!searchQuery.trim()}
           />
         </div>
       </DialogContent>
