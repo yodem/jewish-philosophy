@@ -5,12 +5,12 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 export default function TermNotFound() {
   return (
     <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs 
+      <Breadcrumbs
         items={[
-          { label: 'בית', href: '/' },
-          { label: 'מושגים', href: '/terms' },
-          { label: 'לא נמצא' }
-        ]} 
+          { label: "בית", href: "/" },
+          { label: "מושגים", href: "/terms" },
+          { label: "לא נמצא" }
+        ]}
       />
       
       <div className="max-w-2xl mx-auto text-center py-16">
@@ -61,9 +61,9 @@ export default function TermNotFound() {
             עזרה נוספת
           </h2>
           <p className="text-blue-800 dark:text-blue-200 text-sm">
-            אם אתה מאמין שזהו טעות, אנא 
+            אם אתם מאמינים שזהו טעות, אנא
             <Link href="/contact" className="underline mx-1">
-              צור קשר
+              צרו קשר
             </Link>
             ונבדוק את הבעיה.
           </p>

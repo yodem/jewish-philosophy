@@ -46,10 +46,10 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
             
             <!-- Content -->
             <div style="background: white; padding: 40px 30px;">
-              <h2 style="color: #333; margin-top: 0; font-size: 24px;">תודה שהצטרפת לניוזלטר שלנו!</h2>
+              <h2 style="color: #333; margin-top: 0; font-size: 24px;">תודה שהצטרפתם לניוזלטר שלנו!</h2>
               
               <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px;">
-                אנחנו שמחים שהצטרפת לקהילה שלנו!
+                אנחנו שמחים שהצטרפתם לקהילה שלנו!
                 מעתה תקבל עדכונים מיוחדים על:
               </p>
               
@@ -80,7 +80,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
               
               <div style="background: #e3f2fd; border-right: 4px solid #2196f3; padding: 20px; border-radius: 8px; margin: 30px 0;">
                 <p style="margin: 0; font-size: 14px; color: #1976d2;">
-                  <strong>💡 טיפ:</strong> הוסף את כתובת האימייל שלנו לרשימת הקשר שלך כדי לוודא שהעדכונים יגיעו אליך ישירות לתיבת הדואר הנכנס.
+                  <strong>💡 טיפ:</strong> הוסיפו את כתובת האימייל שלנו לרשימת הקשר שלכם כדי לוודא שהעדכונים יגיעו אליכם ישירות לתיבת הדואר הנכנס.
                 </p>
               </div>
               
@@ -106,7 +106,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
           <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 25px 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">💬 תשובה לשאלה שלך!</h1>
+              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">💬 תשובה לשאלתכם!</h1>
             </div>
 
             <!-- Content -->
@@ -115,12 +115,12 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
               <div style="background: #e8f5e8; border-right: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin: 25px 0;">
                 <p style="margin: 0; font-size: 16px; color: #2e7d32;">
-                  <strong>📝 השאלה שלך:</strong> "${data.questionTitle}"
+                  <strong>📝 השאלה שלכם:</strong> "${data.questionTitle}"
                 </p>
               </div>
 
               <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px;">
-                קיבלת תשובה חדשה לשאלה שלך! אנחנו מזמינים אותך לקרוא את התשובה המלאה באתר שלנו.
+                קיבלת תשובה חדשה לשאלתכם! אנחנו מזמינים אותכם לקרוא את התשובה המלאה באתר שלנו.
               </p>
 
               <div style="text-align: center; margin: 35px 0;">
@@ -140,12 +140,12 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
               <div style="background: #fff3e0; border-right: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin: 30px 0;">
                 <p style="margin: 0; font-size: 14px; color: #f57c00;">
-                  <strong>🤝 רוצה לשתף?</strong> אם התשובה עזרה לך, אל תהסס לשתף אותה עם חברים שעשויים להיות מעוניינים!
+                  <strong>🤝 רוצים לשתף?</strong> אם התשובה עזרה לכם, אל תהססו לשתף אותה עם חברים שעשויים להיות מעוניינים!
                 </p>
               </div>
 
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
-                תודה שבחרת לשאול ולהיות חלק מהקהילה שלנו!<br>
+                תודה שבחרתם לשאול ולהיות חלק מהקהילה שלנו!<br>
                 <strong style="color: #4caf50;">צוות הפילוסופיה היהודית</strong>
               </p>
             </div>
@@ -153,7 +153,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
             <!-- Footer -->
             <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0; color: #888; font-size: 12px;">
-                אימייל זה נשלח אוטומטית כהודעה על תשובה לשאלה שלך
+                אימייל זה נשלח אוטומטית כהודעה על תשובה לשאלתכם
               </p>
             </div>
           </div>
@@ -163,7 +163,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
           <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%); padding: 25px 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">✅ השאלה שלך התקבלה!</h1>
+              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">✅ השאלה שלכם התקבלה!</h1>
             </div>
 
             <!-- Content -->
@@ -172,21 +172,21 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
               <div style="background: #e3f2fd; border-right: 4px solid #2196f3; padding: 20px; border-radius: 8px; margin: 25px 0;">
                 <p style="margin: 0; font-size: 16px; color: #1976d2;">
-                  <strong>📝 השאלה שלך:</strong> "${data.questionTitle}"
+                  <strong>📝 השאלה שלכם:</strong> "${data.questionTitle}"
                 </p>
               </div>
 
               <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px;">
-                תודה רבה על שאלתך! השאלה שלך התקבלה בהצלחה ותפורסם בקרוב באתר שלנו.
+                תודה רבה על שאלתך! השאלה שלכם התקבלה בהצלחה ותפורסם בקרוב באתר שלנו.
                 אנחנו נעבור על השאלה ונפרסם אותה בסעיף "שאלות ותשובות".
               </p>
 
               <div style="background: #f8f9fa; border-radius: 12px; padding: 25px; margin: 25px 0;">
                 <h3 style="color: #333; margin-top: 0; font-size: 18px;">מה קורה עכשיו?</h3>
                 <ul style="font-size: 16px; line-height: 2; color: #555; margin: 15px 0 0 0; padding-right: 20px;">
-                  <li>📝 השאלה שלך תפורסם בסעיף השאלות והתשובות</li>
+                  <li>📝 השאלה שלכם תפורסם בסעיף השאלות והתשובות</li>
                   <li>💬 תוכל לקבל תשובה מפרופ׳ שלום בקרוב</li>
-                  <li>🔔 נודיע לך כשיהיו תשובות חדשות</li>
+                  <li>🔔 נודיע לכם כשיהיו תשובות חדשות</li>
                 </ul>
               </div>
 
@@ -201,18 +201,18 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                           font-size: 16px;
                           display: inline-block;
                           box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);">
-                  👀 צפה בשאלה שלך באתר
+                  👀 צפו בשאלה שלכם באתר
                 </a>
               </div>
 
               <div style="background: #fff3e0; border-right: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin: 30px 0;">
                 <p style="margin: 0; font-size: 14px; color: #f57c00;">
-                  <strong>💡 טיפ:</strong> הוסף את כתובת האימייל שלנו לרשימת הקשר שלך כדי לוודא שתקבל התראות על תשובות לשאלה שלך.
+                  <strong>💡 טיפ:</strong> הוסיפו את כתובת האימייל שלנו לרשימת הקשר שלכם כדי לוודא שתקבלו התראות על תשובות לשאלתכם.
                 </p>
               </div>
 
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
-                תודה שהצטרפת לשיחה!<br>
+                תודה שהצטרפתם לשיחה!<br>
                 <strong style="color: #2196f3;">צוות הפילוסופיה היהודית</strong>
               </p>
             </div>
@@ -220,7 +220,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
             <!-- Footer -->
             <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0; color: #888; font-size: 12px;">
-                אימייל זה נשלח אוטומטית כאישור קבלת השאלה שלך
+                אימייל זה נשלח אוטומטית כאישור קבלת השאלה שלכם
               </p>
             </div>
           </div>
@@ -230,7 +230,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
           <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
             <!-- Header -->
             <div style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); padding: 25px 20px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">💬 תגובה חדשה לפוסט שלך!</h1>
+              <h1 style="color: white; margin: 0; font-size: 26px; font-weight: bold;">💬 תגובה חדשה לפוסט שלכם!</h1>
             </div>
 
             <!-- Content -->
@@ -239,21 +239,21 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
               <div style="background: #fff3e0; border-right: 4px solid #ff6b35; padding: 20px; border-radius: 8px; margin: 25px 0;">
                 <p style="margin: 0; font-size: 16px; color: #e65100;">
-                  <strong>📝 הפוסט שלך:</strong> "${data.blogTitle}"
+                  <strong>📝 הפוסט שלכם:</strong> "${data.blogTitle}"
                 </p>
               </div>
 
               <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px;">
-                קיבלת תגובה חדשה לפוסט שלך מאת <strong>${data.commenterName}</strong>! 
-                אנחנו מזמינים אותך לקרוא את התגובה ולהגיב אם תרצה.
+                קיבלת תגובה חדשה לפוסט שלכם מאת <strong>${data.commenterName}</strong>! 
+                אנחנו מזמינים אותכם לקרוא את התגובה ולהגיב אם תרצו.
               </p>
 
               <div style="background: #f8f9fa; border-radius: 12px; padding: 25px; margin: 25px 0;">
                 <h3 style="color: #333; margin-top: 0; font-size: 18px;">מה אפשר לעשות עכשיו?</h3>
                 <ul style="font-size: 16px; line-height: 2; color: #555; margin: 15px 0 0 0; padding-right: 20px;">
                   <li>👀 צפה בתגובה החדשה</li>
-                  <li>💬 הגב בחזרה אם תרצה</li>
-                  <li>🔗 שתף את הפוסט עם חברים</li>
+                  <li>💬 הגיבו בחזרה אם תרצו</li>
+                  <li>🔗 שתפו את הפוסט עם חברים</li>
                 </ul>
               </div>
 
@@ -274,7 +274,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
               <div style="background: #e8f5e8; border-right: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin: 30px 0;">
                 <p style="margin: 0; font-size: 14px; color: #2e7d32;">
-                  <strong>🎉 מזל טוב!</strong> הפוסט שלך מעורר עניין ומעודד דיון. זה סימן טוב לתוכן איכותי!
+                  <strong>🎉 מזל טוב!</strong> הפוסט שלכם מעורר עניין ומעודד דיון. זה סימן טוב לתוכן איכותי!
                 </p>
               </div>
 
@@ -285,7 +285,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
               </div>
 
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
-                תודה שאתה חולק את הידע שלך עם הקהילה!<br>
+                תודה שאתם חולקים את הידע שלכם עם הקהילה!<br>
                 <strong style="color: #ff6b35;">צוות הפילוסופיה היהודית</strong>
               </p>
             </div>
@@ -293,7 +293,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
             <!-- Footer -->
             <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
               <p style="margin: 0 0 10px 0; color: #888; font-size: 12px;">
-                אימייל זה נשלח אוטומטית כהודעה על תגובה חדשה לפוסט שלך
+                אימייל זה נשלח אוטומטית כהודעה על תגובה חדשה לפוסט שלכם
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
                 ניתן להפסיק קבלת התראות אלו בהגדרות המשתמש באתר

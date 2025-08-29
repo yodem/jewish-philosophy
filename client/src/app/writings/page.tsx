@@ -115,8 +115,8 @@ export default function WritingsPage() {
   return (
     <div className="container mx-auto py-8 px-4">
       <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'כתבים' }
+        { label: "בית", href: "/" },
+        { label: "כתבים" }
       ]} />
 
       <BlockRenderer blocks={blocks} />
@@ -130,12 +130,12 @@ export default function WritingsPage() {
         <div className="flex flex-col gap-4 mb-6">
           <form onSubmit={handleSearch} className="flex gap-2">
             <Input
-              placeholder="חפש כתב..."
+              placeholder="חפשו כתב..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="flex-1"
             />
-            <Button type="submit">חפש</Button>
+            <Button type="submit">חפשו</Button>
           </form>
           
           <div className="flex gap-2">
@@ -176,7 +176,7 @@ export default function WritingsPage() {
             {isLoading ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-10">
-                  טוען...
+                  טוענים...
                 </TableCell>
               </TableRow>
             ) : writings.length === 0 ? (

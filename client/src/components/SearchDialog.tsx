@@ -57,7 +57,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[425px] max-w-[350px] mx-auto">
         <DialogHeader className="pb-4">
-          <DialogTitle className="text-right pr-8">חיפוש תוכן</DialogTitle>
+          <DialogTitle className="text-right pr-8">חפשו תוכן</DialogTitle>
         </DialogHeader>
         
         <div className="py-4">

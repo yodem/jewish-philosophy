@@ -37,7 +37,7 @@ export default function CommentSection({
     }
   }, [responsaSlug, blogSlug, onCommentsRefresh]);
 
-  const addCommentLabel = commentType === 'blog' ? 'הוסף תגובה' : 'הוסף תשובה';
+  const addCommentLabel = commentType === 'blog' ? 'הוסיפו תגובה' : 'הוסיפו תשובה';
 
   return (
     <>

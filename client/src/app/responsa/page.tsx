@@ -64,8 +64,8 @@ export default function ResponsaPage() {
   return (
     <div className="container mx-auto py-8">
       <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'שאלות ותשובות' }
+        { label: "בית", href: "/" },
+        { label: "שו״ת" }
       ]} />
 
       <div className="mb-8">
@@ -76,12 +76,12 @@ export default function ResponsaPage() {
         
         <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <Input
-            placeholder="חפש שאלה..."
+            placeholder="חפשו שאלה..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="flex-1"
           />
-          <Button type="submit">חפש</Button>
+          <Button type="submit">חפשו</Button>
         </form>
       </div>
 

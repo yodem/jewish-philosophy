@@ -148,8 +148,8 @@ export default function ResponsaPage() {
     <div className="container mx-auto py-8">
       <JsonLd data={structuredData} />
       <Breadcrumbs items={[
-        { label: 'בית', href: '/' },
-        { label: 'שו״ת', href: '/responsa' },
+        { label: "בית", href: "/" },
+        { label: "שו״ת", href: "/responsa" },
         { label: title }
       ]} />
       

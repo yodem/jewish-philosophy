@@ -3,6 +3,7 @@ import { getPageBySlug } from "@/data/loaders";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { generateMetadata } from "@/lib/metadata";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export const metadata: Metadata = generateMetadata({
   title: "אודות | פילוסופיה יהודית - החזון והמשימה שלנו",
@@ -21,6 +22,12 @@ export default async function AboutPage() {
   if (!data) {
     return (
       <div className="container mx-auto py-12 px-4">
+        <Breadcrumbs
+          items={[
+            { label: "בית", href: "/" },
+            { label: "אודות" }
+          ]}
+        />
         <h1 className="text-3xl font-bold mb-8 text-center">אודות</h1>
         <p className="text-center text-gray-500">
           התוכן לא זמין כרגע. אנא נסו שנית מאוחר יותר.
@@ -31,6 +38,12 @@ export default async function AboutPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
+      <Breadcrumbs
+        items={[
+          { label: "בית", href: "/" },
+          { label: "אודות" }
+        ]}
+      />
       <BlockRenderer blocks={blocks} />
     </div>
   );

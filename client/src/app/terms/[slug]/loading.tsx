@@ -4,12 +4,12 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 export default function TermLoadingPage() {
   return (
     <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs 
+      <Breadcrumbs
         items={[
-          { label: 'בית', href: '/' },
-          { label: 'מושגים', href: '/terms' },
-          { label: '...' }
-        ]} 
+          { label: "בית", href: "/" },
+          { label: "מושגים", href: "/terms" },
+          { label: "..." }
+        ]}
       />
       
       <article className="max-w-4xl mx-auto">

@@ -19,13 +19,13 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
         // Send confirmation email to the questioneer
         await strapi.service("api::email.email").sendStyledEmail({
           to: responsa.questioneerEmail,
-          subject: `השאלה שלך התקבלה: ${responsa.title}`,
+          subject: `השאלה שלכם התקבלה: ${responsa.title}`,
           template: 'questionConfirmation',
           data: {
             questioneer: responsa.questioneer,
             questionTitle: responsa.title,
             questionLink,
-            plainText: `שלום ${responsa.questioneer}, השאלה שלך "${responsa.title}" התקבלה בהצלחה! ניתן לצפות בה בקישור הבא: ${questionLink}`
+            plainText: `שלום ${responsa.questioneer}, השאלה שלכם "${responsa.title}" התקבלה בהצלחה! ניתן לצפות בה בקישור הבא: ${questionLink}`
           }
         });
 
