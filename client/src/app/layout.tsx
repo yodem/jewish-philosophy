@@ -1,6 +1,5 @@
 import './globals.css';
 import Navbar from '../components/Navbar';
-import WhatsappButton from '../components/WhatsappButton';
 import { getGlobalSettings } from "@/data/loaders";
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
@@ -9,6 +8,7 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from "@vercel/analytics/next"
 import { Metadata } from 'next';
 import { JsonLd, Schema } from '@/lib/json-ld';
+import LayoutClient from './LayoutClient';
 
 
 export const metadata: Metadata = {
@@ -193,7 +193,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </main>
 
           {/* WhatsApp Floating Button */}
-          <WhatsappButton />
+          <LayoutClient />
         </Providers>
 
         {/* Load analytics asynchronously */}

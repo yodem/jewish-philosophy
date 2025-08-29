@@ -18,6 +18,7 @@ import { CategoryBadge } from "@/components/CategoryBadge";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function WritingsPage() {
   const searchParams = useSearchParams();
@@ -113,13 +114,14 @@ export default function WritingsPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs items={[
-        { label: "בית", href: "/" },
-        { label: "כתבים" }
-      ]} />
+    <ErrorBoundary>
+      <div className="container mx-auto py-8 px-4">
+        <Breadcrumbs items={[
+          { label: "בית", href: "/" },
+          { label: "כתבים" }
+        ]} />
 
-      <BlockRenderer blocks={blocks} />
+        <BlockRenderer blocks={blocks} />
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-4">כתבים</h1>
@@ -229,6 +231,7 @@ export default function WritingsPage() {
           />
         </div>
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 } 

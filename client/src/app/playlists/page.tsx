@@ -1,10 +1,13 @@
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import { getPlaylistsPaginated, getPageBySlug } from "@/data/loaders";
 import type { Playlist } from "@/types";
-import PlaylistGrid from "@/components/PlaylistGrid";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import PlaylistsPageClient from "./PlaylistsPageClient";
 
 export const metadata: Metadata = generateMetadata({
   title: "סדרות שיעורים | פילוסופיה יהודית - שיעורי וידאו ברצף",
@@ -13,6 +16,14 @@ export const metadata: Metadata = generateMetadata({
   type: "website",
   keywords: "סדרות שיעורים, שיעורי וידאו, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, כוזרי, קורסים יהודיים, שלום צדיק, מבוא לפילוסופיה יהודית, לימוד ברצף, יהדות רציונלית",
 });
+
+function LoadingFallback() {
+  return (
+    <div className="flex h-[60vh] items-center justify-center">
+      <Skeleton className="w-32 h-32 rounded-full bg-blue-200" />
+    </div>
+  );
+}
 
 export default async function PlaylistsPage() {
   const pageRes = await getPageBySlug("playlists");
@@ -30,16 +41,12 @@ export default async function PlaylistsPage() {
             ]}
           />
         </div>
-        <BlockRenderer blocks={blocks} />
-        {playlists.length > 0 && (
-          <div className="w-full flex flex-col items-center justify-center mt-8 sm:mt-16">
-            <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">סדרות</h3>
-            <PlaylistGrid 
-              initialPlaylists={playlists} 
-              baseUrl="/playlists" 
-            />
-          </div>
-        )}
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingFallback />}>
+            <BlockRenderer blocks={blocks} />
+          </Suspense>
+        </ErrorBoundary>
+        <PlaylistsPageClient playlists={playlists} />
       </div>
   );
 } 

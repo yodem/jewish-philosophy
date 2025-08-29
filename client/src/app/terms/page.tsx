@@ -1,6 +1,7 @@
 import { getPageBySlug } from "@/data/loaders";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import TermsPageClient from "./TermsPageClient";
 
 export const metadata: Metadata = generateMetadata({
@@ -16,7 +17,11 @@ export default async function TermsPage() {
   const data = pageRes?.data;
   const blocks = data?.[0]?.blocks || [];
 
-  return <TermsPageClient blocks={blocks} />;
+  return (
+    <ErrorBoundary>
+      <TermsPageClient blocks={blocks} />
+    </ErrorBoundary>
+  );
 }
 
 
