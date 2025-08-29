@@ -558,3 +558,21 @@ export async function getTermBySlug(slug: string): Promise<Term | null> {
   return res.data?.[0] || null;
 }
 
+export async function getEmailIssueCategories() {
+  const path = "/api/email-issue-categories";
+  const url = new URL(path, BASE_URL);
+  
+  url.search = qs.stringify({
+    filters: {
+      isActive: true
+    },
+    sort: 'order:asc'
+  });
+  
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 1 } });
+  console.log(res);
+  
+  
+  return res;
+}
+
