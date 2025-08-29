@@ -13,7 +13,7 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
       // Get the created responsa with its data
       const responsa = response.data;
 
-      if (responsa?.questioneerEmail && responsa?.title) {
+      if (responsa?.questioneerEmail && responsa?.questioneerEmail.trim() && responsa?.title) {
         const questionLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/responsa/${responsa.slug}`;
 
         // Send confirmation email to the questioneer

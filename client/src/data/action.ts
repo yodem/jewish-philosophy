@@ -239,7 +239,7 @@ const questionSchema = z.object({
   }),
   questioneerEmail: z.string().email({
     message: "נא להזין כתובת אימייל תקינה",
-  }),
+  }).optional(),
   categories: z.array(z.number()).min(1, {
     message: "יש לבחור לפחות קטגוריה אחת",
   }).max(3, {
@@ -258,11 +258,17 @@ interface QuestionState {
 export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
   // Get categories from form data (multiple values with same name) - now as IDs
   const categoryIds = formData.getAll("categories").map(id => parseInt(id as string, 10));
+  // Handle optional email - convert empty string to undefined
+  const emailValue = formData.get("questioneerEmail");
+  const processedEmail = emailValue && (emailValue as string).trim().length > 0
+    ? emailValue
+    : undefined;
+
   const validatedFields = questionSchema.safeParse({
     title: formData.get("title"),
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
-    questioneerEmail: formData.get("questioneerEmail"),
+    questioneerEmail: processedEmail,
     categories: categoryIds,
   });
 
@@ -297,20 +303,34 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
 
     // Categories are already IDs from form data, no need to fetch again
 
+    // Build the data object, only including email if it's provided
+    const data: {
+      title: string;
+      content: string;
+      questioneer: string;
+      slug: string;
+      categories: number[];
+      questioneerEmail?: string;
+    } = {
+      title,
+      content,
+      questioneer,
+      slug,
+      categories: categories
+    };
+
+    // Only include email if it's provided
+    if (questioneerEmail && questioneerEmail.trim().length > 0) {
+      data.questioneerEmail = questioneerEmail;
+    }
+
     const response = await fetch(`${BASE_URL}/api/responsas`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        data: {
-          title,
-          content,
-          questioneer,
-          questioneerEmail,
-          slug,
-          categories: categories
-        }
+        data
       }),
     });
 

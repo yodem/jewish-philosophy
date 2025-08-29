@@ -774,7 +774,7 @@ export interface ApiResponsaResponsa extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     questioneer: Schema.Attribute.String & Schema.Attribute.Required;
-    questioneerEmail: Schema.Attribute.Email & Schema.Attribute.Required;
+    questioneerEmail: Schema.Attribute.Email;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;

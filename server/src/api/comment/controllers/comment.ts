@@ -104,8 +104,8 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
       console.log('✅ Comment created successfully:', comment);
 
       // Send email notification for responsa comments
-      if (responsaSlug && contentData?.questioneerEmail) {
-        const questionLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/responsa/${contentData.slug}`;
+      if (responsaSlug && contentData?.questioneerEmail && contentData?.questioneerEmail.trim()) {
+        const questionLink = `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}/responsa/${contentData.slug}`;
 
         console.log('📬 Sending email notification to:', contentData.questioneerEmail);
         console.log('Question title:', contentData.title);
