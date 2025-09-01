@@ -44,7 +44,6 @@ export default function CommentForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const { enqueueSnackbar } = useSnackbar();
-  console.log({isOpen, isThread, parentCommentSlug});
 
   // Handle successful comment submission
   useEffect(() => {
@@ -167,8 +166,6 @@ export default function CommentForm({
           <Button
             type="submit"
             disabled={isSubmitting}
-            loading={isSubmitting}
-            loadingText={currentLabels.submittingButton}
             className={isThread ? "flex-1" : "w-full"}
           >
             {currentLabels.submitButton}

@@ -3,3 +3,5 @@ export { default as ThreadItem } from './ThreadItem';
 export { default as CommentHeader } from './CommentHeader';
 export { default as CommentContent } from './CommentContent';
 export { default as ReplyButton } from './ReplyButton';
+export { default as CommentForm } from './CommentForm';
+export { default as CommentsList } from './CommentsList';
