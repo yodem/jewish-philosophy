@@ -37,7 +37,6 @@ export default function CommentSection({
     }
   }, [responsaSlug, blogSlug, onCommentsRefresh]);
 
-  const addCommentLabel = commentType === 'blog' ? 'הוסיפו תגובה' : 'הוסיפו תשובה';
 
   return (
     <>
@@ -50,7 +49,6 @@ export default function CommentSection({
       />
       
       <div className="mt-12">
-        <h3 className="text-xl font-bold mb-4">{addCommentLabel}</h3>
         <CommentForm 
           responsaSlug={responsaSlug}
           blogSlug={blogSlug}
