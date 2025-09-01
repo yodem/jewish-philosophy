@@ -50,6 +50,12 @@
       "relation": "manyToMany",
       "target": "api::writing.writing",
       "inversedBy": "responsas"
+    },
+    "threads": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::thread.thread",
+      "mappedBy": "responsa"
     }
   }
 }

@@ -434,6 +434,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    threads: Schema.Attribute.Relation<'oneToMany', 'api::thread.thread'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -506,6 +507,8 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     responsa: Schema.Attribute.Relation<'manyToOne', 'api::responsa.responsa'>;
     responsaSlug: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'answerer'> & Schema.Attribute.Required;
+    threads: Schema.Attribute.Relation<'oneToMany', 'api::thread.thread'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -776,6 +779,7 @@ export interface ApiResponsaResponsa extends Struct.CollectionTypeSchema {
     questioneer: Schema.Attribute.String & Schema.Attribute.Required;
     questioneerEmail: Schema.Attribute.Email;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    threads: Schema.Attribute.Relation<'oneToMany', 'api::thread.thread'>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -812,6 +816,46 @@ export interface ApiTermTerm extends Struct.CollectionTypeSchema {
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiThreadThread extends Struct.CollectionTypeSchema {
+  collectionName: 'threads';
+  info: {
+    description: 'Threaded replies to comments';
+    displayName: 'Thread';
+    pluralName: 'threads';
+    singularName: 'thread';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    answer: Schema.Attribute.RichText & Schema.Attribute.Required;
+    answerer: Schema.Attribute.String & Schema.Attribute.Required;
+    blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
+    blogSlug: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::thread.thread'
+    > &
+      Schema.Attribute.Private;
+    parentComment: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::comment.comment'
+    >;
+    parentCommentSlug: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    responsa: Schema.Attribute.Relation<'manyToOne', 'api::responsa.responsa'>;
+    responsaSlug: Schema.Attribute.String;
+    slug: Schema.Attribute.UID<'answerer'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1414,6 +1458,7 @@ declare module '@strapi/strapi' {
       'api::playlist.playlist': ApiPlaylistPlaylist;
       'api::responsa.responsa': ApiResponsaResponsa;
       'api::term.term': ApiTermTerm;
+      'api::thread.thread': ApiThreadThread;
       'api::video.video': ApiVideoVideo;
       'api::writing.writing': ApiWritingWriting;
       'plugin::content-releases.release': PluginContentReleasesRelease;

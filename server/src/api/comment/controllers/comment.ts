@@ -21,9 +21,25 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         return ctx.badRequest('Cannot specify both responsaSlug and blogSlug');
       }
 
+      // Generate slug from answerer
+      const timestamp = Date.now();
+      let slug = answerer
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-');
+
+      // If slug is empty or very short (likely because of Hebrew chars), use a timestamp prefix
+      if (slug.length < 3) {
+        slug = `comment-${timestamp}`;
+      } else {
+        // Otherwise, append timestamp to ensure uniqueness
+        slug = `${slug}-${timestamp}`;
+      }
+
       let commentData: {
         answer: any;
         answerer: any;
+        slug: string;
         publishedAt: string;
         responsa?: number;
         blog?: number;
@@ -32,6 +48,7 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
       } = {
         answer,
         answerer,
+        slug,
         publishedAt: new Date().toISOString()
       };
 
