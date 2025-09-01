@@ -2,7 +2,7 @@
 
 import z from "zod";
 import { subscribeService } from "./services";
-import { createComment } from "./loaders";
+import { createComment, createThread } from "./loaders";
 import { BASE_URL } from "../../consts";
 
 const subscribeSchema = z.object({
@@ -75,6 +75,21 @@ const commentSchema = z.object({
   path: ["responsaSlug"],
 });
 
+const threadSchema = z.object({
+  answer: z.string().min(1, {
+    message: "Please enter your answer",
+  }),
+  answerer: z.string().min(1, {
+    message: "Please enter your name",
+  }),
+  parentCommentSlug: z.string(),
+  responsaSlug: z.string().optional(),
+  blogSlug: z.string().optional(),
+}).refine((data) => data.responsaSlug || data.blogSlug, {
+  message: "Either responsa slug or blog slug is required",
+  path: ["responsaSlug"],
+});
+
 interface CommentState {
   zodErrors: Record<string, string[]> | null;
   strapiErrors: string;
@@ -105,6 +120,63 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
     const response = await createComment({
       answer,
       answerer,
+      responsaSlug,
+      blogSlug
+    });
+
+    if (!response.data) {
+      return {
+        ...prevState,
+        strapiErrors: response.error?.message || "תקלה לא ידועה",
+        errorMessage: "קרתה תקלה, אנא נסו שנית מאוחר יותר.",
+        successMessage: "",
+      };
+    }
+
+    return {
+      ...prevState,
+      successMessage: blogSlug ? "תגובתך התקבלה!" : "תשובתך התקבלה!",
+      zodErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+    };
+  } catch {
+    return {
+      ...prevState,
+      strapiErrors: "",
+      errorMessage: "קרתה תקלה, אנא נסו שנית מאוחר יותר.",
+      successMessage: "",
+    };
+  }
+}
+
+export async function addThreadAction(prevState: CommentState, formData: FormData) {
+  const parentCommentSlug = formData.get("parentCommentSlug") as string;
+
+  const validatedFields = threadSchema.safeParse({
+    answer: formData.get("answer"),
+    answerer: formData.get("answerer"),
+    parentCommentSlug,
+    responsaSlug: formData.get("responsaSlug") || undefined,
+    blogSlug: formData.get("blogSlug") || undefined,
+  });
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
+
+  try {
+    const { answer, answerer, parentCommentSlug, responsaSlug, blogSlug } = validatedFields.data;
+    const response = await createThread({
+      answer,
+      answerer,
+      parentCommentSlug,
       responsaSlug,
       blogSlug
     });

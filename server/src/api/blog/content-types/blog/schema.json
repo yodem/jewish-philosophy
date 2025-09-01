@@ -59,6 +59,12 @@
       "relation": "oneToMany",
       "target": "api::comment.comment",
       "mappedBy": "blog"
+    },
+    "threads": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::thread.thread",
+      "mappedBy": "blog"
     }
   }
 }

@@ -1,11 +1,11 @@
 {
   "kind": "collectionType",
-  "collectionName": "comments",
+  "collectionName": "threads",
   "info": {
-    "singularName": "comment",
-    "pluralName": "comments",
-    "displayName": "Comment",
-    "description": "Comments for responsa questions"
+    "singularName": "thread",
+    "pluralName": "threads",
+    "displayName": "Thread",
+    "description": "Threaded replies to comments"
   },
   "options": {
     "draftAndPublish": true
@@ -20,17 +20,23 @@
       "type": "string",
       "required": true
     },
+    "parentComment": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::comment.comment",
+      "inversedBy": "threads"
+    },
     "responsa": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::responsa.responsa",
-      "inversedBy": "comments"
+      "inversedBy": "threads"
     },
     "blog": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::blog.blog",
-      "inversedBy": "comments"
+      "inversedBy": "threads"
     },
     "responsaSlug": {
       "type": "string"
@@ -38,16 +44,14 @@
     "blogSlug": {
       "type": "string"
     },
+    "parentCommentSlug": {
+      "type": "string",
+      "required": true
+    },
     "slug": {
       "type": "uid",
       "targetField": "answerer",
       "required": true
-    },
-    "threads": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::thread.thread",
-      "mappedBy": "parentComment"
     }
   }
 }

@@ -341,7 +341,16 @@ export async function getResponsaBySlug(slug: string) {
         filters: {
           publishedAt: { $notNull: true }
         },
-        sort: ['createdAt:asc']
+        sort: ['createdAt:asc'],
+        populate: {
+          threads: {
+            filters: {
+              publishedAt: { $notNull: true }
+            },
+            sort: ['createdAt:asc'],
+            fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
+          }
+        }
       }
     },
   });
@@ -350,7 +359,7 @@ export async function getResponsaBySlug(slug: string) {
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET" });
   if (res.data.length === 0) return null;
-  
+
   return res.data[0];
 }
 
@@ -366,13 +375,34 @@ export async function createComment(data: { answer: string; answerer: string; re
   return result;
 }
 
+export async function createThread(data: { answer: string; answerer: string; parentCommentSlug: string; responsaSlug?: string; blogSlug?: string }) {
+  const path = "/api/threads";
+  const url = new URL(path, BASE_URL);
+
+  const result = await fetchAPI(url.href, {
+    method: "POST",
+    body: { data }
+  });
+
+  return result;
+}
+
 export async function getBlogCommentsBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
       blogSlug: { $eq: slug },
       publishedAt: { $notNull: true }
     },
-    sort: ['createdAt:asc']
+    sort: ['createdAt:asc'],
+    populate: {
+      threads: {
+        filters: {
+          publishedAt: { $notNull: true }
+        },
+        sort: ['createdAt:asc'],
+        fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
+      }
+    }
   });
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
@@ -404,7 +434,16 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
       responsaSlug: { $eq: responsaSlug },
       publishedAt: { $notNull: true }
     },
-    sort: ['createdAt:asc']
+    sort: ['createdAt:asc'],
+    populate: {
+      threads: {
+        filters: {
+          publishedAt: { $notNull: true }
+        },
+        sort: ['createdAt:asc'],
+        fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
+      }
+    }
   });
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
@@ -464,7 +503,6 @@ export async function getWritingsByType(type: 'book' | 'article', page: number =
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
-  console.log(res.data);
   
   return res.data || [];
 }
@@ -570,8 +608,6 @@ export async function getEmailIssueCategories() {
   });
   
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 1 } });
-  console.log(res);
-  
   
   return res;
 }

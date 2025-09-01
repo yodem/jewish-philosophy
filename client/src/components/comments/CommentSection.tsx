@@ -2,18 +2,19 @@
 
 import React, { useState, useCallback } from "react";
 import { Comment as CommentType } from "@/types";
-import CommentsList from "./comments/CommentsList";
-import CommentForm from "./comments/CommentForm";
+import { CommentType as CommentTypeEnum } from "@/constants/comments";
+import CommentsList from "./CommentsList";
+import CommentForm from "./CommentForm";
 
 interface CommentSectionProps {
   initialComments: CommentType[];
   responsaSlug?: string;
   blogSlug?: string;
-  commentType?: 'responsa' | 'blog';
+  commentType?: CommentTypeEnum;
   onCommentsRefresh?: (slug: string) => Promise<CommentType[]>;
 }
 
-export default function CommentSection({ 
+export default function CommentSection({
   initialComments,
   responsaSlug,
   blogSlug,
@@ -22,7 +23,6 @@ export default function CommentSection({
 }: CommentSectionProps) {
   const [comments, setComments] = useState<CommentType[]>(initialComments);
 
-  // Callback to refresh comments after comment submission
   const handleCommentAdded = useCallback(async () => {
     if (onCommentsRefresh) {
       const slug = responsaSlug || blogSlug;
@@ -37,21 +37,18 @@ export default function CommentSection({
     }
   }, [responsaSlug, blogSlug, onCommentsRefresh]);
 
-  const addCommentLabel = commentType === 'blog' ? 'הוסיפו תגובה' : 'הוסיפו תשובה';
-
   return (
     <>
-      <CommentsList 
-        comments={comments} 
+      <CommentsList
+        comments={comments}
         commentType={commentType}
         responsaSlug={responsaSlug}
         blogSlug={blogSlug}
         onCommentAdded={handleCommentAdded}
       />
-      
+
       <div className="mt-12">
-        <h3 className="text-xl font-bold mb-4">{addCommentLabel}</h3>
-        <CommentForm 
+        <CommentForm
           responsaSlug={responsaSlug}
           blogSlug={blogSlug}
           onCommentAdded={handleCommentAdded}

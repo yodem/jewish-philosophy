@@ -114,6 +114,23 @@ export type Blog = {
   categories: Category[];
 }
 
+export type Thread = {
+  id: number;
+  documentId: string;
+  slug: string;
+  answer: string;
+  answerer: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  parentComment?: number | Comment;
+  responsa?: number | Responsa;
+  blog?: number | Blog;
+  responsaSlug?: string;
+  blogSlug?: string;
+  parentCommentSlug: string;
+}
+
 export type Comment = {
   id: number;
   documentId: string;
@@ -122,10 +139,12 @@ export type Comment = {
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
+  slug: string;
   responsa?: number | Responsa;
   blog?: number | Blog;
   responsaSlug?: string;
   blogSlug?: string;
+  threads?: Thread[];
 }
 
 export type Responsa = {
