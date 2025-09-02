@@ -37,6 +37,11 @@
     "slug": {
       "type": "uid",
       "targetField": "title"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::category.category"
     }
   }
-} 
+}
