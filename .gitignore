@@ -1,8 +1,24 @@
+# Integration services
 youtube-integ/**/* 
+gemini-integ/**/*
+gemini-integ/.env
+gemini-integ/logs/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+client/.env
+client/.env.local
+server/.env
+server/.env.local
+
+# IDE and system files
 settings.json
 .DS_Store
 .cursorrules
 .cursor
-.env
-client/.env
-server/.env
+
+# Logs
+*.log
+logs/
