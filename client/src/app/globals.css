@@ -30,6 +30,8 @@
 } */
 
 @theme inline {
+  /* Centralized font configuration - Change this to modify the app's font */
+  --font-sans: 'Rubik', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
 

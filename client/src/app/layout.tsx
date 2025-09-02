@@ -143,9 +143,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                 
         {/* Force Google to crawl immediately */}
-        <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />        
+        <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
         {/* Preload critical resources */}
-        <link rel="preload" href="/fonts/inter-hebrew.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         <link rel="preload" href="/og-default.jpg" as="image" />
         
         {/* DNS prefetch for external resources */}
@@ -157,6 +156,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Preconnect to critical third parties */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+
+        {/* Load Rubik font from Google Fonts */}
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
         
         {/* Social media and manifest files */}
         <link rel="manifest" href="/manifest.json" />
@@ -166,7 +168,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Enhanced structured data for organization */}
 
       </head>
-      <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden">
+      <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden font-sans">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
