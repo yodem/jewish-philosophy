@@ -6,9 +6,9 @@ import { Metadata } from "next";
 import { StrapiImage } from "@/components/StrapiImage";
 import { CategoryBadge } from "@/components/CategoryBadge";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
-import ReactMarkdown from "react-markdown";
 import { WritingViewTracker } from "@/components/WritingTracker";
 import BlogCommentSection from "./BlogCommentSection";
+import BlogContentWrapper from "@/components/BlogContentWrapper";
 import { JsonLd } from "@/lib/json-ld";
 import { Article as ArticleSchema, WithContext } from "schema-dts";
 
@@ -194,9 +194,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       )}
       
       <div className="w-full mx-auto mt-8 mb-12 overflow-x-auto px-0 sm:px-4">
-        <article className="prose prose-lg max-w-none dark:prose-invert text-justify">
-        <ReactMarkdown>{content}</ReactMarkdown>
-        </article>
+        <BlogContentWrapper content={content} />
       </div>
       
       {/* Comments Section */}
