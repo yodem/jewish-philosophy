@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import SefariaLinker from "@/components/SefariaLinker";
 
 interface CommentContentProps {
   content: string;
@@ -18,8 +19,13 @@ export default function CommentContent({
   };
 
   return (
-    <div className={`${sizeClasses[size]} dark:prose-invert text-justify ${className}`}>
-      <ReactMarkdown>{content}</ReactMarkdown>
-    </div>
+    <>
+      <div className={`${sizeClasses[size]} dark:prose-invert text-justify ${className}`}>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+      
+      {/* Sefaria Linker for automatic citation linking in comments */}
+      <SefariaLinker />
+    </>
   );
 }

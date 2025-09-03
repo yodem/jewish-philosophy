@@ -12,6 +12,7 @@ import ReactMarkdown from "react-markdown";
 import { trackContentView } from "@/lib/analytics";
 import { JsonLd } from "@/lib/json-ld";
 import { QAPage, WithContext } from "schema-dts";
+import SefariaLinker from "@/components/SefariaLinker";
 
 export default function ResponsaPage() {
   const params = useParams();
@@ -175,7 +176,10 @@ export default function ResponsaPage() {
             <ReactMarkdown>{content}</ReactMarkdown>
           </div>
         </div>
-        
+
+        {/* Sefaria Linker for automatic citation linking */}
+        <SefariaLinker />
+
         <CommentSection 
           initialComments={commentsData}
           responsaSlug={responsa.slug}
