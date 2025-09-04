@@ -38,6 +38,14 @@
       "relation": "manyToMany",
       "target": "api::writing.writing",
       "inversedBy": "categories"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "term",
+        "person",
+        "genre"
+      ]
     }
   }
 }

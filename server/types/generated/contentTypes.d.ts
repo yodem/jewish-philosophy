@@ -472,6 +472,7 @@ export interface ApiCategoryCategory extends Struct.CollectionTypeSchema {
       'api::responsa.responsa'
     >;
     slug: Schema.Attribute.UID<'name'>;
+    type: Schema.Attribute.Enumeration<['term', 'person', 'genre']>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

@@ -11,6 +11,7 @@ import BlogCommentSection from "./BlogCommentSection";
 import BlogContentWrapper from "@/components/BlogContentWrapper";
 import { JsonLd } from "@/lib/json-ld";
 import { Article as ArticleSchema, WithContext } from "schema-dts";
+import SefariaLinker from "@/components/SefariaLinker";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   const pageUrl = `${baseUrl}/blog/${slug}`;
   const imageUrl = blog.coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${blog.coverImage.url}` : undefined;
 
@@ -90,7 +91,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   });
 
   // Generate structured data for the blog post
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   const pageUrl = `${baseUrl}/blog/${slug}`;
   const imageUrl = coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${coverImage.url}` : undefined;
   
@@ -209,6 +210,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <QuestionFormWrapper />
       </div>
     </div>
+    <SefariaLinker />
     </>
   );
 } 
