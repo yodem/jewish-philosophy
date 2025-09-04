@@ -64,7 +64,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
               </div>
               
               <div style="text-align: center; margin: 35px 0;">
-                <a href="${data.siteUrl || process.env.FRONTEND_URL || 'http://localhost:3000'}" 
+                <a href="${data.siteUrl || process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}" 
                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                           color: white; 
                           text-decoration: none; 

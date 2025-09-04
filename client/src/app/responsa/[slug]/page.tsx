@@ -114,7 +114,7 @@ export default function ResponsaPage() {
     });
   };
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   const pageUrl = `${baseUrl}/responsa/${slug}`;
 
   const structuredData: WithContext<QAPage> = {

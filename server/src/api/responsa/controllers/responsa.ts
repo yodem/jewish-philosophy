@@ -14,7 +14,7 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
       const responsa = response.data;
 
       if (responsa?.questioneerEmail && responsa?.questioneerEmail.trim() && responsa?.title) {
-        const questionLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/responsa/${responsa.slug}`;
+        const questionLink = `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app'}/responsa/${responsa.slug}`;
 
         // Send confirmation email to the questioneer
         await strapi.service("api::email.email").sendStyledEmail({

@@ -122,7 +122,7 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
 
       // Send email notification for responsa comments
       if (responsaSlug && contentData?.questioneerEmail && contentData?.questioneerEmail.trim()) {
-        const questionLink = `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}/responsa/${contentData.slug}`;
+        const questionLink = `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app'}/responsa/${contentData.slug}`;
 
         console.log('📬 Sending email notification to:', contentData.questioneerEmail);
         console.log('Question title:', contentData.title);
@@ -148,7 +148,7 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         }
       } else if (blogSlug && contentData?.author?.email) {
         // Send email notification to blog author
-        const blogLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/blog/${contentData.slug}`;
+        const blogLink = `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app'}/blog/${contentData.slug}`;
 
         console.log('📬 Sending email notification to blog author:', contentData.author.email);
         console.log('Blog title:', contentData.title);
