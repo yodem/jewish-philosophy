@@ -18,4 +18,11 @@ export default ({ env }: { env: (key: string) => string }) => ({
       },
     },
   },
+  // Import Export Entries Plugin
+  'import-export-entries': {
+    enabled: true,
+    config: {
+      serverPublicHostname: env('STRAPI_BASE_URL') || 'http://localhost:1337',
+    },
+  },
 });
