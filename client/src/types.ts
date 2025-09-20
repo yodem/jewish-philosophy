@@ -204,3 +204,51 @@ export type EmailIssueCategory = {
   updatedAt: string;
   publishedAt: string;
 }
+
+// Search API Types
+export interface SearchResult {
+  id: number;
+  documentId: string;
+  title: string;
+  description?: string;
+  contentType: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'author' | 'category';
+  date?: string;
+  slug: string;
+  playlistSlug?: string | null;
+  relevanceScore: number;
+}
+
+export interface SearchResponse {
+  data: SearchResult[];
+  meta: {
+    query: string;
+    contentTypes?: string;
+    categories?: string;
+    limit: number;
+    offset: number;
+    total: number;
+    timestamp: string;
+    pagination?: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export interface SearchQuery {
+  query: string;
+  contentTypes?: string;
+  categories?: string;
+}
+
+export interface SearchFilters {
+  query?: string;
+  contentType?: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'all';
+  category?: string;
+  page?: number;
+  pageSize?: number;
+  offset?: number;
+  sort?: string[];
+}

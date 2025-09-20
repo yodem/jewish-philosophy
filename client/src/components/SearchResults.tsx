@@ -1,17 +1,17 @@
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { searchContent, loadMoreContent, SearchFilters, SearchResult, SearchResponse } from '@/data/services';
+import { SearchFilters, SearchResult, SearchResponse } from '@/types';
+import { searchContent } from '@/data/services';
 import { trackSearch } from '@/lib/analytics';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
-import { StrapiImage } from './StrapiImage';
 import SearchForm from './SearchForm';
-import { Calendar, FileText, Video, List, MessageSquare, BookOpen, Loader2 } from 'lucide-react';
+import { Calendar, FileText, Video, List, MessageSquare, BookOpen } from 'lucide-react';
 import { CONTENT_TYPE_CONFIG } from '../../consts';
 
 interface SearchResultsProps {
@@ -32,14 +32,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const lastResultRef = useRef<HTMLDivElement | null>(null);
   
   // Search form state
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
-  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType);
+  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || '');
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
   const sortBy = useMemo(() => filters.sort || ['publishedAt:desc'], [filters.sort]);
 
@@ -48,7 +44,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       try {
         setLoading(true);
         setError(null);
-        setHasMore(true);
         const response = await searchContent({ ...filters, sort: sortBy });
         setResults(response);
         
@@ -56,7 +51,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         if (filters.query) {
           trackSearch(
             filters.query,
-            filters.contentType,
+            filters.contentType || '',
             filters.category,
             response?.meta?.pagination?.total || 0
           );
@@ -72,82 +67,23 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
     fetchResults();
   }, [filters, sortBy]);
 
-  // Infinite scroll callback
-  const loadMore = useCallback(async () => {
-    if (loadingMore || !hasMore || !results) return;
-    
-    try {
-      setLoadingMore(true);
-      const { newResults, hasMore: moreAvailable } = await loadMoreContent(
-        { ...filters, sort: sortBy },
-        results.data
-      );
-      
-      if (newResults.length > 0) {
-        setResults(prev => prev ? {
-          ...prev,
-          data: [...prev.data, ...newResults],
-          meta: {
-            ...prev.meta,
-            pagination: {
-              ...prev.meta.pagination,
-              page: prev.meta.pagination.page + 1
-            }
-          }
-        } : null);
-      }
-      
-      setHasMore(moreAvailable);
-    } catch (err) {
-      console.error('Error loading more results:', err);
-    } finally {
-      setLoadingMore(false);
-    }
-  }, [loadingMore, hasMore, results, filters, sortBy]);
-
-  // Intersection observer for infinite scroll
-  useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect();
-    
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          loadMore();
-        }
-      },
-      { threshold: 0.1, rootMargin: '100px' }
-    );
-
-    if (lastResultRef.current) {
-      observerRef.current.observe(lastResultRef.current);
-    }
-
-    return () => {
-      if (observerRef.current) observerRef.current.disconnect();
-    };
-  }, [loadMore, hasMore, loadingMore]);
+  // Simplified - no infinite scroll needed since we return max 20 results
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    
+
     if (searchQuery.trim()) {
       params.set('q', searchQuery.trim());
     }
-    
-    // Content type is always required
+
+    // Handle content type - always set it in the URL for proper navigation
     params.set('type', selectedContentType);
-    
+
+    // For the new unified search API, 'all' categories should not be sent as a parameter
+    // Only send category if it's not 'all'
     if (selectedCategory !== 'all') {
       params.set('category', selectedCategory);
     }
-
-    // Add sort parameter
-    if (sortBy.length > 0) {
-      params.set('sort', sortBy.join(','));
-    }
-
-    // Reset to page 1 when searching
-    params.set('page', '1');
 
     // Track search event
     trackSearch(
@@ -178,33 +114,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   };
 
   const getResultLink = (result: SearchResult) => {
-    const config = contentTypeConfig[result.type];
-    if (result.type === 'video' && result.playlistSlug) {
+    const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'];
+
+    // For videos, use playlistSlug if available
+    if (result.contentType === 'video' && result.playlistSlug) {
       return `${config.path}/${result.playlistSlug}/${result.slug}`;
     }
+
     return `${config.path}/${result.slug}`;
   };
 
-  const getResultImage = (result: SearchResult) => {
-    // Check if we're on mobile (you can adjust this logic as needed)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640; // sm breakpoint
-    
-    // Return null on mobile to hide images
-    if (isMobile) {
-      return null;
-    }
-    
-    if (result.coverImage?.url) {
-      return result.coverImage.url;
-    }
-    if (result.imageUrl300x400) {
-      return result.imageUrl300x400;
-    }
-    if (result.imageUrlStandard) {
-      return result.imageUrlStandard;
-    }
-    return null;
-  };
 
   if (loading) {
     return (
@@ -291,7 +210,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   }
 
   const { data, meta } = results;
-  const { pagination } = meta;
+  const total = meta?.total || 0;
 
   return (
     <div className="w-full">
@@ -314,23 +233,20 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       {/* Results Summary */}
       <div className="text-center text-gray-600 p-6">
         <p>
-          נמצאו {pagination.total} תוצאות:
+          נמצאו {total} תוצאות:
         </p>
       </div>
 
       {/* Results List */}
       <div className="space-y-4 p-6">
         {data.map((result, index) => {
-          const config = contentTypeConfig[result.type];
+          const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'];
           const Icon = config.icon;
-          const image = getResultImage(result);
-          const isLastResult = index === data.length - 1;
 
           return (
-            <Card 
-              key={`${result.type}-${result.id}-${result.slug}-${index}`} 
+            <Card
+              key={`${result.contentType}-${result.id}-${result.slug}-${index}`}
               className="p-4 sm:p-6 hover:shadow-lg transition-shadow"
-              ref={isLastResult ? lastResultRef : null}
             >
               <Link href={getResultLink(result)} className="block">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 sm:gap-6">
@@ -354,56 +270,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
                       </p>
                     )}
 
-                    {/* Metadata */}
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-500">
-                      {result.publishedAt && (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4 flex-shrink-0" />
-                          <span className="whitespace-nowrap">{formatDate(result.publishedAt)}</span>
-                        </div>
-                      )}
-                      
-                      {result.type === 'writing' && result.author && (
-                        <div className="text-gray-600 break-words">
-                          מאת: {result.author.name}
-                        </div>
-                      )}
-                      
-                      {result.type === 'writing' && result.writingType && (
-                        <Badge variant="outline" className="text-xs flex-shrink-0">
-                          {result.writingType === 'book' ? 'ספר' : 'מאמר'}
-                        </Badge>
-                      )}
-                      
-                      {result.categories && result.categories.length > 0 && (
-                        <div className="flex flex-wrap gap-1 sm:gap-2">
-                          {result.categories.slice(0, 2).map((category) => (
-                            <Badge key={category.id} variant="outline" className="text-xs flex-shrink-0">
-                              {category.name}
-                            </Badge>
-                          ))}
-                          {result.categories.length > 2 && (
-                            <Badge variant="outline" className="text-xs flex-shrink-0">
-                              +{result.categories.length - 2}
-                            </Badge>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    {/* Date */}
+                    {result.date && (
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Calendar className="w-4 h-4 flex-shrink-0" />
+                        <span className="whitespace-nowrap">{formatDate(result.date)}</span>
+                      </div>
+                    )}
                   </div>
-
-                  {/* Image */}
-                  {image && (
-                    <div className="flex-shrink-0 self-start">
-                      <StrapiImage
-                        src={image}
-                        alt={result.title}
-                        width={80}
-                        height={80}
-                        className="rounded-lg object-cover w-20 h-20"
-                      />
-                    </div>
-                  )}
                 </div>
               </Link>
             </Card>
@@ -411,18 +285,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         })}
       </div>
 
-      {/* Loading More Indicator */}
-      {loadingMore && (
-        <div className="flex justify-center items-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
-          <span>טוען עוד תוצאות...</span>
-        </div>
-      )}
-
-      {/* End of Results */}
-      {!hasMore && data.length > 0 && (
+      {/* End of Results Message */}
+      {data.length > 0 && (
         <div className="text-center text-gray-500 py-8">
-          <p>הגעת לסוף התוצאות</p>
+          <p>נמצאו {data.length} תוצאות</p>
         </div>
       )}
     </div>
