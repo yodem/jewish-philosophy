@@ -9,7 +9,7 @@ import { Analytics } from "@vercel/analytics/next"
 import { Metadata } from 'next';
 import { JsonLd, Schema } from '@/lib/json-ld';
 import LayoutClient from './LayoutClient';
-
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
   title: {
@@ -203,6 +203,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <GoogleAnalytics gaId="G-72NSRCMH08" />
         <GoogleTagManager gtmId="GTM-N78GTSCR" />
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
