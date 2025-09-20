@@ -105,7 +105,12 @@ const SearchForm: React.FC<SearchFormProps> = ({
                     key={type.value}
                     contentType={type.value}
                     label={type.label}
-                    variant="default"
+                    variant={type.value === 'all' ? 'outline' : 'default'}
+                    className={
+                      type.value === 'all'
+                        ? "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+                        : ""
+                    }
                     showRemoveIcon={true}
                     onClick={() => {
                       trackContentTypeFilter('all', selectedContentType);
@@ -137,7 +142,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
                   key={type.value}
                   contentType={type.value}
                   label={type.label}
-                  variant="outline"
+                  variant={type.value === 'all' ? 'outline' : 'default'}
                   className={
                     type.value === 'all'
                       ? "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
