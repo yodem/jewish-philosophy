@@ -74,7 +74,7 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
       }
     };
   } catch (error) {
-    console.error('Search API error:', error);
+    console.error('Search API error:' , error);
     return {
       data: [],
       meta: {
