@@ -35,7 +35,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   
   // Search form state
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
-  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || '');
+  const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
+
+  // Debug logging
+  console.log('SearchResults initialized with filters:', filters);
+  console.log('selectedContentType initialized with:', filters.contentType || 'all');
   const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
   const sortBy = useMemo(() => filters.sort || ['publishedAt:desc'], [filters.sort]);
 

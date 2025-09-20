@@ -14,7 +14,7 @@ interface SearchDialogProps {
 const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedContentType, setSelectedContentType] = useState('video'); // Default to blog
+  const [selectedContentType, setSelectedContentType] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   const handleSearch = () => {
@@ -47,7 +47,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setSearchQuery('');
-      setSelectedContentType('video'); // Keep consistent with initial state
+      setSelectedContentType('all'); // Reset to "all content types" like category
       setSelectedCategory('all');
     }
     onOpenChange(open);

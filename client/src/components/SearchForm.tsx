@@ -91,24 +91,65 @@ const SearchForm: React.FC<SearchFormProps> = ({
           <Filter className="h-4 w-4" />
           סוג תוכן *
         </label>
-        <div className="flex flex-wrap gap-2 justify-start">
-          {SEARCH_CONTENT_TYPES.map((type) => (
-            <CategoryBadge
-              key={type.value}
-              contentType={type.value}
-              label={type.label}
-              variant={selectedContentType === type.value ? "default" : "outline"}
-              className={
-                type.value === 'all' && selectedContentType !== 'all'
-                  ? "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
-                  : ""
-              }
-              onClick={() => {
-                trackContentTypeFilter(type.value, selectedContentType);
-                onContentTypeChange(type.value);
-              }}
-            />
-          ))}
+        <p className="text-xs text-gray-500 text-right">
+          בחר סוג תוכן או השאר ריק לחיפוש בכל סוגי התוכן
+        </p>
+        <div className="flex flex-col gap-2">
+          {/* Selected Content Type Display */}
+          {selectedContentType !== 'all' && (
+            <div className="flex items-center gap-2">
+              {SEARCH_CONTENT_TYPES
+                .filter(type => type.value === selectedContentType)
+                .map(type => (
+                  <CategoryBadge
+                    key={type.value}
+                    contentType={type.value}
+                    label={type.label}
+                    variant="default"
+                    showRemoveIcon={true}
+                    onClick={() => {
+                      trackContentTypeFilter('all', selectedContentType);
+                      onContentTypeChange('all');
+                    }}
+                  />
+                ))}
+            </div>
+          )}
+
+          {/* All Content Types Indicator */}
+          {selectedContentType === 'all' && (
+            <div className="flex items-center gap-2">
+              <CategoryBadge
+                contentType="all"
+                label="כל התכנים"
+                variant="outline"
+                className="border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+              />
+            </div>
+          )}
+
+          {/* Content Type Selection Options */}
+          <div className="flex flex-wrap gap-2 justify-start">
+            {SEARCH_CONTENT_TYPES
+              .filter(type => type.value !== selectedContentType)
+              .map((type) => (
+                <CategoryBadge
+                  key={type.value}
+                  contentType={type.value}
+                  label={type.label}
+                  variant="outline"
+                  className={
+                    type.value === 'all'
+                      ? "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+                      : "cursor-pointer"
+                  }
+                  onClick={() => {
+                    trackContentTypeFilter(type.value, selectedContentType);
+                    onContentTypeChange(type.value);
+                  }}
+                />
+              ))}
+          </div>
         </div>
         <p className="text-xs text-gray-500 text-right">* חובה לבחור סוג תוכן אחד</p>
       </div>

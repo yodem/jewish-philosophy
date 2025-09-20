@@ -45,18 +45,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     sort = resolvedSearchParams.sort.split(',').filter(Boolean);
   }
   
-  // Get content type - default to 'video' if not provided
+  // Get content type - default to 'all' if not provided
   const contentType = typeof resolvedSearchParams.type === 'string' ?
-    resolvedSearchParams.type as SearchFilters['contentType'] : 'video';
+    resolvedSearchParams.type as SearchFilters['contentType'] : 'all';
 
   // Validate content type - allow 'all' as a valid option
   if (!contentType || !['video', 'playlist', 'blog', 'responsa', 'writing', 'all'].includes(contentType)) {
-    // Redirect to default content type (video) if invalid
+    // Redirect to default content type ('all') if invalid
     const params = new URLSearchParams();
     if (typeof resolvedSearchParams.q === 'string') {
       params.set('q', resolvedSearchParams.q);
     }
-    params.set('type', 'video');
+    params.set('type', 'all');
     if (typeof resolvedSearchParams.category === 'string') {
       params.set('category', resolvedSearchParams.category);
     }
