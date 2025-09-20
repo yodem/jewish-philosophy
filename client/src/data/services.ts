@@ -55,7 +55,6 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
   }
 
   // Don't send limit and offset parameters since we simplified the API
-
   url.search = params.toString();
 
   try {
