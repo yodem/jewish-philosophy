@@ -45,12 +45,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     sort = resolvedSearchParams.sort.split(',').filter(Boolean);
   }
   
-  // Get content type - redirect to default if not provided
-  const contentType = typeof resolvedSearchParams.type === 'string' ? 
-    resolvedSearchParams.type as SearchFilters['contentType'] : null;
-  
-  if (!contentType || !['video', 'playlist', 'blog', 'responsa', 'writing'].includes(contentType)) {
-    // Redirect to default content type (video) if none provided or invalid
+  // Get content type - default to 'video' if not provided
+  const contentType = typeof resolvedSearchParams.type === 'string' ?
+    resolvedSearchParams.type as SearchFilters['contentType'] : 'video';
+
+  // Validate content type - allow 'all' as a valid option
+  if (!contentType || !['video', 'playlist', 'blog', 'responsa', 'writing', 'all'].includes(contentType)) {
+    // Redirect to default content type (video) if invalid
     const params = new URLSearchParams();
     if (typeof resolvedSearchParams.q === 'string') {
       params.set('q', resolvedSearchParams.q);
@@ -64,12 +65,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     }
     redirect(`/search?${params.toString()}`);
   }
-  
+
   const filters: SearchFilters = {
     query: typeof resolvedSearchParams.q === 'string' ? resolvedSearchParams.q : undefined,
     contentType: contentType,
-    category: typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : undefined,
-    page: typeof resolvedSearchParams.page === 'string' ? parseInt(resolvedSearchParams.page) : 1,
+    category: typeof resolvedSearchParams.category === 'string' ? resolvedSearchParams.category : 'all',
+    page: 1, // Always start from page 1
     pageSize: 10,
     sort: sort,
   };

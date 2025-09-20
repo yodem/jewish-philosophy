@@ -9,6 +9,12 @@ import { getAllCategories } from '@/data/services';
 import { Category } from '@/types';
 import { trackContentTypeFilter, trackCategoryFilter } from '@/lib/analytics';
 
+// Content types for search with "all" option
+const SEARCH_CONTENT_TYPES = [
+  { value: 'all', label: 'כל התכנים' },
+  ...CONTENT_TYPES
+];
+
 interface SearchFormProps {
   searchQuery: string;
   selectedContentType: string;
@@ -86,12 +92,17 @@ const SearchForm: React.FC<SearchFormProps> = ({
           סוג תוכן *
         </label>
         <div className="flex flex-wrap gap-2 justify-start">
-          {CONTENT_TYPES.map((type) => (
+          {SEARCH_CONTENT_TYPES.map((type) => (
             <CategoryBadge
               key={type.value}
               contentType={type.value}
               label={type.label}
               variant={selectedContentType === type.value ? "default" : "outline"}
+              className={
+                type.value === 'all' && selectedContentType !== 'all'
+                  ? "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+                  : ""
+              }
               onClick={() => {
                 trackContentTypeFilter(type.value, selectedContentType);
                 onContentTypeChange(type.value);
