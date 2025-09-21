@@ -43,7 +43,7 @@ async function createOrUpdatePlaylist(playlist: any) {
       imageUrl300x400: playlist.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: playlist.snippet.thumbnails?.standard?.url || playlist.snippet.thumbnails?.high?.url || '',
       youtubeId: playlist.id,
-      slug: `${playlist.snippet.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${playlist.id}`,
+      slug: `${playlist.snippet.title.replace(/[^\u0590-\u05FF\u0020-\u007E]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')}-${playlist.id}`,
     },
   };
 
@@ -121,7 +121,7 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
       imageUrl300x400: video.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: video.snippet.thumbnails?.standard?.url || video.snippet.thumbnails?.high?.url || '',
       videoId: video.contentDetails.videoId,
-      slug: `${video.snippet.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${video.contentDetails.videoId}`,
+      slug: `${video.snippet.title.replace(/[^\u0590-\u05FF\u0020-\u007E]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')}-${video.contentDetails.videoId}`,
       playlist: strapiPlaylistId,
     },
   };
