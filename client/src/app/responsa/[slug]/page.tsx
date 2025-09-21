@@ -5,7 +5,7 @@ import { notFound, useParams } from "next/navigation";
 import { getResponsaBySlug, getResponsaCommentsBySlug } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { FullCategoryList } from "@/components/LimitedCategoryList";
-import { Comment as CommentType, Category, Responsa } from "@/types";
+import { Comment as CommentType, Responsa } from "@/types";
 import CommentSection from "@/components/CommentSection";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
