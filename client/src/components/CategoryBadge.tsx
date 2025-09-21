@@ -32,13 +32,6 @@ function getCategoryColorClass(category: Category): string {
   return `${background} ${border}`;
 }
 
-// Helper function to get fallback color for unknown categories
-function getFallbackColorClass(type: string | null): string {
-  const background = TYPE_BACKGROUNDS[type || 'general'] || TYPE_BACKGROUNDS['general'];
-  const border = TYPE_COLORS[type || 'general'] || TYPE_COLORS['general'];
-  return `${background} ${border}`;
-}
-
 // Define colors for content types
 export const CONTENT_TYPE_COLORS: Record<string, string> = {
   all: "bg-gray-600 border-gray-500 text-white",
