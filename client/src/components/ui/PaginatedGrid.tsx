@@ -105,7 +105,9 @@ export default function PaginatedGrid({
   const getDescription = useCallback((item: Playlist | Video | Blog): string | undefined => {
     switch (type) {
       case 'playlist':
-        return (item as Playlist).description;
+        //TODO: add description to all playlist
+        // return (item as Playlist).description;
+        return '';
       case 'video':
         return (item as Video).description;
       case 'blog':
