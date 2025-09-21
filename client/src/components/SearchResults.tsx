@@ -13,6 +13,7 @@ import { Separator } from './ui/separator';
 import SearchForm from './SearchForm';
 import { Calendar, FileText, Video, List, MessageSquare, BookOpen, Tag } from 'lucide-react';
 import { CONTENT_TYPE_CONFIG } from '../../consts';
+import ReactMarkdown from 'react-markdown';
 
 interface SearchResultsProps {
   filters: SearchFilters;
@@ -270,9 +271,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
                     {/* Description */}
                     {result.description && (
-                      <p className="text-gray-600 mb-3 line-clamp-3 break-words">
-                        {result.description}
-                      </p>
+                      result.contentType === 'responsa' ? (
+                        <div className="text-gray-600 mb-3 line-clamp-3 break-words">
+                          <ReactMarkdown>
+                            {result.description}
+                          </ReactMarkdown>
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 mb-3 line-clamp-3 break-words">
+                          {result.description}
+                        </p>
+                      )
                     )}
 
                     {/* Date */}
