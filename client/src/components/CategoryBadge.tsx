@@ -44,40 +44,26 @@ export const CATEGORY_BACKGROUNDS: Record<string, string> = {
   "general": "bg-gray-600 text-white",
 };
 
-// Define border colors based on category type
-export const TYPE_COLORS: Record<string, string> = {
-  term: "border-indigo-500",
-  person: "border-amber-500",
-  genre: "border-yellow-500",
-  general: "border-gray-500",
-};
-
-// Helper function to get category color class based on category slug and type
+// Helper function to get category color class based on category slug
 function getCategoryColorClass(category: Category): string {
-  const { slug, type } = category;
+  const { slug } = category;
 
   // Get background color based on specific category slug
-  const background = CATEGORY_BACKGROUNDS[slug] || CATEGORY_BACKGROUNDS['general'];
-
-  // Get border color based on type
-  const border = TYPE_COLORS[type || 'general'] || TYPE_COLORS['general'];
-
-  // Return combined classes
-  return `${background} ${border}`;
+  return CATEGORY_BACKGROUNDS[slug] || CATEGORY_BACKGROUNDS['general'];
 }
 
 // Define colors for content types
 export const CONTENT_TYPE_COLORS: Record<string, string> = {
-  all: "bg-gray-600 border-gray-500 text-white",
-  blog: "bg-blue-500 border-blue-400 text-white",
-  video: "bg-red-500 border-red-400 text-white",
-  playlist: "bg-green-500 border-green-400 text-white",
-  responsa: "bg-purple-500 border-purple-400 text-white",
-  writing: "bg-orange-500 border-orange-400 text-white",
-  term: "bg-indigo-500 border-indigo-400 text-white",
-  person: "bg-amber-500 border-amber-400 text-white",
-  genre: "bg-yellow-500 border-yellow-400 text-white",
-  general: "bg-gray-500 border-gray-400 text-white",
+  all: "bg-gray-600 text-white",
+  blog: "bg-blue-500 text-white",
+  video: "bg-red-500 text-white",
+  playlist: "bg-green-500 text-white",
+  responsa: "bg-purple-500 text-white",
+  writing: "bg-orange-500 text-white",
+  term: "bg-indigo-500 text-white",
+  person: "bg-amber-500 text-white",
+  genre: "bg-yellow-500 text-white",
+  general: "bg-gray-500 text-white",
 };
 
 
