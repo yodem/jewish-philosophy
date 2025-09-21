@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import SocialShare from "@/components/SocialShare";
+import { CategoryBadge } from "@/components/CategoryBadge";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import { JsonLd } from "@/lib/json-ld";
@@ -128,6 +129,14 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
             <div className="prose prose-lg max-w-none">
               <p className="text-gray-700 leading-relaxed text-justify mb-4">{video.description}</p>
 
+              {/* Category badges */}
+              {video.categories && video.categories.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {video.categories.map((category) => (
+                    <CategoryBadge key={category.id} category={category} />
+                  ))}
+                </div>
+              )}
             </div>
           </article>
 
