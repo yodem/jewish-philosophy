@@ -3,7 +3,48 @@ import { Category } from "@/types";
 import React from "react";
 
 
-// Define type-based color schemes
+// Define category-specific background colors (each category gets its own unique color)
+export const CATEGORY_BACKGROUNDS: Record<string, string> = {
+  // Terms - Blue/Purple spectrum
+  "soul": "bg-blue-600 text-white",
+  "god": "bg-blue-700 text-white",
+  "evil": "bg-blue-800 text-white",
+  "mind": "bg-indigo-600 text-white",
+  "family": "bg-indigo-700 text-white",
+  "free-will": "bg-indigo-800 text-white",
+  "messiah": "bg-purple-600 text-white",
+  "kabalah": "bg-purple-700 text-white",
+  "yetzer-hara": "bg-purple-800 text-white",
+  "pure": "bg-violet-600 text-white",
+
+  // Persons - Amber/Orange spectrum
+  "aristotle": "bg-amber-600 text-white",
+  "mimonidies": "bg-amber-700 text-white",
+  "hazal": "bg-amber-800 text-white",
+  "ibn-sina": "bg-orange-600 text-white",
+  "ibn-ezra": "bg-orange-700 text-white",
+  "al-phiumi": "bg-orange-800 text-white",
+  "rabi-yehuda-halevi": "bg-red-600 text-white",
+  "spinoza": "bg-red-700 text-white",
+  "rabi-moshe-narbon": "bg-red-800 text-white",
+  "rasag": "bg-pink-600 text-white",
+  "philon": "bg-pink-700 text-white",
+  "ibn-gvirol": "bg-pink-800 text-white",
+  "plato": "bg-rose-600 text-white",
+
+  // Genres - Yellow/Green spectrum
+  "aristotelianism": "bg-yellow-600 text-white",
+  "platonism": "bg-yellow-700 text-white",
+  "metaphysics": "bg-yellow-800 text-white",
+  "materialism": "bg-lime-600 text-white",
+  "ontology": "bg-lime-700 text-white",
+  "epistemology": "bg-green-600 text-white",
+
+  // General
+  "general": "bg-gray-600 text-white",
+};
+
+// Define border colors based on category type
 export const TYPE_COLORS: Record<string, string> = {
   term: "border-indigo-500",
   person: "border-amber-500",
@@ -11,19 +52,12 @@ export const TYPE_COLORS: Record<string, string> = {
   general: "border-gray-500",
 };
 
-export const TYPE_BACKGROUNDS: Record<string, string> = {
-  term: "bg-indigo-600 text-white",
-  person: "bg-amber-700 text-white",
-  genre: "bg-yellow-600 text-white",
-  general: "bg-gray-600 text-white",
-};
-
-// Helper function to get category color class based on category type
+// Helper function to get category color class based on category slug and type
 function getCategoryColorClass(category: Category): string {
-  const { type } = category;
+  const { slug, type } = category;
 
-  // Get background color based on type
-  const background = TYPE_BACKGROUNDS[type || 'general'] || TYPE_BACKGROUNDS['general'];
+  // Get background color based on specific category slug
+  const background = CATEGORY_BACKGROUNDS[slug] || CATEGORY_BACKGROUNDS['general'];
 
   // Get border color based on type
   const border = TYPE_COLORS[type || 'general'] || TYPE_COLORS['general'];
