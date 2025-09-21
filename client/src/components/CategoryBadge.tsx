@@ -3,44 +3,43 @@ import { Category } from "@/types";
 import React from "react";
 
 
-// Define category-specific background colors (each category gets its own unique color)
+// Define category-specific background colors (large variety across all categories)
 export const CATEGORY_BACKGROUNDS: Record<string, string> = {
-  // Terms - Blue/Purple spectrum
+  // Diverse color palette for all categories
   "soul": "bg-blue-600 text-white",
-  "god": "bg-blue-700 text-white",
-  "evil": "bg-blue-800 text-white",
+  "god": "bg-cyan-600 text-white",
+  "evil": "bg-teal-600 text-white",
   "mind": "bg-indigo-600 text-white",
-  "family": "bg-indigo-700 text-white",
-  "free-will": "bg-indigo-800 text-white",
-  "messiah": "bg-purple-600 text-white",
-  "kabalah": "bg-purple-700 text-white",
-  "yetzer-hara": "bg-purple-800 text-white",
-  "pure": "bg-violet-600 text-white",
+  "family": "bg-purple-600 text-white",
+  "free-will": "bg-violet-600 text-white",
+  "messiah": "bg-fuchsia-600 text-white",
+  "kabalah": "bg-pink-600 text-white",
+  "yetzer-hara": "bg-rose-600 text-white",
+  "pure": "bg-red-600 text-white",
 
-  // Persons - Amber/Orange spectrum
   "aristotle": "bg-amber-600 text-white",
-  "mimonidies": "bg-amber-700 text-white",
-  "hazal": "bg-amber-800 text-white",
-  "ibn-sina": "bg-orange-600 text-white",
-  "ibn-ezra": "bg-orange-700 text-white",
-  "al-phiumi": "bg-orange-800 text-white",
-  "rabi-yehuda-halevi": "bg-red-600 text-white",
-  "spinoza": "bg-red-700 text-white",
-  "rabi-moshe-narbon": "bg-red-800 text-white",
-  "rasag": "bg-pink-600 text-white",
-  "philon": "bg-pink-700 text-white",
-  "ibn-gvirol": "bg-pink-800 text-white",
-  "plato": "bg-rose-600 text-white",
+  "mimonidies": "bg-orange-600 text-white",
+  "hazal": "bg-yellow-600 text-white",
+  "ibn-sina": "bg-lime-600 text-white",
+  "ibn-ezra": "bg-green-600 text-white",
+  "al-phiumi": "bg-emerald-600 text-white",
+  "rabi-yehuda-halevi": "bg-blue-700 text-white",
+  "spinoza": "bg-cyan-700 text-white",
+  "rabi-moshe-narbon": "bg-teal-700 text-white",
+  "rasag": "bg-indigo-700 text-white",
+  "philon": "bg-purple-700 text-white",
+  "ibn-gvirol": "bg-violet-700 text-white",
+  "plato": "bg-fuchsia-700 text-white",
+  "ibn-rushd": "bg-pink-700 text-white",
+  "crescas": "bg-rose-700 text-white",
 
-  // Genres - Yellow/Green spectrum
-  "aristotelianism": "bg-yellow-600 text-white",
-  "platonism": "bg-yellow-700 text-white",
-  "metaphysics": "bg-yellow-800 text-white",
-  "materialism": "bg-lime-600 text-white",
-  "ontology": "bg-lime-700 text-white",
-  "epistemology": "bg-green-600 text-white",
+  "aristotelianism": "bg-amber-700 text-white",
+  "platonism": "bg-orange-700 text-white",
+  "metaphysics": "bg-yellow-700 text-white",
+  "materialism": "bg-lime-700 text-white",
+  "ontology": "bg-green-700 text-white",
+  "epistemology": "bg-emerald-700 text-white",
 
-  // General
   "general": "bg-gray-600 text-white",
 };
 
