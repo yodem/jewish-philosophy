@@ -64,7 +64,7 @@ export default function MediaCard({
             src={image}
             alt={title}
             fill
-            quality={50}
+            quality={75}
             objectFit={`${type === 'blog' ? 'cover' : 'contain'}`}
             className="w-full h-full object-contain"
             priority
