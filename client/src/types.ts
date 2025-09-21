@@ -212,7 +212,7 @@ export interface SearchResult {
   documentId: string;
   title: string;
   description?: string;
-  contentType: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'author' | 'category';
+  contentType: 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'term' | 'author' | 'category';
   date?: string;
   slug: string;
   playlistSlug?: string | null;

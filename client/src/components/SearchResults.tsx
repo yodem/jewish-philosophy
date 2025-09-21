@@ -11,7 +11,7 @@ import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Separator } from './ui/separator';
 import SearchForm from './SearchForm';
-import { Calendar, FileText, Video, List, MessageSquare, BookOpen } from 'lucide-react';
+import { Calendar, FileText, Video, List, MessageSquare, BookOpen, Tag } from 'lucide-react';
 import { CONTENT_TYPE_CONFIG } from '../../consts';
 
 interface SearchResultsProps {
@@ -25,6 +25,7 @@ const contentTypeConfig = {
   playlist: { icon: List, label: CONTENT_TYPE_CONFIG.playlist.label, color: CONTENT_TYPE_CONFIG.playlist.color, path: CONTENT_TYPE_CONFIG.playlist.path },
   responsa: { icon: MessageSquare, label: CONTENT_TYPE_CONFIG.responsa.label, color: CONTENT_TYPE_CONFIG.responsa.color, path: CONTENT_TYPE_CONFIG.responsa.path },
   writing: { icon: BookOpen, label: CONTENT_TYPE_CONFIG.writing.label, color: CONTENT_TYPE_CONFIG.writing.color, path: CONTENT_TYPE_CONFIG.writing.path },
+  term: { icon: Tag, label: CONTENT_TYPE_CONFIG.term.label, color: CONTENT_TYPE_CONFIG.term.color, path: CONTENT_TYPE_CONFIG.term.path },
 };
 
 const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
@@ -118,7 +119,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   };
 
   const getResultLink = (result: SearchResult) => {
-    const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'];
+    const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'term'];
 
     // For videos, use playlistSlug if available
     if (result.contentType === 'video' && result.playlistSlug) {
@@ -244,7 +245,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       {/* Results List */}
       <div className="space-y-4 p-6">
         {data.map((result, index) => {
-          const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing'];
+          const config = contentTypeConfig[result.contentType as 'blog' | 'video' | 'playlist' | 'responsa' | 'writing' | 'term'];
           const Icon = config.icon;
 
           return (

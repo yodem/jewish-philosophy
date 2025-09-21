@@ -26,6 +26,7 @@ export const CONTENT_TYPE_COLORS: Record<string, string> = {
   playlist: "bg-green-500 text-white dark:bg-green-600",
   responsa: "bg-purple-500 text-white dark:bg-purple-600",
   writing: "bg-orange-500 text-white dark:bg-orange-600",
+  term: "bg-indigo-500 text-white dark:bg-indigo-600",
 };
 
 

@@ -10,6 +10,7 @@ import { Metadata } from 'next';
 import { JsonLd, Schema } from '@/lib/json-ld';
 import LayoutClient from './LayoutClient';
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { fredoka } from '@/lib/fonts';
 
 export const metadata: Metadata = {
   title: {
@@ -131,7 +132,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   };
 
   return (
-    <html lang="hebrew" dir="rtl" className="overflow-x-hidden">
+    <html lang="hebrew" dir="rtl" className={`overflow-x-hidden ${fredoka.className}`}>
       <head>
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
@@ -156,9 +157,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Preconnect to critical third parties */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* Load Fredoka Hebrew font from Google Fonts */}
-        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
         
         {/* Social media and manifest files */}
         <link rel="manifest" href="/manifest.json" />
