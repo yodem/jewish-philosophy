@@ -31,7 +31,7 @@ interface CategoryComboboxProps {
   className?: string;
 }
 
-const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre'): string => {
+const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre' | null): string => {
   switch (type) {
     case 'person':
       return 'אדם';
@@ -39,8 +39,9 @@ const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre'): string => {
       return 'ז׳אנר';
     case 'term':
       return 'מושג';
+    case null:
     default:
-      return '';
+      return 'כללי';
   }
 };
 

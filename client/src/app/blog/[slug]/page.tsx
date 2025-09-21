@@ -4,7 +4,7 @@ import { Category, Blog } from "@/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { StrapiImage } from "@/components/StrapiImage";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { FullCategoryList } from "@/components/LimitedCategoryList";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { WritingViewTracker } from "@/components/WritingTracker";
 import BlogCommentSection from "./BlogCommentSection";
@@ -165,10 +165,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </div>
         
         {categories && categories.length > 0 && (
-          <div className="flex flex-wrap gap-2 mb-4 justify-center">
-            {categories.map((category: Category) => (
-              <CategoryBadge key={category.id} category={category} />
-            ))}
+          <div className="mb-4 flex justify-center">
+            <FullCategoryList categories={categories} />
           </div>
         )}
         

@@ -1,7 +1,7 @@
 import { getWritingBySlug } from "@/data/loaders";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { FullCategoryList } from "@/components/LimitedCategoryList";
 import Link from "next/link";
 import { StrapiImage } from "@/components/StrapiImage";
 import { Button } from "@/components/ui/button";
@@ -127,10 +127,8 @@ export default async function WritingPage({ params }: WritingPageProps) {
             <span>{new Date(writing.publishedAt).toLocaleDateString('he-IL')}</span>
           </div>
           {writing.categories.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {writing.categories.map((category) => (
-                <CategoryBadge key={category.id} category={category} />
-              ))}
+            <div className="mb-6 flex justify-center">
+              <FullCategoryList categories={writing.categories} />
             </div>
           )}
         </div>
