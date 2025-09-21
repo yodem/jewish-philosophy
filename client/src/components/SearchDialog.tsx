@@ -55,11 +55,20 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[425px] max-w-[350px] mx-auto">
+      <DialogContent
+        className="sm:max-w-[425px] max-w-[350px] mx-auto"
+        onPointerDownOutside={(e) => {
+          // Prevent closing when clicking on the combobox popover
+          const target = e.target as HTMLElement;
+          if (target.closest('[role="combobox"]') || target.closest('[data-radix-popper-content-wrapper]')) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader className="pb-4">
           <DialogTitle className="text-right pr-8">חפשו תוכן</DialogTitle>
         </DialogHeader>
-        
+
         <div className="py-4">
           <SearchForm
             searchQuery={searchQuery}

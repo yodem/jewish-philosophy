@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Configuration
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeYouTubeVideo'
-const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'http://localhost:1337'
+const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`
 const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 
@@ -19,7 +19,8 @@ function constructYouTubeUrl(videoId: string): string {
 async function fetchAllVideos() {
   console.log('🔍 Fetching all videos from Strapi...')
   try {
-    const res = await axios.get(`${STRAPI_URL}/videos?populate=*`)
+    // Use pagination[pageSize]=100 to get more than default 25 items
+    const res = await axios.get(`${STRAPI_URL}/videos?populate=*&pagination[pageSize]=100`)
     const videos = res.data.data || []
     console.log(`📹 Found ${videos.length} videos`)
     return videos
@@ -32,7 +33,8 @@ async function fetchAllVideos() {
 async function fetchCategories() {
   console.log('📂 Fetching categories from Strapi...')
   try {
-    const res = await axios.get(`${STRAPI_URL}/categories`)
+    // Use pagination[pageSize]=100 to get more than default 25 items
+    const res = await axios.get(`${STRAPI_URL}/categories?pagination[pageSize]=100`)
     const categories = res.data.data || []
     console.log(`🏷️  Found ${categories.length} categories`)
     return categories

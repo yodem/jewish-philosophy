@@ -1,8 +1,8 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
-
+import { Check, ChevronsUpDown as ChevronsUpDownIcon } from "lucide-react"
+import { Category } from "@/types"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -19,34 +19,57 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface ComboboxOption {
-  value: string;
-  label: string;
-  description?: string;
-}
-
-interface ComboboxProps {
-  options: ComboboxOption[];
+interface CategoryComboboxProps {
+  categories: Category[];
   value?: string;
   onValueChange: (value: string) => void;
   placeholder?: string;
   emptyMessage?: string;
   disabled?: boolean;
   className?: string;
+  loading?: boolean;
 }
 
-export function Combobox({
-  options,
+const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre'): string => {
+  switch (type) {
+    case 'person':
+      return 'אדם';
+    case 'genre':
+      return 'ז׳אנר';
+    case 'term':
+      return 'מושג';
+    default:
+      return '';
+  }
+};
+
+export function CategoryCombobox({
+  categories,
   value,
   onValueChange,
-  placeholder = "Select option...",
-  emptyMessage = "No option found.",
+  placeholder = "בחר קטגוריה...",
+  emptyMessage = "לא נמצאו קטגוריות.",
   disabled = false,
   className,
-}: ComboboxProps) {
+  loading = false,
+}: CategoryComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
-  const selectedOption = options.find((option) => option.value === value);
+  // Create options array for the combobox
+  const options = React.useMemo(() => [
+    {
+      value: 'all',
+      label: 'כל הקטגוריות',
+      description: ''
+    },
+    ...categories.map(category => ({
+      value: category.slug,
+      label: category.name,
+      description: getCategoryTypeLabel(category.type)
+    }))
+  ], [categories]);
+
+  const selectedOption = options.find(option => option.value === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -56,11 +79,13 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className={cn("w-full justify-between text-right", className)}
-          disabled={disabled}
+          disabled={disabled || loading}
           dir="rtl"
         >
-          {selectedOption ? (
-            <div className="flex flex-col items-start text-right ">
+          {loading ? (
+            <span className="text-gray-500 text-right">טוען קטגוריות...</span>
+          ) : selectedOption ? (
+            <div className="flex flex-col items-end text-right flex-1">
               <span>{selectedOption.label}</span>
               {selectedOption.description && (
                 <span className="text-xs text-gray-500">{selectedOption.description}</span>
@@ -69,30 +94,30 @@ export function Combobox({
           ) : (
             <span className="text-right">{placeholder}</span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 z-[2147483647]" align="start" side="bottom">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="end" side="bottom">
         <Command>
-          <CommandInput placeholder="חפש..." className="h-9" />
+          <CommandInput placeholder="חפש קטגוריה..." className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.label}
-                  onSelect={() => {
-                    onValueChange(option.value === value ? "" : option.value)
-                    setOpen(false)
+                  value={option.value}
+                  onSelect={(currentValue) => {
+                    onValueChange(currentValue === value ? "all" : currentValue);
+                    setOpen(false);
                   }}
                   className="text-right"
                   dir="rtl"
                 >
-                  <div className="flex flex-col items-start text-right pr-4 ">
+                  <div className="flex flex-col items-end text-right flex-1">
                     <span>{option.label}</span>
                     {option.description && (
-                      <span className="text-xs text-gray-500 align-right">{option.description}</span>
+                      <span className="text-xs text-gray-500">{option.description}</span>
                     )}
                   </div>
                   <Check

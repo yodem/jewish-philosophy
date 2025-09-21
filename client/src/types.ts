@@ -99,6 +99,7 @@ export type Category = {
   name: string;
   slug: string;
   description: string;
+  type: 'term' | 'person' | 'genre';
 }
 
 export type Blog = {
