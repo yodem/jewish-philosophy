@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Skeleton } from './ui/skeleton';
 import { CategoryCombobox } from './CategoryCombobox';
 import { CategoryBadge } from './CategoryBadge';
 import { Search, Filter } from 'lucide-react';

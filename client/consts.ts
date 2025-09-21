@@ -7,6 +7,7 @@ export const CONTENT_TYPES = [
   { value: 'blog', label: 'בלוגים' },
   { value: 'responsa', label: 'שו"ת' },
   { value: 'writing', label: 'כתבים' },
+  { value: 'term', label: 'מושגים' },
 ];
 
 // Content type configuration for display
@@ -16,4 +17,5 @@ export const CONTENT_TYPE_CONFIG = {
   blog: { icon: 'FileText', label: 'בלוגים', color: 'bg-blue-100 text-blue-800', path: '/blog' },
   responsa: { icon: 'MessageSquare', label: 'שו"ת', color: 'bg-purple-100 text-purple-800', path: '/responsa' },
   writing: { icon: 'BookOpen', label: 'כתבים', color: 'bg-orange-100 text-orange-800', path: '/writings' },
+  term: { icon: 'Tag', label: 'מושגים', color: 'bg-indigo-100 text-indigo-800', path: '/terms' },
 };

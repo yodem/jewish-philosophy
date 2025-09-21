@@ -61,6 +61,13 @@ const CONTENT_TYPE_CONFIG = {
       responsas: { fields: ['id'] }
     }
   },
+  term: {
+    searchableFields: ['title', 'description'],
+    populate: {
+      author: { fields: ['name'] },
+      categories: { fields: ['id', 'name', 'slug'] }
+    }
+  },
   author: {
     searchableFields: ['name', 'email'],
     populate: {}
@@ -75,7 +82,7 @@ export default () => ({
   performSearch: async ({ query, contentTypes, categories }: SearchQuery): Promise<SearchResult[]> => {
     try {
       // Default content types to search if not specified
-      const defaultContentTypes = ['blog', 'video', 'playlist', 'responsa', 'writing'];
+      const defaultContentTypes = ['blog', 'video', 'playlist', 'responsa', 'writing', 'term'];
       let typesToSearch: string[];
 
       if (!contentTypes) {
