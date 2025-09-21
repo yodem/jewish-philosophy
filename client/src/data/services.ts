@@ -58,7 +58,7 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
   url.search = params.toString();
 
   try {
-    const response = await fetchAPI(url.href, { method: "GET" });
+    const response = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
 
     // Transform the response to match the expected format
     return {
@@ -81,7 +81,7 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
         query: filters.query || '',
         contentTypes: filters.contentType,
         categories: filters.category,
-        limit: 20,
+        limit: 30,
         offset: 0,
         total: 0,
         timestamp: new Date().toISOString()
@@ -99,6 +99,6 @@ export async function getAllCategories(): Promise<Category[]> {
   const url = new URL('/api/categories', BASE_URL);
   url.search = query;
   
-  const response = await fetchAPI(url.href, { method: "GET" });
+  const response = await fetchAPI(url.href, { method: "GET", next: { revalidate:  60 * 60 * 24 } });
   return response?.data || [];
 }
