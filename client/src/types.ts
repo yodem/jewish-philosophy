@@ -65,6 +65,7 @@ export interface Video {
   videoId: string;
   slug: string;
   playlist: number | Playlist;
+  categories?: Category[];
 }
 
 export interface Playlist {
