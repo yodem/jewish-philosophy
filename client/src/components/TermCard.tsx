@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { LimitedCategoryList } from "@/components/LimitedCategoryList";
 import { Term } from "@/types";
 
 interface TermCardProps {
@@ -26,15 +26,8 @@ export default function TermCard({ term, className }: TermCardProps) {
 
           {/* Categories */}
           {term.categories && term.categories.length > 0 && (
-            <div className="flex flex-wrap gap-1 justify-end">
-              {term.categories.map((category) => (
-                <CategoryBadge
-                  key={category.id}
-                  category={category}
-                  isSelectable={false}
-                  className="text-xs"
-                />
-              ))}
+            <div className="flex justify-end">
+              <LimitedCategoryList categories={term.categories} isSelectable={false} />
             </div>
           )}
         </CardContent>

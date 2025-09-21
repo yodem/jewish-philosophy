@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { LimitedCategoryList } from "@/components/LimitedCategoryList";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
@@ -206,11 +206,7 @@ export default function WritingsPage() {
                   </TableCell>
                   <TableCell>{writing.author.name}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {writing.categories?.map((category) => (
-                        <CategoryBadge key={category.id} category={category} />
-                      ))}
-                    </div>
+                    <LimitedCategoryList categories={writing.categories} />
                   </TableCell>
                   <TableCell>
                     {new Date(writing.publishedAt).toLocaleDateString('he-IL')}

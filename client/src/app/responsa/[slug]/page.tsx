@@ -4,7 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { notFound, useParams } from "next/navigation";
 import { getResponsaBySlug, getResponsaCommentsBySlug } from "@/data/loaders";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { FullCategoryList } from "@/components/LimitedCategoryList";
 import { Comment as CommentType, Category, Responsa } from "@/types";
 import CommentSection from "@/components/CommentSection";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
@@ -165,10 +165,8 @@ export default function ResponsaPage() {
           </div>
           
           {categories && categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {categories.map((category: Category) => (
-                <CategoryBadge key={category.id} category={category} />
-              ))}
+            <div className="mb-4">
+              <FullCategoryList categories={categories} />
             </div>
           )}
           

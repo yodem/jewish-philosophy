@@ -100,7 +100,7 @@ export type Category = {
   name: string;
   slug: string;
   description: string;
-  type: 'term' | 'person' | 'genre';
+  type: 'term' | 'person' | 'genre' | null;
 }
 
 export type Blog = {

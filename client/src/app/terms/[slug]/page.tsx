@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTermBySlug } from '@/data/loaders';
 import Breadcrumbs from '@/components/Breadcrumbs';
-import { CategoryBadge } from '@/components/CategoryBadge';
+import { FullCategoryList } from '@/components/LimitedCategoryList';
 import { generateSEOMetadata } from '@/lib/seo-helpers';
 
 interface TermPageProps {
@@ -55,14 +55,8 @@ export default async function TermPage({ params }: TermPageProps) {
 
           {/* Categories */}
           {term.categories && term.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 justify-center mb-8">
-              {term.categories.map((category) => (
-                <CategoryBadge
-                  key={category.id}
-                  category={category}
-                  isSelectable={false}
-                />
-              ))}
+            <div className="mb-8 flex justify-center">
+              <FullCategoryList categories={term.categories} isSelectable={false} />
             </div>
           )}
         </header>

@@ -2,31 +2,55 @@ import { Badge } from "@/components/ui/badge";
 import { Category } from "@/types";
 import React from "react";
 
-// Define the color mapping for categories
-export const CATEGORY_COLORS: Record<string, string> = {
-  philosophy: "bg-blue-600 text-white dark:bg-blue-700",
-  evil: "bg-red-700 text-white dark:bg-red-800",
-  religion: "bg-yellow-600 text-white dark:bg-yellow-700",
-  soul: "bg-indigo-600 text-white dark:bg-indigo-700",
-  mimonidies: "bg-green-700 text-white dark:bg-green-800",
-  hazal: "bg-pink-700 text-white dark:bg-pink-800",
-  family: "bg-teal-700 text-white dark:bg-teal-800",
-  torah: "bg-purple-700 text-white dark:bg-purple-800",
-  "free-will": "bg-orange-600 text-white dark:bg-orange-700",
-  mind: "bg-cyan-700 text-white dark:bg-cyan-800",
-  aristotle: "bg-lime-700 text-white dark:bg-lime-800",
-  god: "bg-blue-400 text-white dark:from-blue-800",
+
+// Define type-based color schemes
+export const TYPE_COLORS: Record<string, string> = {
+  term: "border-indigo-500",
+  person: "border-amber-500",
+  genre: "border-yellow-500",
+  general: "border-gray-500",
 };
+
+export const TYPE_BACKGROUNDS: Record<string, string> = {
+  term: "bg-indigo-600 text-white",
+  person: "bg-amber-700 text-white",
+  genre: "bg-yellow-600 text-white",
+  general: "bg-gray-600 text-white",
+};
+
+// Helper function to get category color class based on category type
+function getCategoryColorClass(category: Category): string {
+  const { type } = category;
+
+  // Get background color based on type
+  const background = TYPE_BACKGROUNDS[type || 'general'] || TYPE_BACKGROUNDS['general'];
+
+  // Get border color based on type
+  const border = TYPE_COLORS[type || 'general'] || TYPE_COLORS['general'];
+
+  // Return combined classes
+  return `${background} ${border}`;
+}
+
+// Helper function to get fallback color for unknown categories
+function getFallbackColorClass(type: string | null): string {
+  const background = TYPE_BACKGROUNDS[type || 'general'] || TYPE_BACKGROUNDS['general'];
+  const border = TYPE_COLORS[type || 'general'] || TYPE_COLORS['general'];
+  return `${background} ${border}`;
+}
 
 // Define colors for content types
 export const CONTENT_TYPE_COLORS: Record<string, string> = {
-  all: "bg-gray-600 text-white dark:bg-gray-700",
-  blog: "bg-blue-500 text-white dark:bg-blue-600",
-  video: "bg-red-500 text-white dark:bg-red-600", 
-  playlist: "bg-green-500 text-white dark:bg-green-600",
-  responsa: "bg-purple-500 text-white dark:bg-purple-600",
-  writing: "bg-orange-500 text-white dark:bg-orange-600",
-  term: "bg-indigo-500 text-white dark:bg-indigo-600",
+  all: "bg-gray-600 border-gray-500 text-white",
+  blog: "bg-blue-500 border-blue-400 text-white",
+  video: "bg-red-500 border-red-400 text-white",
+  playlist: "bg-green-500 border-green-400 text-white",
+  responsa: "bg-purple-500 border-purple-400 text-white",
+  writing: "bg-orange-500 border-orange-400 text-white",
+  term: "bg-indigo-500 border-indigo-400 text-white",
+  person: "bg-amber-500 border-amber-400 text-white",
+  genre: "bg-yellow-500 border-yellow-400 text-white",
+  general: "bg-gray-500 border-gray-400 text-white",
 };
 
 
@@ -60,7 +84,7 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
   let displayLabel = "";
 
   if (category) {
-    colorClass = CATEGORY_COLORS[category.slug] || "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
+    colorClass = getCategoryColorClass(category);
     displayLabel = category.name;
   } else if (contentType) {
     colorClass = CONTENT_TYPE_COLORS[contentType] || "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-100";
@@ -71,8 +95,8 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
   }
 
   // If variant is outline, don't use the color class
-  const finalClassName = variant === "outline" 
-    ? className 
+  const finalClassName = variant === "outline"
+    ? className
     : `${colorClass} ${className || ""}`.trim();
 
   // Add selection and disabled states
@@ -87,9 +111,9 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
     : '';
 
   return (
-    <Badge 
+    <Badge
       className={`
-        ${finalClassName} 
+        ${finalClassName}
         ${selectionClass}
         ${disabledClass}
         ${onClick ? '' : ''}
@@ -100,15 +124,15 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
     >
       <span>{displayLabel}</span>
       {isSelected && showRemoveIcon && (
-        <svg 
-          className="w-4 h-4 hover:scale-125 transition-transform duration-200" 
-          fill="currentColor" 
+        <svg
+          className="w-4 h-4 hover:scale-125 transition-transform duration-200"
+          fill="currentColor"
           viewBox="0 0 20 20"
         >
-          <path 
-            fillRule="evenodd" 
-            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
-            clipRule="evenodd" 
+          <path
+            fillRule="evenodd"
+            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+            clipRule="evenodd"
           />
         </svg>
       )}

@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { LimitedCategoryList } from "@/components/LimitedCategoryList";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
@@ -120,11 +120,7 @@ export default function ResponsaPage() {
                 >
                   <TableCell className="font-medium">{responsa.title}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {responsa.categories?.map((category) => (
-                        <CategoryBadge key={category.id} category={category} isSelectable={false} />
-                      ))}
-                    </div>
+                    <LimitedCategoryList categories={responsa.categories} isSelectable={false} />
                   </TableCell>
                   <TableCell>{responsa.comments?.length || 0}</TableCell>
                 </TableRow>

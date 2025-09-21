@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import SocialShare from "@/components/SocialShare";
-import { CategoryBadge } from "@/components/CategoryBadge";
+import { FullCategoryList } from "@/components/LimitedCategoryList";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import { JsonLd } from "@/lib/json-ld";
@@ -131,10 +131,8 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
 
               {/* Category badges */}
               {video.categories && video.categories.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {video.categories.map((category) => (
-                    <CategoryBadge key={category.id} category={category} />
-                  ))}
+                <div className="mt-4">
+                  <FullCategoryList categories={video.categories} />
                 </div>
               )}
             </div>
