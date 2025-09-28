@@ -20,84 +20,61 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${strapiUrl}`;
     };
 
-    // Static pages with Hebrew localization support
+    // Static pages - simplified without alternates to avoid GSC issues
     const staticPages: MetadataRoute.Sitemap = [
       {
         url: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
-        priority: 1,
-        alternates: {
-          languages: {
-            'he-IL': baseUrl,
-          },
-        },
+        priority: 1.0,
       },
       {
         url: formatUrl('/about'),
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.8,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/about'),
-          },
-        },
       },
       {
         url: formatUrl('/blog'),
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 0.9,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/blog'),
-          },
-        },
       },
       {
         url: formatUrl('/playlists'),
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/playlists'),
-          },
-        },
       },
       {
         url: formatUrl('/writings'),
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.8,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/writings'),
-          },
-        },
       },
       {
         url: formatUrl('/search'),
         lastModified: new Date(),
         changeFrequency: 'monthly' as const,
         priority: 0.5,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/search'),
-          },
-        },
       },
       {
         url: formatUrl('/responsa'),
         lastModified: new Date(),
         changeFrequency: 'weekly' as const,
         priority: 0.7,
-        alternates: {
-          languages: {
-            'he-IL': formatUrl('/responsa'),
-          },
-        },
+      },
+      {
+        url: formatUrl('/contact'),
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.6,
+      },
+      {
+        url: formatUrl('/terms'),
+        lastModified: new Date(),
+        changeFrequency: 'yearly' as const,
+        priority: 0.3,
       },
     ];
 
@@ -108,67 +85,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       getAllWritings().catch(() => []),
     ]);
 
-    // Blog pages with image sitemaps
+    // Blog pages - simplified for GSC compliance
     const blogPages: MetadataRoute.Sitemap = blogs.map((blog: Blog) => ({
       url: formatUrl(`/blog/${blog.slug}`),
       lastModified: new Date(blog.publishedAt),
       changeFrequency: 'weekly' as const,
       priority: 0.7,
-      alternates: {
-        languages: {
-          'he-IL': formatUrl(`/blog/${blog.slug}`),
-        },
-      },
       ...(blog.coverImage && {
         images: [getImageUrl(blog.coverImage.url)].filter(Boolean) as string[],
       }),
     }));
 
-    // Playlist pages with image sitemaps
+    // Playlist pages - simplified for GSC compliance
     const playlistPages: MetadataRoute.Sitemap = playlists.map((playlist: Playlist) => ({
       url: formatUrl(`/playlists/${playlist.slug}`),
       lastModified: new Date(playlist.updatedAt || playlist.createdAt),
       changeFrequency: 'weekly' as const,
       priority: 0.6,
-      alternates: {
-        languages: {
-          'he-IL': formatUrl(`/playlists/${playlist.slug}`),
-        },
-      },
       images: [
         getImageUrl(playlist.imageUrl300x400),
         getImageUrl(playlist.imageUrlStandard),
       ].filter(Boolean) as string[],
     }));
 
-    // Individual video pages with comprehensive video sitemaps (CRUCIAL for SEO)
+    // Individual video pages - simplified without videos property to avoid GSC issues
     const videoPages: MetadataRoute.Sitemap = playlists.flatMap((playlist: Playlist) => 
       (playlist.videos || []).map((video: Video) => ({
         url: formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
         lastModified: new Date(playlist.updatedAt || playlist.createdAt),
         changeFrequency: 'weekly' as const,
         priority: 0.8, // High priority for video content
-        alternates: {
-          languages: {
-            'he-IL': formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
-          },
-        },
-        // Video sitemap according to Next.js docs and Google standards
-        videos: [
-          {
-            title: video.title,
-            thumbnail_loc: getImageUrl(video.imageUrl300x400) || getImageUrl(video.imageUrlStandard) || '',
-            description: video.description,
-            content_loc: `https://www.youtube.com/watch?v=${video.videoId}`,
-            player_loc: `https://www.youtube.com/embed/${video.videoId}`,
-            duration: 600, // Default duration in seconds (10 minutes)
-            publication_date: new Date(playlist.createdAt).toISOString(),
-            family_friendly: 'yes',
-            requires_subscription: 'no',
-            live: 'no',
-          },
-        ],
-        // Also include video thumbnail as image
+        // Only include images, remove videos property for GSC compliance
         images: [
           getImageUrl(video.imageUrl300x400),
           getImageUrl(video.imageUrlStandard),
@@ -176,29 +123,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
     );
 
-    // Writing pages with image sitemaps
+    // Writing pages - simplified for GSC compliance
     const writingPages: MetadataRoute.Sitemap = writings.map((writing: Writing) => ({
       url: formatUrl(`/writings/${writing.slug}`),
       lastModified: new Date(writing.updatedAt || writing.publishedAt),
       changeFrequency: 'monthly' as const,
       priority: 0.6,
-      alternates: {
-        languages: {
-          'he-IL': formatUrl(`/writings/${writing.slug}`),
-        },
-      },
       ...(writing.image && {
         images: [getImageUrl(writing.image.url)].filter(Boolean) as string[],
       }),
     }));
+
+    // Get terms and responsa if they exist
+    const responsaPages: MetadataRoute.Sitemap = [];
+    const termsPages: MetadataRoute.Sitemap = [];
+
+    // You can extend this to include individual responsa and terms pages
+    // For now, including the main category pages covered in staticPages
 
     // Combine all pages
     return [
       ...staticPages, 
       ...blogPages, 
       ...playlistPages, 
-      ...videoPages, // Individual video pages with video sitemaps
-      ...writingPages
+      ...videoPages,
+      ...writingPages,
+      ...responsaPages,
+      ...termsPages
     ];
 
   } catch (error) {
@@ -209,12 +160,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
-        priority: 1,
-        alternates: {
-          languages: {
-            'he-IL': baseUrl,
-          },
-        },
+        priority: 1.0,
+      },
+      {
+        url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/about`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      },
+      {
+        url: `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/blog`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.9,
       },
     ];
   }
