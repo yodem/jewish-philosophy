@@ -6,7 +6,6 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import AboutPageClient from "./AboutPageClient";
 
 export const metadata: Metadata = generateMetadata({
   title: "אודות | פילוסופיה יהודית - החזון והמשימה שלנו",
@@ -60,7 +59,6 @@ export default async function AboutPage() {
           <BlockRenderer blocks={blocks} />
         </Suspense>
       </ErrorBoundary>
-      <AboutPageClient />
     </div>
   );
 } 
