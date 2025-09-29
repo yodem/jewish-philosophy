@@ -4,7 +4,7 @@
 
 // Type definitions for search functionality
 interface SearchQuery {
-  query: string;
+  query?: string;
   contentTypes?: string;
   categories?: string;
 }
@@ -159,7 +159,7 @@ export default () => ({
         date: result.publishedAt || result.createdAt,
         slug: result.slug || result.id.toString(),
         playlistSlug: result.playlist?.slug || null, // Include playlist slug for video URLs
-        relevanceScore: calculateRelevanceScore(result, query, [...config.searchableFields])
+        relevanceScore: calculateRelevanceScore(result, [...config.searchableFields], query)
       }));
 
     } catch (error) {
@@ -170,11 +170,11 @@ export default () => ({
 });
 
 // Helper function to build search filters
-function buildSearchFilters(contentType: string, query: string, categories?: string) {
+function buildSearchFilters(contentType: string, query?: string, categories?: string) {
   const filters: any[] = [];
 
   // Add text search across searchable fields
-  if (query) {
+  if (query && query.trim()) {
     const textFilters = [];
     const config = CONTENT_TYPE_CONFIG[contentType as keyof typeof CONTENT_TYPE_CONFIG];
 
@@ -198,12 +198,17 @@ function buildSearchFilters(contentType: string, query: string, categories?: str
     });
   }
 
+  // If no filters, return an empty object to get all content
+  if (filters.length === 0) {
+    return {};
+  }
+
   return filters.length === 1 ? filters[0] : { $and: filters };
 }
 
 // Helper function to calculate relevance score
-function calculateRelevanceScore(result: any, query: string, searchableFields: string[]): number {
-  if (!query) return 1;
+function calculateRelevanceScore(result: any, searchableFields: string[], query?: string): number {
+  if (!query || !query.trim()) return 1;
 
   const queryLower = query.toLowerCase();
   let score = 0;

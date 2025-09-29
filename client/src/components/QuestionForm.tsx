@@ -9,9 +9,6 @@ import { Input } from "@/components/ui/input";
 import { submitQuestionAction } from "@/data/action";
 import { SnackbarProvider, useSnackbar } from 'notistack';
 import { trackQuestionSubmission } from "@/lib/analytics";
-import { useCategories } from "@/hooks/use-categories";
-import { CategoryBadge } from "@/components/CategoryBadge";
-import { Category } from "@/types";
 import {
   Dialog,
   DialogContent,
@@ -51,7 +48,6 @@ function QuestionFormInner() {
   const [state, formAction] = useActionState(submitQuestionAction, initialState);
   const [showForm, setShowForm] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<Category[]>([]);
   const [formValues, setFormValues] = useState({
     title: '',
     content: '',
@@ -59,7 +55,6 @@ function QuestionFormInner() {
     questioneerEmail: ''
   });
   const { enqueueSnackbar } = useSnackbar();
-  const { fullCategories, loadingCategories } = useCategories();
 
   // Show notifications on submit
   useEffect(() => {
@@ -82,7 +77,6 @@ function QuestionFormInner() {
   // Reset form when form is shown/hidden
   useEffect(() => {
     if (!showForm) {
-      setSelectedCategories([]);
       setFormValues({
         title: '',
         content: '',
@@ -102,9 +96,7 @@ function QuestionFormInner() {
       formValues.title.trim().length >= 3 &&
       formValues.content.trim().length >= 10 &&
       formValues.questioneer.trim().length >= 2 &&
-      emailValid &&
-      selectedCategories.length >= 1 &&
-      selectedCategories.length <= 3
+      emailValid
     );
   };
 
@@ -116,20 +108,6 @@ function QuestionFormInner() {
     }
   };
 
-  // Handle category selection
-  const handleCategoryChange = (category: Category) => {
-    setSelectedCategories(prev => {
-      const isSelected = prev.some(cat => cat.id === category.id);
-      if (isSelected) {
-        return prev.filter(cat => cat.id !== category.id);
-      } else {
-        if (prev.length >= 3) {
-          return prev;
-        }
-        return [...prev, category];
-      }
-    });
-  };
 
   // Handle form input changes
   const handleInputChange = (field: 'title' | 'content' | 'questioneer' | 'questioneerEmail', value: string) => {
@@ -167,15 +145,6 @@ function QuestionFormInner() {
         <>
           <h3 className="text-xl font-semibold mb-6">שאל שאלה חדשה</h3>
           <form action={formAction} className="space-y-4">
-            {/* Hidden inputs for selected categories */}
-            {selectedCategories.map((category) => (
-              <input
-                key={category.id}
-                type="hidden"
-                name="categories"
-                value={category.id.toString()}
-              />
-            ))}
             <div>
               <label htmlFor="title" className="block text-sm font-medium mb-1">
                 כותרת
@@ -243,40 +212,6 @@ function QuestionFormInner() {
               />
               {state.zodErrors?.content && (
                 <p className="text-red-500 text-sm mt-1">{state.zodErrors.content[0]}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">
-                קטגוריות (1-3 קטגוריות) {selectedCategories.length > 0 && `(${selectedCategories.length}/3)`}
-              </label>
-              {loadingCategories ? (
-                <div className="text-gray-500 text-sm">טוענים קטגוריות...</div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex flex-wrap gap-3">
-                    {fullCategories.map((category) => {
-                      const isSelected = selectedCategories.some(cat => cat.id === category.id);
-                      const isDisabled = !isSelected && selectedCategories.length >= 3;
-
-                      return (
-                        <CategoryBadge
-                          key={category.id}
-                          category={category}
-                          isSelected={isSelected}
-                          isDisabled={isDisabled}
-                          showRemoveIcon={isSelected}
-                          onClick={() => handleCategoryChange(category)}
-                        />
-                      );
-                    })}
-                  </div>
-                  {selectedCategories.length >= 3 && (
-                    <p className="text-blue-600 text-sm">נבחרו 3 קטגוריות מקסימום</p>
-                  )}
-                  {state.zodErrors?.categories && (
-                    <p className="text-red-500 text-sm">{state.zodErrors.categories[0]}</p>
-                  )}
-                </div>
               )}
             </div>
             <div className="flex justify-between items-center gap-4">
