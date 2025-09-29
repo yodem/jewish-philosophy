@@ -15,6 +15,7 @@ export default ({ env }: { env: (key: string) => string }) => ({
         defaultFrom: env('RESEND_DEFAULT_FROM_EMAIL') || 'onboarding@resend.dev',
         defaultReplyTo: env('RESEND_DEFAULT_REPLY_TO_EMAIL') || 'onboarding@resend.dev',
         testAddress: env('RESEND_TEST_ADDRESS') || 'onboarding@resend.dev',
+        supportAddress: env('RESEND_SUPPORT_TO_EMAIL') || 'yotamfromm123@gmail.com',
       },
     },
   },
