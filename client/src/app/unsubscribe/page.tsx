@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Link from 'next/link';
 import UnsubscribeForm from '@/components/UnsubscribeForm';
 
 export const metadata: Metadata = {
@@ -26,12 +27,12 @@ export default function UnsubscribePage() {
         <UnsubscribeForm />
         
         <div className="mt-8 text-center">
-          <a 
+          <Link 
             href="/" 
             className="text-blue-600 hover:text-blue-800 text-sm"
           >
             ← חזרה לעמוד הבית
-          </a>
+          </Link>
         </div>
       </div>
     </div>
