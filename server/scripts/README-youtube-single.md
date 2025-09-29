@@ -20,6 +20,8 @@ Make sure you have the required environment variables set:
 - `YOUTUBE_API_KEY` - Your YouTube Data API v3 key
 - `STRAPI_BASE_URL` - Your Strapi instance URL (optional, defaults to production)
 
+**Note:** Environment variables are automatically loaded from `.env` file using `dotenv`.
+
 ### Basic Commands
 
 ```bash

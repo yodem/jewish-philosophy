@@ -16,6 +16,7 @@ export const CATEGORY_BACKGROUNDS: Record<string, string> = {
   "kabalah": "bg-pink-600 text-white",
   "yetzer-hara": "bg-rose-600 text-white",
   "pure": "bg-red-600 text-white",
+  "reform": "bg-red-700 text-white",
 
   "aristotle": "bg-amber-600 text-white",
   "mimonidies": "bg-orange-600 text-white",
@@ -40,7 +41,7 @@ export const CATEGORY_BACKGROUNDS: Record<string, string> = {
   "ontology": "bg-green-700 text-white",
   "epistemology": "bg-emerald-700 text-white",
 
-  "general": "bg-gray-600 text-white",
+  "general": "bg-gray-400 text-white",
 };
 
 // Helper function to get category color class based on category slug

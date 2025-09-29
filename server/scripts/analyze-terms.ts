@@ -1,4 +1,9 @@
 import axios from 'axios'
+import dotenv from 'dotenv'
+import qs from 'qs'
+
+// Load environment variables
+dotenv.config()
 
 // Configuration
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeStaticData'
@@ -14,8 +19,14 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 async function fetchAllTerms() {
   console.log('🔍 Fetching all terms from Strapi...')
   try {
-    // Use pagination[pageSize]=100 to get more than default 25 items
-    const res = await axios.get(`${STRAPI_URL}/terms?populate=*&pagination[pageSize]=100`)
+    const query = qs.stringify({
+      populate: '*',
+      pagination: {
+        pageSize: 100
+      }
+    })
+    
+    const res = await axios.get(`${STRAPI_URL}/terms?${query}`)
     const terms = res.data.data || []
     console.log(`📝 Found ${terms.length} terms`)
     return terms
@@ -28,9 +39,20 @@ async function fetchAllTerms() {
 async function fetchCategories() {
   console.log('📂 Fetching genre and term categories from Strapi...')
   try {
-    // Use pagination[pageSize]=100 to get more than default 25 items
-    // Filter for categories where type=genre OR type=term
-    const res = await axios.get(`${STRAPI_URL}/categories?filters[$or][0][type][$eq]=genre&filters[$or][1][type][$eq]=term&populate=*&pagination[pageSize]=100`)
+    const query = qs.stringify({
+      filters: {
+        $or: [
+          { type: { $eq: 'genre' } },
+          { type: { $eq: 'term' } }
+        ]
+      },
+      populate: '*',
+      pagination: {
+        pageSize: 100
+      }
+    })
+    
+    const res = await axios.get(`${STRAPI_URL}/categories?${query}`)
     const categories = res.data.data || []
     console.log(`🏷️  Found ${categories.length} genre and term categories`)
     return categories
@@ -114,10 +136,10 @@ async function updateTermInStrapi(term: any, analysisResult: any, categories: an
       data: {}
     }
 
-    // Update categories if any were found using the connect syntax
+    // Update categories if any were found using the set syntax (override existing)
     if (categoryDocumentIds.length > 0) {
       updatePayload.data.categories = {
-        connect: categoryDocumentIds
+        set: categoryDocumentIds
       }
     }
 

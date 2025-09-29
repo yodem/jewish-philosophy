@@ -1,4 +1,9 @@
 import axios from 'axios'
+import dotenv from 'dotenv'
+import qs from 'qs'
+
+// Load environment variables
+dotenv.config()
 
 // Configuration
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeYouTubeVideo'
@@ -19,8 +24,14 @@ function constructYouTubeUrl(videoId: string): string {
 async function fetchAllVideos() {
   console.log('🔍 Fetching all videos from Strapi...')
   try {
-    // Use pagination[pageSize]=100 to get more than default 25 items
-    const res = await axios.get(`${STRAPI_URL}/videos?populate=*&pagination[pageSize]=100`)
+    const query = qs.stringify({
+      populate: '*',
+      pagination: {
+        pageSize: 100
+      }
+    })
+    
+    const res = await axios.get(`${STRAPI_URL}/videos?${query}`)
     const videos = res.data.data || []
     console.log(`📹 Found ${videos.length} videos`)
     return videos
@@ -33,8 +44,14 @@ async function fetchAllVideos() {
 async function fetchCategories() {
   console.log('📂 Fetching categories from Strapi...')
   try {
-    // Use pagination[pageSize]=100 to get more than default 25 items
-    const res = await axios.get(`${STRAPI_URL}/categories?pagination[pageSize]=100`)
+    const query = qs.stringify({
+      populate: '*',
+      pagination: {
+        pageSize: 100
+      }
+    })
+    
+    const res = await axios.get(`${STRAPI_URL}/categories?${query}`)
     const categories = res.data.data || []
     console.log(`🏷️  Found ${categories.length} categories`)
     return categories
@@ -125,10 +142,10 @@ async function updateVideoInStrapi(video: any, analysisResult: any, categories: 
       updatePayload.data.description = analysisResult.description
     }
 
-    // Update categories if any were found using the connect syntax
+    // Update categories if any were found using the set syntax (override existing)
     if (categoryDocumentIds.length > 0) {
       updatePayload.data.categories = {
-        connect: categoryDocumentIds
+        set: categoryDocumentIds
       }
     }
 
