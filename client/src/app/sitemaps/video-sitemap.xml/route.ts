@@ -2,23 +2,37 @@ import { getAllPlaylists } from '@/data/loaders';
 import { Playlist, Video } from '@/types';
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  
+  // Ensure baseUrl always ends with "/"
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   
   try {
-    const playlists = await getAllPlaylists().catch(() => []);
+    // Add timeout protection for Strapi API calls
+    const fetchWithTimeout = async <T>(fetchFn: () => Promise<T>, timeoutMs = 8000): Promise<T> => {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Fetch timeout')), timeoutMs);
+      });
+      
+      return Promise.race([fetchFn(), timeoutPromise]);
+    };
+
+    const playlists = await fetchWithTimeout(() => getAllPlaylists(), 7000).catch((error) => {
+      console.error('Failed to fetch playlists for video sitemap:', error);
+      return [];
+    });
     
     // Helper function to get image URL
     const getImageUrl = (strapiUrl?: string) => {
       if (!strapiUrl) return '';
       if (strapiUrl.startsWith('http')) return strapiUrl;
-      return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${strapiUrl}`;
+      return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || 'http://localhost:1337'}${strapiUrl}`;
     };
 
     // Helper function to format URL
     const formatUrl = (path: string) => {
-      const cleanPath = path.startsWith('/') ? path : `/${path}`;
-      const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-      return `${cleanBaseUrl}${cleanPath}`;
+      const cleanPath = path.startsWith('/') ? path.slice(1) : path; // Remove leading slash if present
+      return `${normalizedBaseUrl}${cleanPath}`;
     };
 
     // Helper function to escape XML
@@ -68,8 +82,9 @@ ${videoEntries}
 
     return new Response(sitemap, {
       headers: {
-        'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=1800, s-maxage=3600',
+        'X-Robots-Tag': 'noindex',
       },
     });
 
@@ -84,8 +99,9 @@ ${videoEntries}
 
     return new Response(errorSitemap, {
       headers: {
-        'Content-Type': 'application/xml',
+        'Content-Type': 'application/xml; charset=utf-8',
         'Cache-Control': 'public, max-age=300, s-maxage=300',
+        'X-Robots-Tag': 'noindex',
       },
     });
   }

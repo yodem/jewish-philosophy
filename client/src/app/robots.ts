@@ -1,7 +1,10 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  
+  // Ensure baseUrl always ends with "/"
+  const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   
   return {
     rules: [
@@ -37,11 +40,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: [
-      `${baseUrl}/sitemap.xml`,
-      `${baseUrl}/video-sitemap.xml`,
-      `${baseUrl}/sitemap-index.xml`,
-    ],
-    host: baseUrl,
+    sitemap: `${normalizedBaseUrl}sitemap-index.xml`,
+    host: normalizedBaseUrl,
   };
 } 
