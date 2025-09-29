@@ -12,9 +12,9 @@ export default ({ env }: { env: (key: string) => string }) => ({
         apiKey: env('RESEND_API_KEY'),
       },
       settings: {
-        defaultFrom: env('RESEND_DEFAULT_FROM_EMAIL') || 'noreply@example.com',
-        defaultReplyTo: env('RESEND_DEFAULT_REPLY_TO_EMAIL') || 'support@example.com',
-        testAddress: env('RESEND_TEST_ADDRESS') || 'test@example.com',
+        defaultFrom: env('RESEND_DEFAULT_FROM_EMAIL') || 'onboarding@resend.dev',
+        defaultReplyTo: env('RESEND_DEFAULT_REPLY_TO_EMAIL') || 'onboarding@resend.dev',
+        testAddress: env('RESEND_TEST_ADDRESS') || 'onboarding@resend.dev',
       },
     },
   },

@@ -16,10 +16,10 @@ export default function HomePageClient() {
     <div className="w-full">
       <Subscribe
         id={1}
-        headline="הירשמו לניוזלטר"
-        content="קבלו עדכונים על תכנים חדשים, שיעורים ותשובות לשאלות"
+        headline="הצטרפו אלינו!"
+        content="הירשמו לערוץ שלנו וקבלו התראות על תוכן חדש!"
         placeholder="הכניסו את כתובת האימייל שלכם"
-        buttonText="הירשמו"
+        buttonText="הרשמה"
       />
     </div>
   );

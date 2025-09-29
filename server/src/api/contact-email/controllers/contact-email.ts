@@ -40,9 +40,9 @@ ${message}
 
       // Send the email using Strapi's email service (Strapi v5 syntax)
       await strapi.plugins.email.services.email.send({
-        to: 'yotamfromm123@gmail.com', // Support email address
+        to: strapi.config.get('plugin::email.settings.defaultFrom'), // Support email address
         from: strapi.config.get('plugin::email.settings.defaultFrom'), // Use configured default from
-        replyTo: email, // User's email for easy reply
+        replyTo: strapi.config.get('plugin::email.settings.defaultFrom'), // User's email for easy reply
         subject: emailSubject,
         text: emailBody,
         html: emailBody.replace(/\n/g, '<br>')
