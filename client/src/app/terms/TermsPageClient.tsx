@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAllTerms } from "@/data/loaders";
 import { Term, Block } from "@/types";
@@ -11,6 +11,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { TermsGridSkeleton } from "@/components/ui/skeleton";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import TermCard from "@/components/TermCard";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
 interface TermsPageClientProps {
   blocks?: Block[];
@@ -24,38 +25,12 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
     pagination: { page: 1, pageSize: 12, total: 0, pageCount: 0 }
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState(searchParams.get("search") || "");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchParams.get("search") || "");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
-  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Debounced search effect
-  useEffect(() => {
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    debounceTimeoutRef.current = setTimeout(() => {
-      setDebouncedSearchTerm(search);
-    }, 300); // 300ms debounce delay
-
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, [search]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, []);
+  
+  // Use the debounced search hook
+  const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
   // Fetch data when debounced search or page changes
   useEffect(() => {
@@ -77,7 +52,6 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Update URL immediately on form submission
     router.push(`/terms?search=${encodeURIComponent(search)}`);
   };
 

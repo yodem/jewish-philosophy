@@ -19,6 +19,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import BlockRenderer from "@/components/blocks/BlockRenderer";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
 export default function WritingsPage() {
   const searchParams = useSearchParams();
@@ -28,7 +29,6 @@ export default function WritingsPage() {
     pagination: { page: 1, pageSize: 12, total: 0, pageCount: 0 }
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [typeFilter, setTypeFilter] = useState<'all' | 'book' | 'article'>(
     (searchParams.get("type") as 'all' | 'book' | 'article') || 'all'
   );
@@ -36,6 +36,9 @@ export default function WritingsPage() {
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
+  
+  // Use the debounced search hook
+  const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
   useEffect(() => {
     async function fetchPageData() {
@@ -63,10 +66,10 @@ export default function WritingsPage() {
           filteredWritings = result.filter(writing => writing.type === typeFilter);
         }
         
-        if (search) {
+        if (debouncedSearchTerm) {
           filteredWritings = filteredWritings.filter(writing => 
-            writing.title.toLowerCase().includes(search.toLowerCase()) ||
-            writing.description.toLowerCase().includes(search.toLowerCase())
+            writing.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+            writing.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
           );
         }
 
@@ -85,7 +88,7 @@ export default function WritingsPage() {
     }
 
     fetchData();
-  }, [page, search, typeFilter]);
+  }, [page, debouncedSearchTerm, typeFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
