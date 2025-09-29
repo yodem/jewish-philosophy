@@ -346,11 +346,6 @@ const questionSchema = z.object({
   questioneerEmail: z.string().email({
     message: "נא להזין כתובת אימייל תקינה",
   }).optional(),
-  categories: z.array(z.number()).min(1, {
-    message: "יש לבחור לפחות קטגוריה אחת",
-  }).max(3, {
-    message: "ניתן לבחור עד 3 קטגוריות בלבד",
-  }),
 });
 
 interface QuestionState {
@@ -362,8 +357,6 @@ interface QuestionState {
 }
 
 export async function submitQuestionAction(prevState: QuestionState, formData: FormData) {
-  // Get categories from form data (multiple values with same name) - now as IDs
-  const categoryIds = formData.getAll("categories").map(id => parseInt(id as string, 10));
   // Handle optional email - convert empty string to undefined
   const emailValue = formData.get("questioneerEmail");
   const processedEmail = emailValue && (emailValue as string).trim().length > 0
@@ -375,7 +368,6 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
     content: formData.get("content"),
     questioneer: formData.get("questioneer"),
     questioneerEmail: processedEmail,
-    categories: categoryIds,
   });
 
   if (!validatedFields.success) {
@@ -389,7 +381,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
   }
 
   try {
-    const { title, content, questioneer, questioneerEmail, categories } = validatedFields.data;
+    const { title, content, questioneer, questioneerEmail } = validatedFields.data;
 
     // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
     // Transliterate Hebrew characters to Latin or use timestamp as fallback
@@ -407,22 +399,18 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       slug = `${slug}-${timestamp}`;
     }
 
-    // Categories are already IDs from form data, no need to fetch again
-
     // Build the data object, only including email if it's provided
     const data: {
       title: string;
       content: string;
       questioneer: string;
       slug: string;
-      categories: number[];
       questioneerEmail?: string;
     } = {
       title,
       content,
       questioneer,
-      slug,
-      categories: categories
+      slug
     };
 
     // Only include email if it's provided
