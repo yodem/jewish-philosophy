@@ -71,7 +71,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
       {/* Search Input */}
       <div className="grid gap-2">
         <label htmlFor="search" className="text-sm font-medium text-right">
-          מה תרצו לחפש?
+          מה תרצו לחפש? <span className="text-gray-500">(אופציונלי)</span>
         </label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -165,7 +165,6 @@ const SearchForm: React.FC<SearchFormProps> = ({
               ))}
           </div>
         </div>
-        <p className="text-xs text-gray-500 text-right">* חובה לבחור סוג תוכן אחד</p>
       </div>
 
       {/* Category Filter */}
@@ -201,13 +200,18 @@ const SearchForm: React.FC<SearchFormProps> = ({
 
       {/* Search Button */}
       {showSubmitButton && (
-        <Button
-          type="submit"
-          className="w-full mt-4"
-          disabled={disabled || !selectedContentType}
-        >
-          חפשו
-        </Button>
+        <>
+          <p className="text-xs text-gray-500 text-center">
+            הזינו טקסט לחיפוש או בחרו קטגוריה/סוג תוכן ספציפי
+          </p>
+          <Button
+            type="submit"
+            className="w-full mt-2"
+            disabled={disabled || (!searchQuery && selectedCategory === 'all' && selectedContentType === 'all')}
+          >
+            חפשו
+          </Button>
+        </>
       )}
     </form>
   );
