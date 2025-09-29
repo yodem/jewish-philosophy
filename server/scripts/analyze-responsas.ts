@@ -72,7 +72,6 @@ async function fetchAllResponsas(): Promise<ResponsaData[]> {
   try {
     const query = qs.stringify({
       populate: {
-        categories: true,
         comments: {
           filters: {
             publishedAt: { $notNull: true }

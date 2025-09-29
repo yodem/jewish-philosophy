@@ -71,7 +71,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
       {/* Search Input */}
       <div className="grid gap-2">
         <label htmlFor="search" className="text-sm font-medium text-right">
-          מה תרצו לחפש? <span className="text-gray-500">(אופציונלי)</span>
+          מה תרצו לחפש? 
         </label>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -101,7 +101,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
           סוג תוכן *
         </label>
         <p className="text-xs text-gray-500 text-right">
-          בחר סוג תוכן או השאר ריק לחיפוש בכל סוגי התוכן
+          בחרו סוג תוכן או השאר ריק לחיפוש בכל סוגי התוכן
         </p>
         <div className="flex flex-col gap-2">
           {/* Selected Content Type Display */}
@@ -173,7 +173,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
           קטגוריה
         </label>
         <p className="text-xs text-gray-500 text-right">
-          בחר קטגוריה או השאר ריק לחיפוש בכל הקטגוריות
+         בחרו קטגוריה
         </p>
         <div className="flex flex-col gap-2">
          
@@ -188,7 +188,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
               trackCategoryFilter(value, selectedContentType);
               onCategoryChange(value);
             }}
-            placeholder="בחר קטגוריה..."
+            placeholder="בחרו קטגוריה..."
             emptyMessage="לא נמצאו קטגוריות."
             disabled={loadingCategories}
             loading={loadingCategories}
@@ -202,12 +202,12 @@ const SearchForm: React.FC<SearchFormProps> = ({
       {showSubmitButton && (
         <>
           <p className="text-xs text-gray-500 text-center">
-            הזינו טקסט לחיפוש או בחרו קטגוריה/סוג תוכן ספציפי
+            הזינו טקסט לחיפוש או בחרו קטגוריה ספציפית
           </p>
           <Button
             type="submit"
             className="w-full mt-2"
-            disabled={disabled || (!searchQuery && selectedCategory === 'all' && selectedContentType === 'all')}
+            disabled={disabled || (!searchQuery.trim() && !selectedCategory)}
           >
             חפשו
           </Button>

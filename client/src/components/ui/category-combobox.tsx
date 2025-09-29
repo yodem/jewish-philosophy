@@ -48,7 +48,7 @@ export function CategoryCombobox({
   categories,
   value,
   onValueChange,
-  placeholder = "בחר קטגוריה...",
+  placeholder = "בחרו קטגוריה...",
   emptyMessage = "לא נמצאו קטגוריות.",
   disabled = false,
   className,
