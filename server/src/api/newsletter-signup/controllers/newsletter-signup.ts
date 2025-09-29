@@ -3,6 +3,7 @@
  */
 
 import { factories } from '@strapi/strapi'
+import resendAudienceService from '../../../services/resend-audience'
 
 export default factories.createCoreController('api::newsletter-signup.newsletter-signup', ({ strapi }) => ({
   // Extend default CRUD methods
@@ -30,6 +31,19 @@ export default factories.createCoreController('api::newsletter-signup.newsletter
       const email = response.data.email;
 
       if (email) {
+        // Add to Resend audience (non-blocking)
+        try {
+          const audienceResult = await resendAudienceService.addContact(email);
+          if (audienceResult.success) {
+            console.log(`✅ Added ${email} to Resend audience`);
+          } else {
+            console.warn(`⚠️ Failed to add ${email} to Resend audience: ${audienceResult.error}`);
+          }
+        } catch (audienceError) {
+          // Log but don't fail the subscription
+          console.error('Resend audience error (non-critical):', audienceError);
+        }
+
         // Send styled confirmation email to the subscriber
         await strapi.service("api::email.email").sendStyledEmail({
           to: email,
@@ -79,6 +93,19 @@ export default factories.createCoreController('api::newsletter-signup.newsletter
 
       if (!entries || entries.length === 0) {
         return ctx.notFound('Email not found in newsletter subscriptions');
+      }
+
+      // Remove from Resend audience (non-blocking)
+      try {
+        const audienceResult = await resendAudienceService.removeContact(email);
+        if (audienceResult.success) {
+          console.log(`✅ Removed ${email} from Resend audience`);
+        } else {
+          console.warn(`⚠️ Failed to remove ${email} from Resend audience: ${audienceResult.error}`);
+        }
+      } catch (audienceError) {
+        // Log but don't fail the unsubscription
+        console.error('Resend audience removal error (non-critical):', audienceError);
       }
 
       // Delete the subscription
