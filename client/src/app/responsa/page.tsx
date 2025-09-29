@@ -20,6 +20,7 @@ import { Pagination } from "@/components/ui/pagination";
 import QuestionFormWrapper from "@/components/QuestionFormWrapper";
 import { TableRowSkeleton } from "@/components/ui/skeleton";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
 export default function ResponsaPage() {
   const searchParams = useSearchParams();
@@ -29,16 +30,19 @@ export default function ResponsaPage() {
     pagination: { page: 1, pageSize: 10, total: 0, pageCount: 0 }
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 10;
+  
+  // Use the debounced search hook
+  const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
+  // Fetch data when debounced search or page changes
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getAllResponsas(page, pageSize, search);
+        const result = await getAllResponsas(page, pageSize, debouncedSearchTerm);
         setResponsas(result.data);
         setMeta(result.meta);
       } catch (error) {
@@ -49,7 +53,7 @@ export default function ResponsaPage() {
     }
 
     fetchData();
-  }, [page, search]);
+  }, [page, debouncedSearchTerm]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
