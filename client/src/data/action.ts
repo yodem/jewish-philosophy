@@ -1,7 +1,7 @@
 "use server";
 
 import z from "zod";
-import { subscribeService } from "./services";
+import { subscribeService, unsubscribeService } from "./services";
 import { createComment, createThread } from "./loaders";
 import { BASE_URL } from "../../consts";
 
@@ -35,6 +35,23 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
   const response = await subscribeService(validatedFields.data.email);
 
   if (!response.data) {
+    // Check if it's a duplicate email error
+    const errorMessage = response.error?.message || "";
+    const isDuplicateEmail = 
+      errorMessage.includes("unique constraint") || 
+      errorMessage.includes("duplicate") ||
+      errorMessage.includes("already exists") ||
+      response.error?.status === 400;
+
+    if (isDuplicateEmail) {
+      return {
+        ...prevState,
+        strapiErrors: "כתובת האימייל כבר קיימת במערכת",
+        errorMessage: "כתובת האימייל הזו כבר רשומה לניוזלטר שלנו. תודה על העניין!",
+        successMessage: "",
+      };
+    }
+
     return {
       ...prevState,
       strapiErrors: response.error.message || "בעיה בהרשמה לניוזלטר",
@@ -44,6 +61,23 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
   }
 
   if (response.data.error) {
+    // Check if it's a duplicate email error
+    const errorMessage = response.data.error.message || "";
+    const isDuplicateEmail = 
+      errorMessage.includes("unique constraint") || 
+      errorMessage.includes("duplicate") ||
+      errorMessage.includes("already exists") ||
+      response.data.error.status === 400;
+
+    if (isDuplicateEmail) {
+      return {
+        ...prevState,
+        strapiErrors: "כתובת האימייל כבר קיימת במערכת",
+        errorMessage: "כתובת האימייל הזו כבר רשומה לניוזלטר שלנו. תודה על העניין!",
+        successMessage: "",
+      };
+    }
+
     return {
       ...prevState,
       strapiErrors: response.data.error.message || "בעיה בהרשמה לניוזלטר",
@@ -439,6 +473,80 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       ...prevState,
       strapiErrors: "",
       errorMessage: "שגיאה בשליחת השאלה. אנא נסה שוב.",
+      successMessage: "",
+    };
+  }
+}
+
+const unsubscribeSchema = z.object({
+  email: z.string().email({
+    message: "נא להזין כתובת אימייל תקינה",
+  }),
+});
+
+interface UnsubscribeState {
+  zodErrors: Record<string, string[]> | null;
+  strapiErrors: string;
+  successMessage: string;
+  errorMessage: string;
+}
+
+export async function unsubscribeAction(prevState: UnsubscribeState, formData: FormData) {
+  const validatedFields = unsubscribeSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      ...prevState,
+      zodErrors: validatedFields.error.flatten().fieldErrors,
+      strapiErrors: "",
+      errorMessage: "",
+      successMessage: "",
+    };
+  }
+
+  try {
+    const response = await unsubscribeService(validatedFields.data.email);
+
+    if (!response.data) {
+      // Check if email wasn't found
+      const errorMessage = response.error?.message || "";
+      const isEmailNotFound = 
+        errorMessage.includes("not found") || 
+        errorMessage.includes("does not exist") ||
+        response.error?.status === 404;
+
+      if (isEmailNotFound) {
+        return {
+          ...prevState,
+          strapiErrors: "כתובת האימייל לא נמצאה במערכת",
+          errorMessage: "כתובת האימייל הזו לא רשומה לניוזלטר שלנו.",
+          successMessage: "",
+        };
+      }
+
+      return {
+        ...prevState,
+        strapiErrors: response.error?.message || "בעיה בביטול המנוי",
+        errorMessage: "בעיה בביטול המנוי, אנא נסו שנית מאוחר יותר.",
+        successMessage: "",
+      };
+    }
+
+    return {
+      ...prevState,
+      successMessage: "המנוי בוטל בהצלחה! תודה שהיה כם חלק מהקהילה שלנו.",
+      zodErrors: null,
+      strapiErrors: "",
+      errorMessage: "",
+    };
+  } catch (error) {
+    console.error('Unsubscribe error:', error);
+    return {
+      ...prevState,
+      strapiErrors: "",
+      errorMessage: "בעיה בביטול המנוי, אנא נסו שנית מאוחר יותר.",
       successMessage: "",
     };
   }

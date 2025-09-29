@@ -25,6 +25,30 @@ export async function subscribeService(email: string) {
     }
   }
 
+export async function unsubscribeService(email: string) {
+    const url = new URL("/api/newsletter-signups/unsubscribe", BASE_URL);
+
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      return response.json();
+    } catch (error) {
+      console.error("Unsubscribe Service Error:", error);
+      return {
+        data: null,
+        error: { message: "Network error", status: 500 }
+      };
+    }
+  }
+
 
 // Re-export types from types.ts for backwards compatibility
 export type { SearchResult, SearchResponse, SearchFilters, SearchQuery } from "@/types";

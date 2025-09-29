@@ -5,6 +5,22 @@
 import { factories } from '@strapi/strapi'
 
 export default factories.createCoreController('api::newsletter-signup.newsletter-signup', ({ strapi }) => ({
+  // Extend default CRUD methods
+  async find(ctx) {
+    return await super.find(ctx);
+  },
+
+  async findOne(ctx) {
+    return await super.findOne(ctx);
+  },
+
+  async update(ctx) {
+    return await super.update(ctx);
+  },
+
+  async delete(ctx) {
+    return await super.delete(ctx);
+  },
   async create(ctx) {
     try {
       // Call the default create method first
@@ -22,6 +38,7 @@ export default factories.createCoreController('api::newsletter-signup.newsletter
           data: {
             subscriberCount: '1,000+',
             siteUrl: process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/',
+            unsubscribeUrl: `${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}/unsubscribe`,
             plainText: `ברוכים הבאים לניוזלטר הפילוסופיה היהודית! תודה שהצטרפתם לקהילה שלנו. מעתה תקבלו עדכונים על מאמרים חדשים, שיעורים, תשובות לשאלות ועוד. בקרו באתר: ${process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}`
           }
         });
@@ -40,6 +57,41 @@ export default factories.createCoreController('api::newsletter-signup.newsletter
       
       // For email errors, we'll still return success but log the error
       return super.create(ctx);
+    }
+  },
+
+  async unsubscribe(ctx) {
+    try {
+      const { email } = ctx.request.body;
+
+      if (!email) {
+        return ctx.badRequest('Email is required');
+      }
+
+      // Find the newsletter signup by email
+      const entries = await strapi.entityService.findMany('api::newsletter-signup.newsletter-signup', {
+        filters: {
+          email: {
+            $eq: email
+          }
+        }
+      });
+
+      if (!entries || entries.length === 0) {
+        return ctx.notFound('Email not found in newsletter subscriptions');
+      }
+
+      // Delete the subscription
+      await strapi.entityService.delete('api::newsletter-signup.newsletter-signup', entries[0].id);
+
+      return {
+        data: {
+          message: 'Successfully unsubscribed from newsletter'
+        }
+      };
+    } catch (error) {
+      console.error('Unsubscribe error:', error);
+      return ctx.internalServerError('Failed to unsubscribe');
     }
   }
 }));

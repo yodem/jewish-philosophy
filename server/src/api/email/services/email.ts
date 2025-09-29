@@ -13,6 +13,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
       await strapi.plugins["email"].services.email.send({
         from: process.env.RESEND_DEFAULT_FROM_EMAIL || "onboarding@resend.dev",
         to: emailTo,
+        replyTo: process.env.RESEND_DEFAULT_REPLY_TO_EMAIL || "onboarding@resend.dev",
         subject: "Test Email from Strapi",
         html: `<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">Test Email</h2>
@@ -78,12 +79,6 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 </a>
               </div>
               
-              <div style="background: #e3f2fd; border-right: 4px solid #2196f3; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0; font-size: 14px; color: #1976d2;">
-                  <strong>💡 טיפ:</strong> הוסיפו את כתובת האימייל שלנו לרשימת הקשר שלכם כדי לוודא שהעדכונים יגיעו אליכם ישירות לתיבת הדואר הנכנס.
-                </p>
-              </div>
-              
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
                 תודה רבה על הצטרפותך!<br>
                 <strong style="color: #667eea;">צוות פילוסופיה יהודית</strong>
@@ -96,7 +91,10 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כאישור להרשמה לניוזלטר
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                ניתן לבטל את המנוי בכל עת על ידי הקלקה על הקישור בתחתית עדכונים עתידיים
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                   style="color: #667eea; text-decoration: none;">
+                  ביטול מנוי
+                </a>
               </p>
             </div>
           </div>
@@ -138,12 +136,6 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 </a>
               </div>
 
-              <div style="background: #fff3e0; border-right: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0; font-size: 14px; color: #f57c00;">
-                  <strong>🤝 רוצים לשתף?</strong> אם התשובה עזרה לכם, אל תהססו לשתף אותה עם חברים שעשויים להיות מעוניינים!
-                </p>
-              </div>
-
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
                 תודה שבחרתם לשאול ולהיות חלק מהקהילה שלנו!<br>
                 <strong style="color: #4caf50;">צוות הפילוסופיה היהודית</strong>
@@ -152,8 +144,14 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
             <!-- Footer -->
             <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
-              <p style="margin: 0; color: #888; font-size: 12px;">
+              <p style="margin: 0 0 10px 0; color: #888; font-size: 12px;">
                 אימייל זה נשלח אוטומטית כהודעה על תשובה לשאלתכם
+              </p>
+              <p style="margin: 0; color: #888; font-size: 12px;">
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                   style="color: #4caf50; text-decoration: none;">
+                  ביטול מנוי
+                </a>
               </p>
             </div>
           </div>
@@ -205,12 +203,6 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 </a>
               </div>
 
-              <div style="background: #fff3e0; border-right: 4px solid #ff9800; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0; font-size: 14px; color: #f57c00;">
-                  <strong>💡 טיפ:</strong> הוסיפו את כתובת האימייל שלנו לרשימת הקשר שלכם כדי לוודא שתקבלו התראות על תשובות לשאלתכם.
-                </p>
-              </div>
-
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
                 תודה שהצטרפתם לשיחה!<br>
                 <strong style="color: #2196f3;">צוות הפילוסופיה היהודית</strong>
@@ -219,8 +211,14 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
 
             <!-- Footer -->
             <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
-              <p style="margin: 0; color: #888; font-size: 12px;">
+              <p style="margin: 0 0 10px 0; color: #888; font-size: 12px;">
                 אימייל זה נשלח אוטומטית כאישור קבלת השאלה שלכם
+              </p>
+              <p style="margin: 0; color: #888; font-size: 12px;">
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                   style="color: #2196f3; text-decoration: none;">
+                  ביטול מנוי
+                </a>
               </p>
             </div>
           </div>
@@ -248,15 +246,6 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אנחנו מזמינים אותכם לקרוא את התגובה ולהגיב אם תרצו.
               </p>
 
-              <div style="background: #f8f9fa; border-radius: 12px; padding: 25px; margin: 25px 0;">
-                <h3 style="color: #333; margin-top: 0; font-size: 18px;">מה אפשר לעשות עכשיו?</h3>
-                <ul style="font-size: 16px; line-height: 2; color: #555; margin: 15px 0 0 0; padding-right: 20px;">
-                  <li>👀 צפה בתגובה החדשה</li>
-                  <li>💬 הגיבו בחזרה אם תרצו</li>
-                  <li>🔗 שתפו את הפוסט עם חברים</li>
-                </ul>
-              </div>
-
               <div style="text-align: center; margin: 35px 0;">
                 <a href="${data.blogLink}"
                    style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
@@ -272,18 +261,6 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 </a>
               </div>
 
-              <div style="background: #e8f5e8; border-right: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0; font-size: 14px; color: #2e7d32;">
-                  <strong>🎉 מזל טוב!</strong> הפוסט שלכם מעורר עניין ומעודד דיון. זה סימן טוב לתוכן איכותי!
-                </p>
-              </div>
-
-              <div style="background: #e3f2fd; border-right: 4px solid #2196f3; padding: 20px; border-radius: 8px; margin: 30px 0;">
-                <p style="margin: 0; font-size: 14px; color: #1976d2;">
-                  <strong>💡 טיפ:</strong> תגובות איכותיות מעודדות יותר אנשים לקרוא ולהגיב. כדאי להגיב בחזרה ולעודד דיון!
-                </p>
-              </div>
-
               <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
                 תודה שאתם חולקים את הידע שלכם עם הקהילה!<br>
                 <strong style="color: #ff6b35;">צוות הפילוסופיה היהודית</strong>
@@ -296,7 +273,10 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כהודעה על תגובה חדשה לפוסט שלכם
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                ניתן להפסיק קבלת התראות אלו בהגדרות המשתמש באתר
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                   style="color: #ff6b35; text-decoration: none;">
+                  ביטול מנוי
+                </a>
               </p>
             </div>
           </div>
@@ -313,6 +293,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
       await strapi.plugins["email"].services.email.send({
         from: process.env.RESEND_DEFAULT_FROM_EMAIL || "noreply@example.com",
         to,
+        replyTo: process.env.RESEND_DEFAULT_REPLY_TO_EMAIL || "noreply@example.com",
         subject,
         html: htmlContent,
         text: `${subject}\n\n${data.plainText || 'Please view this email in HTML format.'}`,
