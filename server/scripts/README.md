@@ -4,6 +4,15 @@ This folder contains utility scripts for the Strapi backend.
 
 ## Available Scripts
 
+### analyze-blogs.ts
+Analyzes blog posts using AI and updates them with category classifications.
+
+```bash
+# Run from server directory
+cd server
+npx tsx scripts/analyze-blogs.ts
+```
+
 ### categorize-videos.ts
 Automatically categorizes uncategorized videos using Gemini AI.
 
@@ -56,11 +65,14 @@ npx tsx scripts/analyze-videos.ts
 3. Gets AI-generated Hebrew descriptions and category matches
 4. Updates videos in Strapi with new data
 5. Handles Strapi v5 API with proper document IDs
+6. **Overrides existing categories** (doesn't add to them)
 
 **Configuration:**
 - `STRAPI_BASE_URL` - Strapi URL (default: localhost:1337)
 - `DELAY_MS` - Delay between requests (default: 2000ms)
 - `TEST_MODE` - Process only 1 video for testing
+
+**Environment:** All scripts automatically load `.env` file using `dotenv`. See `../.env.example` for available variables.
 
 ### analyze-terms.ts
 Analyzes terms using AI and updates them with category classifications.
@@ -78,8 +90,60 @@ npx tsx scripts/analyze-terms.ts
 4. Gets AI-suggested category matches based on title and description
 5. Updates terms in Strapi with matched genre categories
 6. Handles Strapi v5 API with proper document IDs
+7. **Overrides existing categories** (doesn't add to them)
 
 **Configuration:**
 - `STRAPI_BASE_URL` - Strapi URL (default: localhost:1337)
 - `DELAY_MS` - Delay between requests (default: 2000ms)
 - `TEST_MODE` - Process only 1 term for testing
+
+**Environment:** All scripts automatically load `.env` file using `dotenv`. See `../.env.example` for available variables.
+
+### analyze-responsas.ts
+Analyzes responsas using AI and updates them with category classifications.
+
+```bash
+# Run from server directory
+cd server
+npx tsx scripts/analyze-responsas.ts
+```
+
+**What it does:**
+1. Fetches all responsas from Strapi CMS
+2. Fetches categories from Strapi
+3. Sends responsas to Static Data Analysis API (localhost:4000) with first comment as clarification
+4. Gets AI-suggested category matches based on title, content, and clarification
+5. Updates responsas in Strapi with matched categories
+6. Handles Strapi v5 API with proper document IDs
+7. **Overrides existing categories** (doesn't add to them)
+
+**Configuration:**
+- `STRAPI_BASE_URL` - Strapi URL (default: production URL)
+- `DELAY_MS` - Delay between requests (default: 2000ms)
+
+**Environment:** All scripts automatically load `.env` file using `dotenv`. See `../.env.example` for available variables.
+
+### analyze-blogs.ts
+Analyzes blog posts using AI and updates them with category classifications.
+
+```bash
+# Run from server directory
+cd server
+npx tsx scripts/analyze-blogs.ts
+```
+
+**What it does:**
+1. Fetches all blogs from Strapi CMS
+2. Fetches categories from Strapi
+3. Extracts meaningful text from rich content (HTML)
+4. Sends blogs to Static Data Analysis API (localhost:4000) with content as clarification
+5. Gets AI-suggested category matches based on title, description, and content
+6. Updates blogs in Strapi with matched categories
+7. Handles Strapi v5 API with proper document IDs
+8. **Overrides existing categories** (doesn't add to them)
+
+**Configuration:**
+- `STRAPI_BASE_URL` - Strapi URL (default: production URL)
+- `DELAY_MS` - Delay between requests (default: 2000ms)
+
+**Environment:** All scripts automatically load `.env` file using `dotenv`. See `../.env.example` for available variables.

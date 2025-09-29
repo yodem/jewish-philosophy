@@ -2,112 +2,134 @@
 
 ## Overview
 
-This script analyzes responsas (Q&A content) and automatically assigns categories based on AI analysis. It fetches all responsas from Strapi, analyzes their content using an AI service, and updates them with appropriate categories.
+The `analyze-responsas.ts` script analyzes responsa content using AI to automatically categorize them based on their content and comments.
 
 ## Features
 
-- **AI-Powered Analysis**: Uses the Static Data Analysis API to analyze responsa content and suggest relevant categories
-- **All Category Types**: Works with all category types (term, person, genre) unlike the terms script which only uses genre and term
-- **Batch Processing**: Processes responsas one by one with configurable delays between requests
-- **Error Handling**: Robust error handling with fallback mechanisms for Strapi updates
-- **Progress Tracking**: Detailed logging and progress tracking throughout the process
+### ✨ **Refactored Features**
+- **Type Safety**: Full TypeScript interfaces for all data structures
+- **Comment Integration**: Fetches and includes the first comment as clarification for better AI analysis
+- **Enhanced API**: Uses new StaticDataAnalysis API with clarificationParagraph parameter
+- **Better Error Handling**: Comprehensive error handling with proper type checking
+- **Optimized API Calls**: Parallel data fetching for better performance
+- **Enhanced Logging**: Detailed progress tracking and error reporting
+
+### 🔧 **Technical Improvements**
+- **Strapi v5 Support**: Proper handling of `documentId` and fallback to `id`
+- **Pagination**: Configurable pagination size (default: 100 items)
+- **Rate Limiting**: Configurable delay between API calls (default: 2 seconds)
+- **Memory Management**: Better resource handling and cleanup
+
+## Configuration
+
+### Environment Variables
+- `STRAPI_BASE_URL`: Base URL for Strapi instance (default: production URL)
+- `DELAY_MS`: Delay between API calls in milliseconds (default: 2000)
+
+**Note:** Environment variables are automatically loaded from `.env` file using `dotenv`.
+
+### API Configuration
+- **Analysis API**: `http://localhost:4000/analyzeStaticData`
+- **Pagination Size**: 100 items per request
+- **Population**: Categories and comments are populated with sorting
+
+## Data Flow
+
+1. **Fetch Data**: Parallel fetching of categories and responsas
+2. **Process Each Responsa**:
+   - Extract title, content, and first comment
+   - Send to AI analysis API with first comment as clarification
+   - Update Strapi with returned categories
+3. **Error Handling**: Comprehensive error tracking and reporting
+
+## API Payload Structure
+
+### Request to Analysis API
+```typescript
+{
+  title: string,
+  description: string,           // responsa content
+  clarificationParagraph?: string, // first comment as clarification
+  categories: string[]           // available category names
+}
+```
+
+### Response from Analysis API
+```typescript
+{
+  success: boolean,
+  message?: string,
+  categories?: string[] // suggested category names
+}
+```
 
 ## Usage
 
-### Prerequisites
-
-1. **Environment Variables**:
-   - `STRAPI_BASE_URL`: Your Strapi backend URL (defaults to production URL)
-   - `DELAY_MS`: Delay between API calls in milliseconds (default: 2000)
-
-2. **AI Analysis Service**: The script expects an AI service running at `http://localhost:4000/analyzeStaticData`
-
-### Running the Script
-
 ```bash
-# From the server directory
 cd server
-
-# Run with default settings
-npx ts-node scripts/analyze-responsas.ts
-
-# Run with custom delay
-DELAY_MS=3000 npx ts-node scripts/analyze-responsas.ts
-
-# Run with custom Strapi URL
-STRAPI_BASE_URL=http://localhost:1337 npx ts-node scripts/analyze-responsas.ts
+pnpm ts-node scripts/analyze-responsas.ts
 ```
-
-## How It Works
-
-1. **Data Fetching**:
-   - Fetches all responsas from Strapi with full population
-   - Fetches all categories from Strapi (term, person, genre types)
-
-2. **AI Analysis**:
-   - Sends each responsa's title and content to the AI analysis API
-   - Receives suggested category names from the AI
-   - Matches AI suggestions with existing categories in Strapi
-
-3. **Strapi Updates**:
-   - Updates responsas with matched categories using Strapi's connect syntax
-   - Handles both documentId (Strapi v5) and id fallbacks for updates
-
-## Configuration Options
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `STRAPI_BASE_URL` | Production URL | Strapi backend base URL |
-| `DELAY_MS` | 2000 | Delay between API calls in milliseconds |
-| `ANALYSIS_API_URL` | http://localhost:4000/analyzeStaticData | AI analysis service endpoint |
-
-## Output
-
-The script provides detailed console output including:
-- Number of responsas found and processed
-- AI analysis results for each responsa
-- Category matching information
-- Success/failure counts
-- Error details if any occur
 
 ## Error Handling
 
-- **Missing Data**: Skips responsas without title or content
-- **API Failures**: Continues processing other responsas if one fails
-- **No Matches**: Logs warnings when no categories match AI suggestions
-- **Update Failures**: Provides detailed error information and continues processing
+The script handles various error scenarios:
+- **Network Errors**: Retry logic with fallback URLs
+- **Missing Data**: Graceful handling of missing title/content
+- **API Failures**: Detailed error logging with status codes
+- **Category Mismatches**: Logging when AI categories don't match Strapi categories
 
-## Categories Used
+## Logging
 
-Unlike the terms analysis script which only uses "genre" and "term" categories, this script uses ALL available category types:
-- **term**: Jewish terminology and concepts
-- **person**: Rabbis, scholars, and historical figures
-- **genre**: Content types and thematic categories
+The script provides detailed logging:
+- 🔍 Data fetching progress
+- ❓ Responsa processing status
+- 💬 Comment availability
+- 🏷️ Category matching results
+- ✅ Success/failure tracking
+- ⏱️ Timing information
 
-## Integration
+## Strapi Update Format
 
-This script integrates with:
-- **Strapi CMS**: For fetching and updating responsa content
-- **AI Analysis Service**: For content analysis and category suggestions
-- **Category System**: Uses all available category types for maximum flexibility
+**Request:**
+```json
+{
+  "data": {
+    "categories": {
+      "set": ["document_id_1", "document_id_2"]
+    }
+  }
+}
+```
 
-## Best Practices
+**Note:** The script uses `set` instead of `connect` to **override** existing categories rather than adding to them.
 
-1. **Test First**: Run on a small subset of data before processing all responsas
-2. **Backup Data**: Consider backing up your Strapi database before running
-3. **Monitor Progress**: Watch the console output for any issues
-4. **Adjust Delays**: Increase `DELAY_MS` if you encounter rate limiting
-5. **Review Results**: Check the updated responsas in Strapi to verify category assignments
+## Performance
+
+- **Parallel Fetching**: Categories and responsas fetched simultaneously
+- **Batch Processing**: Configurable pagination for large datasets
+- **Rate Limiting**: Prevents API overload with configurable delays
+- **Memory Efficient**: Processes items individually to manage memory usage
+
+## Dependencies
+
+- `axios`: HTTP client for API calls
+- `qs`: Query string formatting for Strapi API calls
+- `dotenv`: Environment variable loading
+- `@types/node`: Node.js type definitions
+- `typescript`: TypeScript compiler
+- `ts-node`: TypeScript execution environment
 
 ## Troubleshooting
 
 ### Common Issues
-
-1. **AI Service Unavailable**: Ensure the analysis service is running on port 4000
-2. **Strapi Connection Issues**: Verify `STRAPI_BASE_URL` is correct
-3. **Permission Errors**: Ensure your Strapi user has update permissions for responsas
-4. **Rate Limiting**: Increase `DELAY_MS` if you hit API limits
+1. **Module Not Found**: Ensure dependencies are installed (`pnpm add axios qs dotenv`)
+2. **Connection Errors**: Check Strapi URL and network connectivity
+3. **Analysis API Errors**: Verify the analysis service is running on port 4000
+4. **Category Mismatches**: Ensure category names in Strapi match expected format
+5. **Query Format Errors**: Script now uses proper `qs` formatting for Strapi API calls
 
 ### Debug Mode
-
-For more detailed logging, you can modify the script to add additional console.log statements or use a debugging tool like `node --inspect`.
+Enable detailed logging by checking console output for:
+- API response status codes
+- Category matching results
+- Error details and stack traces

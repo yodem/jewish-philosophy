@@ -53,6 +53,8 @@ TEST_MODE=false npx tsx scripts/analyze-videos.ts
 - `DELAY_MS`: Delay between video processing in milliseconds (default: `2000`)
 - `TEST_MODE`: Set to `true` for test mode, `false` for production (default: `false`)
 
+**Note:** Environment variables are automatically loaded from `.env` file using `dotenv`.
+
 ### API Endpoints
 
 - **Strapi API**: `http://localhost:1337/api`
@@ -142,10 +144,14 @@ Add console.log statements or check the detailed output for:
 {
   "data": {
     "description": "AI-generated description",
-    "categories": [1, 3, 5]
+    "categories": {
+      "set": ["document_id_1", "document_id_2"]
+    }
   }
 }
 ```
+
+**Note:** The script uses `set` instead of `connect` to **override** existing categories rather than adding to them.
 
 ## Safety Features
 
