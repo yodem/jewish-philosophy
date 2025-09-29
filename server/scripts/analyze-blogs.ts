@@ -62,9 +62,6 @@ async function fetchAllBlogs(): Promise<BlogData[]> {
   
   try {
     const query = qs.stringify({
-      populate: {
-        categories: true
-      },
       pagination: {
         pageSize: PAGINATION_SIZE
       },

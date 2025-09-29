@@ -49,7 +49,7 @@ export function CategoryCombobox({
   categories,
   value,
   onValueChange,
-  placeholder = "בחר קטגוריה...",
+  placeholder = "בחרו קטגוריה...",
   emptyMessage = "לא נמצאו קטגוריות.",
   disabled = false,
   loading = false,
@@ -71,7 +71,7 @@ export function CategoryCombobox({
     }))
   ], [categories])
 
-  const selectedOption = options.find((option) => option.value === value)
+  const selectedOption = value ? options.find((option) => option.value === value) : null
 
   if (loading) {
     return <Skeleton className="h-10 w-full" />

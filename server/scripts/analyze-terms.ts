@@ -20,7 +20,6 @@ async function fetchAllTerms() {
   console.log('🔍 Fetching all terms from Strapi...')
   try {
     const query = qs.stringify({
-      populate: '*',
       pagination: {
         pageSize: 100
       }

@@ -8,7 +8,7 @@ export default {
       const { query, contentTypes, categories } = ctx.query;
 
       // Validate that at least one search parameter is provided
-      if (!query && !categories) {
+      if (!query?.trim() && !categories?.trim()) {
         ctx.status = 400;
         ctx.body = {
           error: 'At least one search parameter (query or categories) is required'
