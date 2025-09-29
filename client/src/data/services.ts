@@ -7,19 +7,16 @@ export async function subscribeService(email: string) {
     const url = new URL("/api/newsletter-signups", BASE_URL);
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchAPI(url.href, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        body: {
           data: {
             email,
           },
-        }),
+        },
       });
 
-      return response.json();
+      return response;
     } catch (error) {
       console.error("Subscribe Service Error:", error);
     }
@@ -29,17 +26,14 @@ export async function unsubscribeService(email: string) {
     const url = new URL("/api/newsletter-signups/unsubscribe", BASE_URL);
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchAPI(url.href, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        body: {
           email,
-        }),
+        },
       });
 
-      return response.json();
+      return response;
     } catch (error) {
       console.error("Unsubscribe Service Error:", error);
       return {

@@ -4,6 +4,7 @@ import z from "zod";
 import { subscribeService, unsubscribeService } from "./services";
 import { createComment, createThread } from "./loaders";
 import { BASE_URL } from "../../consts";
+import { fetchAPI } from "@/utils/fetchApi";
 
 const subscribeSchema = z.object({
   email: z.string().email({
@@ -289,23 +290,18 @@ export async function submitContactAction(prevState: ContactState, formData: For
     const { name, email, subject, message, category } = validatedFields.data;
 
     // Send email via Strapi API
-    const response = await fetch(`${BASE_URL}/api/contact-email/send`, {
+    const responseData = await fetchAPI(`${BASE_URL}/api/contact-email/send`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         name,
         email,
         subject,
         message,
         category: parseInt(category, 10)
-      }),
+      },
     });
 
-    const responseData = await response.json();
-
-    if (!response.ok) {
+    if (responseData.error) {
       console.error('Error sending email:', responseData);
       return {
         ...prevState,
@@ -418,19 +414,14 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       data.questioneerEmail = questioneerEmail;
     }
 
-    const response = await fetch(`${BASE_URL}/api/responsas`, {
+    const responseData = await fetchAPI(`${BASE_URL}/api/responsas`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+      body: {
         data
-      }),
+      },
     });
 
-    const responseData = await response.json();
-
-    if (!response.ok) {
+    if (responseData.error) {
       console.error('Error response:', responseData);
       return {
         ...prevState,

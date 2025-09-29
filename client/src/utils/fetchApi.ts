@@ -18,10 +18,13 @@ interface ErrorWithCause extends Error {
 export async function fetchAPI(url: string, options: FetchAPIOptions) {
   const { method, authToken, body, next, headers: customHeaders } = options;
 
+  // Use provided authToken or fall back to environment variable
+  const token = authToken || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+
   const requestHeaders: HeadersInit = {
     ...(customHeaders || {}),
     ...(!customHeaders?.["Content-Type"] && { "Content-Type": "application/json" }),
-    ...(authToken && { Authorization: `Bearer ${authToken}` }),
+    ...(token && { Authorization: `Bearer ${token}` }),
   };
 
   const requestInit: RequestInit & { next?: NextFetchRequestConfig } = {
