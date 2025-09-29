@@ -117,6 +117,12 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
               שיעור מסדרת: {playlist.title}
             </h2>
           </header>
+           {/* Category badges */}
+           {video.categories && video.categories.length > 0 && (
+                <div className="mt-4">
+                  <FullCategoryList categories={video.categories} />
+                </div>
+              )}
 
           {/* Video player */}
           <YoutubePlayer videoId={video.videoId} title={video.title} playlistTitle={playlist.title} />
@@ -128,13 +134,6 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
             </h3>
             <div className="prose prose-lg max-w-none">
               <p className="text-gray-700 leading-relaxed text-justify mb-4">{video.description}</p>
-
-              {/* Category badges */}
-              {video.categories && video.categories.length > 0 && (
-                <div className="mt-4">
-                  <FullCategoryList categories={video.categories} />
-                </div>
-              )}
             </div>
           </article>
 
