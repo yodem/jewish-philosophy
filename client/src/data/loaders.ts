@@ -205,7 +205,6 @@ export async function getVideoBySlug(slug: string) {
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
   if (res.data.length === 0) return null;
   const item = res.data[0]
-  console.log('item', item);
   return item
 }
 
