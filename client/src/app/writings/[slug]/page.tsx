@@ -11,6 +11,7 @@ import { WritingViewTracker, WritingButtonTracker } from "@/components/WritingTr
 import { JsonLd } from "@/lib/json-ld";
 import { Article, Book, WithContext } from "schema-dts";
 import { BASE_URL } from "../../../../consts";
+import ReactMarkdown from "react-markdown";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -146,9 +147,9 @@ export default async function WritingPage({ params }: WritingPageProps) {
           />
         </div>}
 
-        <div className="text-center mb-8">
-          <p className="text-lg leading-relaxed text-gray-700 text-justify">{writing.description}</p>
-        </div>
+        <div className={`dark:prose-invert text-justify`}>
+      <ReactMarkdown>{writing.description}</ReactMarkdown>
+    </div>
 
         {(pdfUrl || writing.linkToWriting?.href) && (
           <div className="text-center mt-8">

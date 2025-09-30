@@ -918,7 +918,7 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.RichText;
     image: Schema.Attribute.Media<'images'>;
     linkToWriting: Schema.Attribute.Component<'elements.link', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
