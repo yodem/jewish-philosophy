@@ -174,19 +174,18 @@ export default function WritingsPage() {
               <TableHead>סוג</TableHead>
               <TableHead>מחבר</TableHead>
               <TableHead>קטגוריות</TableHead>
-              <TableHead>תאריך פרסום</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   טוענים...
                 </TableCell>
               </TableRow>
             ) : writings.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   לא נמצאו כתבים
                 </TableCell>
               </TableRow>
@@ -210,9 +209,6 @@ export default function WritingsPage() {
                   <TableCell>{writing.author.name}</TableCell>
                   <TableCell>
                     <LimitedCategoryList categories={writing.categories} />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(writing.publishedAt).toLocaleDateString('he-IL')}
                   </TableCell>
                 </TableRow>
               ))
