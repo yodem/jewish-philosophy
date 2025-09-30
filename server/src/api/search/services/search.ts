@@ -33,10 +33,7 @@ const CONTENT_TYPE_CONFIG = {
   },
   video: {
     searchableFields: ['title', 'description', 'videoId'],
-    populate: {
-      playlist: { fields: ['slug'] },
-      categories: { fields: ['id', 'name', 'slug'] }
-    }
+    populate: ['playlist', 'categories']
   },
   playlist: {
     searchableFields: ['title', 'description', 'youtubeId'],
@@ -150,7 +147,8 @@ export default () => ({
         populate: config.populate as any
       });
 
-      return results.map((result: any) => ({
+      // Map results and filter out videos without playlists
+      const mappedResults = results.map((result: any) => ({
         id: result.id,
         documentId: result.documentId,
         title: result.title || result.name || '', // Handle different field names
@@ -161,6 +159,13 @@ export default () => ({
         playlistSlug: result.playlist?.slug || null, // Include playlist slug for video URLs
         relevanceScore: calculateRelevanceScore(result, [...config.searchableFields], query)
       }));
+
+      // Filter out videos without playlists since they cannot be accessed
+      if (contentType === 'video') {
+        return mappedResults.filter(result => result.playlistSlug);
+      }
+
+      return mappedResults;
 
     } catch (error) {
       console.error(`Error searching content type ${contentType}:`, error);
