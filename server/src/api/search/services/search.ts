@@ -174,14 +174,32 @@ function buildSearchFilters(contentType: string, query?: string, categories?: st
   const hasQuery = query && query.trim();
   const hasCategories = categories && categories.trim();
 
+  // Helper to build AND logic for categories
+  const buildCategoryFilter = (categoryList: string[]) => {
+    if (categoryList.length === 1) {
+      // Single category - simple filter
+      return {
+        categories: {
+          slug: categoryList[0]
+        }
+      };
+    } else {
+      // Multiple categories - require ALL (AND logic)
+      return {
+        $and: categoryList.map(categorySlug => ({
+          categories: {
+            slug: categorySlug
+          }
+        }))
+      };
+    }
+  };
+
   // Case 1: Only categories (no search text)
-  // Return all content with those categories
+  // Return all content with ALL those categories (AND logic)
   if (!hasQuery && hasCategories) {
-    return {
-      categories: {
-        slug: { $in: categories.split(',').map(c => c.trim()) }
-      }
-    };
+    const categoryList = categories.split(',').map(c => c.trim()).filter(Boolean);
+    return buildCategoryFilter(categoryList);
   }
 
   // Case 2: Only search text (no categories)
@@ -200,7 +218,7 @@ function buildSearchFilters(contentType: string, query?: string, categories?: st
   }
 
   // Case 3: Both search text AND categories
-  // Search text across fields AND filter by categories
+  // Search text across fields AND filter by ALL categories
   if (hasQuery && hasCategories) {
     const textFilters = [];
     const config = CONTENT_TYPE_CONFIG[contentType as keyof typeof CONTENT_TYPE_CONFIG];
@@ -211,11 +229,8 @@ function buildSearchFilters(contentType: string, query?: string, categories?: st
       }
     }
 
-    const categoryFilter = {
-      categories: {
-        slug: { $in: categories.split(',').map(c => c.trim()) }
-      }
-    };
+    const categoryList = categories.split(',').map(c => c.trim()).filter(Boolean);
+    const categoryFilter = buildCategoryFilter(categoryList);
 
     if (textFilters.length === 0) {
       return categoryFilter;
