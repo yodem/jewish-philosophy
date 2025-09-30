@@ -477,7 +477,7 @@ export async function getWritingsPaginated(
   const query = qs.stringify({
     populate: '*',
     sort: [
-      'type:asc', // This will sort 'article' before 'book' alphabetically, so we need custom sorting
+      'type:desc', // 'book' comes before 'article' alphabetically when sorted descending
       'publishedAt:desc'
     ],
     pagination: {
@@ -499,20 +499,10 @@ export async function getWritingsPaginated(
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   
-  // Since Strapi doesn't support custom sorting by enum values, we'll sort client-side after fetching
-  const sortedData = (res.data || []).sort((a: Writing, b: Writing) => {
-    // First sort by type: books first, then articles
-    if (a.type !== b.type) {
-      if (a.type === 'book' && b.type === 'article') return -1;
-      if (a.type === 'article' && b.type === 'book') return 1;
-    }
-    // Then by publishedAt (most recent first)
-    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
-  });
-
+  // Now Strapi handles the sorting at the database level: books first, then articles
   return {
-    data: sortedData,
-    meta: res.meta || { pagination: { page, pageSize, total: sortedData.length, pageCount: Math.ceil(sortedData.length / pageSize) } }
+    data: res.data || [],
+    meta: res.meta || { pagination: { page, pageSize, total: 0, pageCount: 0 } }
   };
 }
 
