@@ -63,6 +63,13 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "pdfFile": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files"
+      ]
     }
   }
 }

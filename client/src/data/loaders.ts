@@ -512,7 +512,15 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
     filters: {
       slug: { $eq: slug },
     },
-    populate: '*',
+    populate: {
+      author: true,
+      categories: true,
+      blogs: true,
+      responsas: true,
+      image: true,
+      pdfFile: true,
+      linkToWriting: true,
+    },
   });
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);

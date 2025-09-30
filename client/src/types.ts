@@ -170,6 +170,7 @@ export type Writing = {
   description: string;
   type: 'book' | 'article';
   linkToWriting?: LinkProps;
+  pdfFile?: ImageProps; // Using ImageProps as it has the same structure (url, etc)
   author: Autor;
   slug: string;
   createdAt: string;

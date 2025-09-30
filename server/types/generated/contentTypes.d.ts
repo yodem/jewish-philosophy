@@ -927,6 +927,7 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
       'api::writing.writing'
     > &
       Schema.Attribute.Private;
+    pdfFile: Schema.Attribute.Media<'files'>;
     publishedAt: Schema.Attribute.DateTime;
     responsas: Schema.Attribute.Relation<
       'manyToMany',
