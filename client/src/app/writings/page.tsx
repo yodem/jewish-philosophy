@@ -37,7 +37,7 @@ export default function WritingsPage() {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
   
-  // Use the debounced search hook
+  // Use the debounced search hook (it automatically reads from URL search parameter)
   const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
   useEffect(() => {
@@ -57,29 +57,16 @@ export default function WritingsPage() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        // TODO: Update this when we implement search and filtering in the backend
-        const result = await getWritingsPaginated(page, pageSize);
-        let filteredWritings = result;
-        
-        // Client-side filtering for now
-        if (typeFilter !== 'all') {
-          filteredWritings = result.filter(writing => writing.type === typeFilter);
-        }
-        
-        if (debouncedSearchTerm) {
-          filteredWritings = filteredWritings.filter(writing => 
-            writing.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
-            writing.description.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-          );
-        }
+        // Server-side filtering and sorting with proper pagination
+        const result = await getWritingsPaginated(
+          page, 
+          pageSize, 
+          typeFilter, 
+          debouncedSearchTerm || undefined
+        );
 
-        setWritings(filteredWritings);
-        // For now, we'll use simple pagination calculation
-        const total = filteredWritings.length;
-        const pageCount = Math.ceil(total / pageSize);
-        setMeta({
-          pagination: { page, pageSize, total, pageCount }
-        });
+        setWritings(result.data);
+        setMeta(result.meta);
       } catch (error) {
         console.error("Error fetching writings:", error);
       } finally {
@@ -95,6 +82,7 @@ export default function WritingsPage() {
     const params = new URLSearchParams();
     if (search) params.set("search", search);
     if (typeFilter !== 'all') params.set("type", typeFilter);
+    params.set("page", "1"); // Reset to first page when searching
     router.push(`/writings?${params.toString()}`);
   };
 
