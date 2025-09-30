@@ -49,6 +49,7 @@ TEST_MODE=false npx tsx scripts/analyze-terms.ts
 ### Environment Variables
 
 - `STRAPI_BASE_URL`: Strapi server URL (default: `http://localhost:1337`)
+- `STRAPI_API_TOKEN` or `NEXT_PUBLIC_STRAPI_API_TOKEN`: Strapi authentication token
 - `DELAY_MS`: Delay between term processing in milliseconds (default: `2000`)
 - `TEST_MODE`: Set to `true` for test mode, `false` for production (default: `false`)
 

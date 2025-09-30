@@ -9,6 +9,7 @@ dotenv.config()
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeStaticData'
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN
 const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 
 // Categories will be fetched from Strapi dynamically
@@ -17,17 +18,26 @@ const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 async function fetchAllVideos() {
-  console.log('🔍 Fetching all videos from Strapi...')
+  console.log('🔍 Fetching videos without categories from Strapi...')
   try {
     const query = qs.stringify({
+      filters: {
+        categories: {
+          $null: true
+        }
+      },
       pagination: {
         pageSize: 200
       }
     })
     
-    const res = await axios.get(`${STRAPI_URL}/videos?${query}`)
+    const res = await axios.get(`${STRAPI_URL}/videos?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+      }
+    })
     const videos = res.data.data || []
-    console.log(`📹 Found ${videos.length} videos`)
+    console.log(`📹 Found ${videos.length} videos without categories`)
     return videos
   } catch (error: any) {
     console.error('❌ Failed to fetch videos:', error.message)
@@ -45,7 +55,11 @@ async function fetchCategories() {
       }
     })
     
-    const res = await axios.get(`${STRAPI_URL}/categories?${query}`)
+    const res = await axios.get(`${STRAPI_URL}/categories?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+      }
+    })
     const categories = res.data.data || []
     console.log(`🏷️  Found ${categories.length} categories`)
     return categories
@@ -150,7 +164,11 @@ async function updateVideoInStrapi(video: any, analysisResult: any, categories: 
     let updateUrl = `${STRAPI_URL}/videos/${video.documentId || video.id}`
     console.log(`🔗 Update URL: ${updateUrl}`)
     try {
-      const updateResponse = await axios.put(updateUrl, updatePayload)
+      const updateResponse = await axios.put(updateUrl, updatePayload, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      })
       if (updateResponse.data?.data) {
         console.log(`✅ Successfully updated video!`)
         return updateResponse.data.data
@@ -160,7 +178,11 @@ async function updateVideoInStrapi(video: any, analysisResult: any, categories: 
       updateUrl = `${STRAPI_URL}/videos/${video.id}`
       console.log(`🔗 Fallback Update URL: ${updateUrl}`)
 
-      const updateResponse = await axios.put(updateUrl, updatePayload)
+      const updateResponse = await axios.put(updateUrl, updatePayload, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      })
       if (updateResponse.data?.data) {
         console.log(`✅ Successfully updated video with fallback!`)
         return updateResponse.data.data

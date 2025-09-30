@@ -51,6 +51,7 @@ interface AnalysisRequest {
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeStaticData'
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com'
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN
 const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 const PAGINATION_SIZE = 100
 
@@ -58,10 +59,15 @@ const PAGINATION_SIZE = 100
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
 async function fetchAllBlogs(): Promise<BlogData[]> {
-  console.log('🔍 Fetching all blogs from Strapi...')
+  console.log('🔍 Fetching blogs without categories from Strapi...')
   
   try {
     const query = qs.stringify({
+      filters: {
+        categories: {
+          $null: true
+        }
+      },
       pagination: {
         pageSize: PAGINATION_SIZE
       },
@@ -69,11 +75,16 @@ async function fetchAllBlogs(): Promise<BlogData[]> {
     })
     
     const response: AxiosResponse<StrapiResponse<BlogData[]>> = await axios.get(
-      `${STRAPI_URL}/blogs?${query}`
+      `${STRAPI_URL}/blogs?${query}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      }
     )
     
     const blogs = response.data.data || []
-    console.log(`📄 Found ${blogs.length} blogs`)
+    console.log(`📄 Found ${blogs.length} blogs without categories`)
     
     return blogs
   } catch (error: unknown) {
@@ -95,7 +106,12 @@ async function fetchCategories(): Promise<CategoryData[]> {
     })
     
     const response: AxiosResponse<StrapiResponse<CategoryData[]>> = await axios.get(
-      `${STRAPI_URL}/categories?${query}`
+      `${STRAPI_URL}/categories?${query}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      }
     )
     
     const categories = response.data.data || []
@@ -242,7 +258,12 @@ async function updateBlogInStrapi(
     try {
       const updateResponse: AxiosResponse<StrapiResponse<BlogData>> = await axios.put(
         updateUrl, 
-        updatePayload
+        updatePayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+          }
+        }
       )
       
       if (updateResponse.data?.data) {
@@ -258,7 +279,12 @@ async function updateBlogInStrapi(
 
       const updateResponse: AxiosResponse<StrapiResponse<BlogData>> = await axios.put(
         updateUrl, 
-        updatePayload
+        updatePayload,
+        {
+          headers: {
+            'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+          }
+        }
       )
       
       if (updateResponse.data?.data) {
