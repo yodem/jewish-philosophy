@@ -10,6 +10,7 @@ import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata"
 import { WritingViewTracker, WritingButtonTracker } from "@/components/WritingTracker";
 import { JsonLd } from "@/lib/json-ld";
 import { Article, Book, WithContext } from "schema-dts";
+import { BASE_URL } from "../../../../consts";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -53,6 +54,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
   const pageUrl = `${baseUrl}/writings/${slug}`;
   const imageUrl = writing.image?.url ? `${process.env.STRAPI_BASE_URL || ''}${writing.image.url}` : undefined;
+  const pdfUrl = writing.pdfFile?.url ? `${BASE_URL}${writing.pdfFile.url}` : null;
 
   // Structured data for the writing
   const structuredData: WithContext<Article | Book> = {
@@ -148,29 +150,30 @@ export default async function WritingPage({ params }: WritingPageProps) {
           <p className="text-lg leading-relaxed text-gray-700 text-justify">{writing.description}</p>
         </div>
 
-        {writing.linkToWriting?.href && (
+        {(pdfUrl || writing.linkToWriting?.href) && (
           <div className="text-center mt-8">
             <WritingButtonTracker
               writingTitle={writing.title}
               writingType={writing.type}
               author={writing.author.name}
-              isExternal={writing.linkToWriting.isExternal || false}
+              isExternal={true}
             >
               <Link
-                href={writing.linkToWriting.href}
-                target={writing.linkToWriting.isExternal ? "_blank" : "_self"}
-                rel={writing.linkToWriting.isExternal ? "noopener noreferrer" : undefined}
+                href={pdfUrl || writing.linkToWriting?.href || '#'}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Button
                   variant="default"
                   className="inline-flex items-center gap-2 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
                 >
-                  {writing.linkToWriting?.text || defaultButtonText}
-                  {writing.linkToWriting?.isExternal && (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  )}
+                  {pdfUrl 
+                    ? (isBook ? 'צפייה בספר (PDF)' : 'קרא מאמר (PDF)')
+                    : (writing.linkToWriting?.text || defaultButtonText)
+                  }
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
                 </Button>
               </Link>
             </WritingButtonTracker>
