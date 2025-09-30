@@ -468,13 +468,30 @@ export async function getAllWritings(): Promise<Writing[]> {
   return res.data || [];
 }
 
-export async function getWritingsPaginated(page: number = 1, pageSize: number = 12): Promise<Writing[]> {
+export async function getWritingsPaginated(
+  page: number = 1, 
+  pageSize: number = 12,
+  typeFilter?: 'book' | 'article' | 'all',
+  searchTerm?: string
+): Promise<{ data: Writing[]; meta: { pagination: { page: number; pageSize: number; total: number; pageCount: number } } }> {
   const query = qs.stringify({
     populate: '*',
-    sort: ['publishedAt:desc'],
+    sort: [
+      'type:asc', // This will sort 'article' before 'book' alphabetically, so we need custom sorting
+      'publishedAt:desc'
+    ],
     pagination: {
       page,
       pageSize
+    },
+    filters: {
+      ...(typeFilter && typeFilter !== 'all' ? { type: { $eq: typeFilter } } : {}),
+      ...(searchTerm ? {
+        $or: [
+          { title: { $containsi: searchTerm } },
+          { description: { $containsi: searchTerm } }
+        ]
+      } : {})
     }
   });
   const path = "/api/writings";
@@ -482,7 +499,21 @@ export async function getWritingsPaginated(page: number = 1, pageSize: number = 
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
   
-  return res.data || [];
+  // Since Strapi doesn't support custom sorting by enum values, we'll sort client-side after fetching
+  const sortedData = (res.data || []).sort((a: Writing, b: Writing) => {
+    // First sort by type: books first, then articles
+    if (a.type !== b.type) {
+      if (a.type === 'book' && b.type === 'article') return -1;
+      if (a.type === 'article' && b.type === 'book') return 1;
+    }
+    // Then by publishedAt (most recent first)
+    return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+  });
+
+  return {
+    data: sortedData,
+    meta: res.meta || { pagination: { page, pageSize, total: sortedData.length, pageCount: Math.ceil(sortedData.length / pageSize) } }
+  };
 }
 
 export async function getWritingsByType(type: 'book' | 'article', page: number = 1, pageSize: number = 12): Promise<Writing[]> {
