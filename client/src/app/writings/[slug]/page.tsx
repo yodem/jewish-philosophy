@@ -52,10 +52,15 @@ export default async function WritingPage({ params }: WritingPageProps) {
   const typeLabel = isBook ? 'ספר' : 'מאמר';
   const defaultButtonText = isBook ? 'צפייה בספר' : 'קרא מאמר';
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
   const pageUrl = `${baseUrl}/writings/${slug}`;
   const imageUrl = writing.image?.url ? `${process.env.STRAPI_BASE_URL || ''}${writing.image.url}` : undefined;
-  const pdfUrl = writing.pdfFile?.url ? `${BASE_URL}${writing.pdfFile.url}` : null;
+  // Check if PDF URL is already absolute (starts with http:// or https://)
+  const pdfUrl = writing.pdfFile?.url 
+    ? (writing.pdfFile.url.startsWith('http://') || writing.pdfFile.url.startsWith('https://'))
+      ? writing.pdfFile.url
+      : `${BASE_URL}${writing.pdfFile.url}`
+    : null;
 
   // Structured data for the writing
   const structuredData: WithContext<Article | Book> = {
