@@ -9,6 +9,7 @@ dotenv.config()
 const ANALYSIS_API_URL = 'http://localhost:4000/analyzeStaticData'
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN
 const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 
 // Categories will be fetched from Strapi dynamically
@@ -17,17 +18,26 @@ const DELAY_MS = parseInt(process.env.DELAY_MS || '2000')
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 async function fetchAllTerms() {
-  console.log('🔍 Fetching all terms from Strapi...')
+  console.log('🔍 Fetching terms without categories from Strapi...')
   try {
     const query = qs.stringify({
+      filters: {
+        categories: {
+          $null: true
+        }
+      },
       pagination: {
         pageSize: 100
       }
     })
     
-    const res = await axios.get(`${STRAPI_URL}/terms?${query}`)
+    const res = await axios.get(`${STRAPI_URL}/terms?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+      }
+    })
     const terms = res.data.data || []
-    console.log(`📝 Found ${terms.length} terms`)
+    console.log(`📝 Found ${terms.length} terms without categories`)
     return terms
   } catch (error: any) {
     console.error('❌ Failed to fetch terms:', error.message)
@@ -51,7 +61,11 @@ async function fetchCategories() {
       }
     })
     
-    const res = await axios.get(`${STRAPI_URL}/categories?${query}`)
+    const res = await axios.get(`${STRAPI_URL}/categories?${query}`, {
+      headers: {
+        'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+      }
+    })
     const categories = res.data.data || []
     console.log(`🏷️  Found ${categories.length} genre and term categories`)
     return categories
@@ -155,7 +169,11 @@ async function updateTermInStrapi(term: any, analysisResult: any, categories: an
     let updateUrl = `${STRAPI_URL}/terms/${term.documentId || term.id}`
     console.log(`🔗 Update URL: ${updateUrl}`)
     try {
-      const updateResponse = await axios.put(updateUrl, updatePayload)
+      const updateResponse = await axios.put(updateUrl, updatePayload, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      })
       if (updateResponse.data?.data) {
         console.log(`✅ Successfully updated term!`)
         return updateResponse.data.data
@@ -165,7 +183,11 @@ async function updateTermInStrapi(term: any, analysisResult: any, categories: an
       updateUrl = `${STRAPI_URL}/terms/${term.id}`
       console.log(`🔗 Fallback Update URL: ${updateUrl}`)
 
-      const updateResponse = await axios.put(updateUrl, updatePayload)
+      const updateResponse = await axios.put(updateUrl, updatePayload, {
+        headers: {
+          'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+        }
+      })
       if (updateResponse.data?.data) {
         console.log(`✅ Successfully updated term with fallback!`)
         return updateResponse.data.data

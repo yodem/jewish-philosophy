@@ -26,6 +26,7 @@ The `analyze-blogs.ts` script analyzes blog content using AI to automatically ca
 
 ### Environment Variables
 - `STRAPI_BASE_URL`: Base URL for Strapi instance (default: production URL)
+- `STRAPI_API_TOKEN` or `NEXT_PUBLIC_STRAPI_API_TOKEN`: Strapi authentication token
 - `DELAY_MS`: Delay between API calls in milliseconds (default: 2000)
 
 **Note:** Environment variables are automatically loaded from `.env` file using `dotenv`.

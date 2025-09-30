@@ -18,23 +18,14 @@ interface StrapiResponse<T> {
   }
 }
 
-interface ResponsaData {
+interface WritingData {
   id: number
   documentId: string
   title: string
-  content: string
-  questioneer: string
+  description?: string
+  type?: 'book' | 'article'
   slug: string
   categories?: CategoryData[]
-  comments?: CommentData[]
-}
-
-interface CommentData {
-  id: number
-  documentId: string
-  answer: string
-  answerer: string
-  responsa?: ResponsaData
 }
 
 interface CategoryData {
@@ -67,8 +58,8 @@ const PAGINATION_SIZE = 100
 // Helper function to add delay between API calls
 const delay = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms))
 
-async function fetchAllResponsas(): Promise<ResponsaData[]> {
-  console.log('🔍 Fetching responsas without categories from Strapi...')
+async function fetchAllWritings(): Promise<WritingData[]> {
+  console.log('🔍 Fetching writings without categories from Strapi...')
   
   try {
     const query = qs.stringify({
@@ -77,22 +68,14 @@ async function fetchAllResponsas(): Promise<ResponsaData[]> {
           $null: true
         }
       },
-      populate: {
-        comments: {
-          filters: {
-            publishedAt: { $notNull: true }
-          },
-          sort: ['createdAt:asc']
-        }
-      },
       pagination: {
         pageSize: PAGINATION_SIZE
       },
       sort: ['createdAt:desc']
     })
     
-    const response: AxiosResponse<StrapiResponse<ResponsaData[]>> = await axios.get(
-      `${STRAPI_URL}/responsas?${query}`,
+    const response: AxiosResponse<StrapiResponse<WritingData[]>> = await axios.get(
+      `${STRAPI_URL}/writings?${query}`,
       {
         headers: {
           'Authorization': `Bearer ${STRAPI_API_TOKEN}`
@@ -100,13 +83,13 @@ async function fetchAllResponsas(): Promise<ResponsaData[]> {
       }
     )
     
-    const responsas = response.data.data || []
-    console.log(`❓ Found ${responsas.length} responsas without categories`)
+    const writings = response.data.data || []
+    console.log(`📄 Found ${writings.length} writings without categories`)
     
-    return responsas
+    return writings
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    console.error('❌ Failed to fetch responsas:', errorMessage)
+    console.error('❌ Failed to fetch writings:', errorMessage)
     throw error
   }
 }
@@ -142,47 +125,49 @@ async function fetchCategories(): Promise<CategoryData[]> {
   }
 }
 
-function getFirstComment(responsa: ResponsaData): string | undefined {
-  if (!responsa.comments || responsa.comments.length === 0) {
-    return undefined
-  }
+// Helper function to extract meaningful text from rich content
+function extractTextFromRichContent(content: string): string {
+  if (!content) return ''
   
-  // Comments are already sorted by ID ascending, so first one is the oldest
-  const firstComment = responsa.comments[0]
-  return firstComment.answer
+  // Remove basic HTML tags and get first 500 characters for analysis
+  const textContent = content
+    .replace(/<[^>]*>/g, ' ')           // Remove HTML tags
+    .replace(/\s+/g, ' ')              // Normalize whitespace
+    .trim()
+  
+  // Return first 500 characters to avoid overwhelming the AI
+  return textContent
 }
 
-async function analyzeResponsaWithAI(
-  responsa: ResponsaData, 
+async function analyzeWritingWithAI(
+  writing: WritingData, 
   categoryNames: string[]
 ): Promise<AnalysisResult | null> {
-  const { title, content } = responsa
+  const { title, description, type } = writing
 
-  if (!title || !content) {
-    console.log(`⚠️  Skipping responsa - missing title or content`)
+  if (!title || !description) {
+    console.log(`⚠️  Skipping writing - missing title or description`)
     return null
   }
 
-  const firstComment = getFirstComment(responsa)
+  // Extract meaningful text from rich content description
+  const extractedDescription = extractTextFromRichContent(description)
   
-  console.log(`❓ Analyzing responsa: ${title}`)
-  if (firstComment) {
-    console.log(`💬 Using first comment as clarification (${firstComment.length} chars)`)
-  } else {
-    console.log(`💬 No comments found for clarification`)
-  }
+  console.log(`📄 Analyzing writing: ${title}`)
+  console.log(`📖 Type: ${type || 'not specified'}`)
+  console.log(`📝 Description length: ${description.length} chars`)
   console.log(`🏷️  Using category names: ${categoryNames.join(', ')}`)
 
   try {
     const requestPayload: AnalysisRequest = {
       title,
-      description: content,
+      description: extractedDescription,
       categories: categoryNames
     }
 
-    // Add first comment as clarificationParagraph if available
-    if (firstComment) {
-      requestPayload.clarificationParagraph = firstComment
+    // Add type information as clarification if available
+    if (type) {
+      requestPayload.clarificationParagraph = `This is a ${type} writing.`
     }
 
     const response: AxiosResponse<AnalysisResult> = await axios.post(
@@ -212,26 +197,26 @@ async function analyzeResponsaWithAI(
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`❌ Error analyzing responsa: ${errorMessage}`)
+    console.error(`❌ Error analyzing writing: ${errorMessage}`)
     return null
   }
 }
 
-async function updateResponsaInStrapi(
-  responsa: ResponsaData, 
+async function updateWritingInStrapi(
+  writing: WritingData, 
   analysisResult: AnalysisResult, 
   categories: CategoryData[]
-): Promise<ResponsaData | null> {
+): Promise<WritingData | null> {
   try {
-    console.log(`🔍 Responsa data:`, {
-      id: responsa.id,
-      documentId: responsa.documentId,
-      title: responsa.title
+    console.log(`🔍 Writing data:`, {
+      id: writing.id,
+      documentId: writing.documentId,
+      title: writing.title
     })
 
     if (!analysisResult.categories || analysisResult.categories.length === 0) {
       console.log(`⚠️  No categories returned from analysis`)
-      return responsa
+      return writing
     }
 
     // Filter categories to match only the returned array names
@@ -241,7 +226,7 @@ async function updateResponsaInStrapi(
 
     if (matchingCategories.length === 0) {
       console.log(`⚠️  No matching categories found in Strapi`)
-      return responsa
+      return writing
     }
 
     // Use the documentIds of the remaining categories for connection
@@ -260,14 +245,14 @@ async function updateResponsaInStrapi(
       }
     }
 
-    console.log(`💾 Updating responsa with data:`, JSON.stringify(updatePayload, null, 2))
+    console.log(`💾 Updating writing with data:`, JSON.stringify(updatePayload, null, 2))
 
     // Try updating with documentId first (Strapi v5), then fallback to id
-    let updateUrl = `${STRAPI_URL}/responsas/${responsa.documentId || responsa.id}`
+    let updateUrl = `${STRAPI_URL}/writings/${writing.documentId || writing.id}`
     console.log(`🔗 Update URL: ${updateUrl}`)
     
     try {
-      const updateResponse: AxiosResponse<StrapiResponse<ResponsaData>> = await axios.put(
+      const updateResponse: AxiosResponse<StrapiResponse<WritingData>> = await axios.put(
         updateUrl, 
         updatePayload,
         {
@@ -278,17 +263,17 @@ async function updateResponsaInStrapi(
       )
       
       if (updateResponse.data?.data) {
-        console.log(`✅ Successfully updated responsa!`)
+        console.log(`✅ Successfully updated writing!`)
         return updateResponse.data.data
       }
     } catch (docError: unknown) {
       const statusCode = (docError as any)?.response?.status
       console.log(`⚠️  Document ID update failed (${statusCode}), trying with regular ID...`)
       
-      updateUrl = `${STRAPI_URL}/responsas/${responsa.id}`
+      updateUrl = `${STRAPI_URL}/writings/${writing.id}`
       console.log(`🔗 Fallback Update URL: ${updateUrl}`)
 
-      const updateResponse: AxiosResponse<StrapiResponse<ResponsaData>> = await axios.put(
+      const updateResponse: AxiosResponse<StrapiResponse<WritingData>> = await axios.put(
         updateUrl, 
         updatePayload,
         {
@@ -299,17 +284,17 @@ async function updateResponsaInStrapi(
       )
       
       if (updateResponse.data?.data) {
-        console.log(`✅ Successfully updated responsa with fallback!`)
+        console.log(`✅ Successfully updated writing with fallback!`)
         return updateResponse.data.data
       }
     }
 
-    console.log(`❌ Failed to update responsa`)
+    console.log(`❌ Failed to update writing`)
     return null
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-    console.error(`❌ Error updating responsa in Strapi: ${errorMessage}`)
+    console.error(`❌ Error updating writing in Strapi: ${errorMessage}`)
     
     if ((error as any)?.response) {
       console.error(`   Status: ${(error as any).response.status}`)
@@ -320,35 +305,35 @@ async function updateResponsaInStrapi(
   }
 }
 
-async function processResponsa(
-  responsa: ResponsaData, 
+async function processWriting(
+  writing: WritingData, 
   categories: CategoryData[], 
   categoryNames: string[]
-): Promise<ResponsaData | null> {
-  console.log(`\n❓ Processing responsa: ${responsa.title} (ID: ${responsa.id})`)
+): Promise<WritingData | null> {
+  console.log(`\n📄 Processing writing: ${writing.title} (ID: ${writing.id})`)
 
-  // Analyze responsa with AI
-  const analysisResult = await analyzeResponsaWithAI(responsa, categoryNames)
+  // Analyze writing with AI
+  const analysisResult = await analyzeWritingWithAI(writing, categoryNames)
   if (!analysisResult) {
     return null
   }
 
-  // Update responsa in Strapi
-  const updatedResponsa = await updateResponsaInStrapi(responsa, analysisResult, categories)
-  return updatedResponsa
+  // Update writing in Strapi
+  const updatedWriting = await updateWritingInStrapi(writing, analysisResult, categories)
+  return updatedWriting
 }
 
 async function main(): Promise<void> {
-  console.log(`🚀 Starting Responsa Analysis & Update Script...`)
+  console.log(`🚀 Starting Writing Analysis & Update Script...`)
   console.log('🔗 Analysis API:', ANALYSIS_API_URL)
   console.log('🗄️  Strapi URL:', STRAPI_URL)
   console.log('⏱️  Delay between requests:', `${DELAY_MS}ms`)
 
   try {
     // Fetch data
-    const [categories, responsas] = await Promise.all([
+    const [categories, writings] = await Promise.all([
       fetchCategories(),
-      fetchAllResponsas()
+      fetchAllWritings()
     ])
 
     if (categories.length === 0) {
@@ -356,8 +341,8 @@ async function main(): Promise<void> {
       return
     }
 
-    if (responsas.length === 0) {
-      console.log('✅ No responsas found to analyze')
+    if (writings.length === 0) {
+      console.log('✅ No writings found to analyze')
       return
     }
 
@@ -367,18 +352,18 @@ async function main(): Promise<void> {
       .filter((name): name is string => Boolean(name))
     
     console.log('📋 Using category names from Strapi:', categoryNames.join(', '))
-    console.log(`\n📊 Processing ${responsas.length} responsas`)
+    console.log(`\n📊 Processing ${writings.length} writings`)
 
     let processedCount = 0
     let successCount = 0
     let skippedCount = 0
 
-    // Process responsas one by one
-    for (const responsa of responsas) {
+    // Process writings one by one
+    for (const writing of writings) {
       processedCount++
-      console.log(`\n❓ Processing responsa ${processedCount}/${responsas.length}: ${responsa.title}`)
+      console.log(`\n📄 Processing writing ${processedCount}/${writings.length}: ${writing.title}`)
 
-      const result = await processResponsa(responsa, categories, categoryNames)
+      const result = await processWriting(writing, categories, categoryNames)
       
       if (result) {
         successCount++
@@ -386,17 +371,17 @@ async function main(): Promise<void> {
         skippedCount++
       }
 
-      // Delay between responsas
-      if (processedCount < responsas.length) {
-        console.log(`⏱️  Waiting before next responsa...`)
+      // Delay between writings
+      if (processedCount < writings.length) {
+        console.log(`⏱️  Waiting before next writing...`)
         await delay(DELAY_MS)
       }
     }
 
     console.log(`\n🎉 Analysis and update completed!`)
-    console.log(`📊 Processed: ${processedCount} responsas`)
-    console.log(`✅ Successfully analyzed and updated: ${successCount} responsas`)
-    console.log(`⚠️  Skipped/Failed: ${skippedCount} responsas`)
+    console.log(`📊 Processed: ${processedCount} writings`)
+    console.log(`✅ Successfully analyzed and updated: ${successCount} writings`)
+    console.log(`⚠️  Skipped/Failed: ${skippedCount} writings`)
 
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
