@@ -15,7 +15,7 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedContentType, setSelectedContentType] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(['all']);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -27,15 +27,15 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     // Content type is always required
     params.set('type', selectedContentType);
 
-    if (selectedCategory && selectedCategory !== 'all') {
-      params.set('category', selectedCategory);
+    if (selectedCategories.length > 0 && !selectedCategories.includes('all')) {
+      params.set('category', selectedCategories.join(','));
     }
 
     // Track search event
     trackSearch(
       searchQuery.trim(),
       selectedContentType,
-      selectedCategory && selectedCategory !== 'all' ? selectedCategory : undefined
+      selectedCategories.length > 0 && !selectedCategories.includes('all') ? selectedCategories.join(',') : undefined
     );
 
     const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
@@ -43,12 +43,37 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
     onOpenChange(false);
   };
 
+  // Handle category selection with multiple selection logic
+  const handleCategoryChange = (categoryValue: string) => {
+    setSelectedCategories(prevCategories => {
+      // If "all" is being picked, clear everything and set to ["all"]
+      if (categoryValue === 'all') {
+        return ['all'];
+      }
+      
+      // If current selection includes "all", replace with the new category
+      if (prevCategories.includes('all')) {
+        return [categoryValue];
+      }
+      
+      // If category is already selected, remove it (toggle off)
+      if (prevCategories.includes(categoryValue)) {
+        const newCategories = prevCategories.filter(cat => cat !== categoryValue);
+        // If no categories left, return to "all"
+        return newCategories.length === 0 ? ['all'] : newCategories;
+      }
+      
+      // Otherwise, add the category to the selection
+      return [...prevCategories, categoryValue];
+    });
+  };
+
   // Reset form when dialog closes
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       setSearchQuery('');
       setSelectedContentType('all'); // Reset to "all content types" like category
-      setSelectedCategory('');
+      setSelectedCategories(['all']);
     }
     onOpenChange(open);
   };
@@ -73,12 +98,12 @@ const SearchDialog: React.FC<SearchDialogProps> = ({ open, onOpenChange }) => {
           <SearchForm
             searchQuery={searchQuery}
             selectedContentType={selectedContentType}
-            selectedCategory={selectedCategory}
+            selectedCategories={selectedCategories}
             onSearchQueryChange={setSearchQuery}
             onContentTypeChange={setSelectedContentType}
-            onCategoryChange={setSelectedCategory}
+            onCategoryChange={handleCategoryChange}
             onSubmit={handleSearch}
-            disabled={!searchQuery.trim() && !selectedCategory}
+            disabled={!searchQuery.trim() && selectedCategories.includes('all')}
           />
         </div>
       </DialogContent>

@@ -111,7 +111,10 @@ export async function searchContent(filters: SearchFilters): Promise<SearchRespo
 export async function getAllCategories(): Promise<Category[]> {
   const query = qs.stringify({
     sort: ['name:asc'],
-    fields: ['name', 'slug', 'description', 'type']
+    fields: ['name', 'slug', 'description', 'type'],
+    pagination: {
+      pageSize: 100
+    }
   });
   
   const url = new URL('/api/categories', BASE_URL);

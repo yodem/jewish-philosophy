@@ -78,6 +78,9 @@ const allPlaylistsQuery = qs.stringify({
       populate: '*'
     }
   },
+  pagination: {
+    pageSize: 100
+  }
 });
 
 export async function getAllPlaylists() {
@@ -233,6 +236,9 @@ export async function getVideosPaginated(page: number = 1, pageSize: number = 12
 const allBlogsQuery = qs.stringify({
   populate: '*',
   sort: ['publishedAt:desc'],
+  pagination: {
+    pageSize: 100
+  }
 });
 
 export async function getAllBlogs(): Promise<Blog[]> {
@@ -457,6 +463,9 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
 const allWritingsQuery = qs.stringify({
   populate: '*',
   sort: ['publishedAt:desc'],
+  pagination: {
+    pageSize: 100
+  }
 });
 
 export async function getAllWritings(): Promise<Writing[]> {

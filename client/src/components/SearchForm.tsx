@@ -18,7 +18,7 @@ const SEARCH_CONTENT_TYPES = [
 interface SearchFormProps {
   searchQuery: string;
   selectedContentType: string;
-  selectedCategory: string;
+  selectedCategories: string[];
   onSearchQueryChange: (query: string) => void;
   onContentTypeChange: (type: string) => void;
   onCategoryChange: (category: string) => void;
@@ -31,7 +31,7 @@ interface SearchFormProps {
 const SearchForm: React.FC<SearchFormProps> = ({
   searchQuery,
   selectedContentType,
-  selectedCategory,
+  selectedCategories,
   onSearchQueryChange,
   onContentTypeChange,
   onCategoryChange,
@@ -170,29 +170,56 @@ const SearchForm: React.FC<SearchFormProps> = ({
       {/* Category Filter */}
       <div className="grid gap-2">
         <label className="text-sm font-medium text-right">
-          קטגוריה
+          קטגוריות
         </label>
         <p className="text-xs text-gray-500 text-right">
-         בחרו קטגוריה
+         בחרו קטגוריות או השארו "כל הקטגוריות" לחיפוש בכלל
         </p>
         <div className="flex flex-col gap-2">
-         
-
-        
+          {/* Selected Categories Display */}
+          {selectedCategories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedCategories.includes('all') ? (
+                <CategoryBadge
+                  contentType="category"
+                  label="כל הקטגוריות"
+                  variant="outline"
+                  className="border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400"
+                />
+              ) : (
+                selectedCategories.map(categorySlug => {
+                  const category = categories.find(cat => cat.slug === categorySlug);
+                  return category ? (
+                    <CategoryBadge
+                      key={category.slug}
+                      category={category}
+                      isSelected={true}
+                      showRemoveIcon={true}
+                      onClick={() => {
+                        trackCategoryFilter('', selectedContentType);
+                        onCategoryChange(category.slug);
+                      }}
+                    />
+                  ) : null;
+                })
+              )}
+            </div>
+          )}
 
           {/* Category Combobox */}
           <CategoryCombobox
             categories={categories}
-            value={selectedCategory}
+            value="" // Always empty since we're showing selected categories as badges
             onValueChange={(value) => {
               trackCategoryFilter(value, selectedContentType);
               onCategoryChange(value);
             }}
-            placeholder="בחרו קטגוריה..."
+            placeholder="הוסיפו קטגוריה..."
             emptyMessage="לא נמצאו קטגוריות."
             disabled={loadingCategories}
             loading={loadingCategories}
             className="text-right"
+            excludeValues={selectedCategories}
           />
         </div>
       </div>
@@ -207,7 +234,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
           <Button
             type="submit"
             className="w-full mt-2"
-            disabled={disabled || (!searchQuery.trim() && !selectedCategory)}
+            disabled={disabled || (!searchQuery.trim() && selectedCategories.includes('all'))}
           >
             חפשו
           </Button>

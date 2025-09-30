@@ -39,7 +39,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
   const [searchQuery, setSearchQuery] = useState(filters.query || '');
   const [selectedContentType, setSelectedContentType] = useState<string>(filters.contentType || 'all');
 
-  const [selectedCategory, setSelectedCategory] = useState(filters.category || 'all');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() => {
+    if (!filters.category || filters.category === 'all') {
+      return ['all'];
+    }
+    // Handle comma-separated categories from URL
+    return filters.category.split(',').map(cat => cat.trim()).filter(Boolean);
+  });
   const sortBy = useMemo(() => filters.sort || ['publishedAt:desc'], [filters.sort]);
 
   useEffect(() => {
@@ -72,6 +78,30 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
   // Simplified - no infinite scroll needed since we return max 20 results
 
+  const handleCategoryChange = (categoryValue: string) => {
+    setSelectedCategories(prevCategories => {
+      // If "all" is being picked, clear everything and set to ["all"]
+      if (categoryValue === 'all') {
+        return ['all'];
+      }
+      
+      // If current selection includes "all", replace with the new category
+      if (prevCategories.includes('all')) {
+        return [categoryValue];
+      }
+      
+      // If category is already selected, remove it (toggle off)
+      if (prevCategories.includes(categoryValue)) {
+        const newCategories = prevCategories.filter(cat => cat !== categoryValue);
+        // If no categories left, return to "all"
+        return newCategories.length === 0 ? ['all'] : newCategories;
+      }
+      
+      // Otherwise, add the category to the selection
+      return [...prevCategories, categoryValue];
+    });
+  };
+
   const handleSearch = () => {
     const params = new URLSearchParams();
 
@@ -84,15 +114,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
     // For the new unified search API, 'all' categories should not be sent as a parameter
     // Only send category if it's not 'all'
-    if (selectedCategory !== 'all') {
-      params.set('category', selectedCategory);
+    if (selectedCategories.length > 0 && !selectedCategories.includes('all')) {
+      params.set('category', selectedCategories.join(','));
     }
 
     // Track search event
     trackSearch(
       searchQuery.trim(),
       selectedContentType,
-      selectedCategory !== 'all' ? selectedCategory : undefined
+      selectedCategories.length > 0 && !selectedCategories.includes('all') ? selectedCategories.join(',') : undefined
     );
 
     const searchUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
@@ -162,10 +192,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
           <SearchForm
             searchQuery={searchQuery}
             selectedContentType={selectedContentType}
-            selectedCategory={selectedCategory}
+            selectedCategories={selectedCategories}
             onSearchQueryChange={setSearchQuery}
             onContentTypeChange={setSelectedContentType}
-            onCategoryChange={setSelectedCategory}
+            onCategoryChange={handleCategoryChange}
             onSubmit={handleSearch}
             onKeyPress={handleKeyPress}
           />
@@ -194,10 +224,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
           <SearchForm
             searchQuery={searchQuery}
             selectedContentType={selectedContentType}
-            selectedCategory={selectedCategory}
+            selectedCategories={selectedCategories}
             onSearchQueryChange={setSearchQuery}
             onContentTypeChange={setSelectedContentType}
-            onCategoryChange={setSelectedCategory}
+            onCategoryChange={handleCategoryChange}
             onSubmit={handleSearch}
             onKeyPress={handleKeyPress}
           />
@@ -222,10 +252,10 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
         <SearchForm
           searchQuery={searchQuery}
           selectedContentType={selectedContentType}
-          selectedCategory={selectedCategory}
+          selectedCategories={selectedCategories}
           onSearchQueryChange={setSearchQuery}
           onContentTypeChange={setSelectedContentType}
-          onCategoryChange={setSelectedCategory}
+          onCategoryChange={handleCategoryChange}
           onSubmit={handleSearch}
           onKeyPress={handleKeyPress}
         />
@@ -268,17 +298,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
                     {/* Description */}
                     {result.description && (
-                      result.contentType === 'responsa' ? (
-                        <div className="text-gray-600 mb-3 line-clamp-3 break-words">
-                          <ReactMarkdown>
-                            {result.description}
-                          </ReactMarkdown>
-                        </div>
-                      ) : (
-                        <p className="text-gray-600 mb-3 line-clamp-3 break-words">
+                      <div className="text-gray-600 mb-3 line-clamp-3 break-words">
+                        <ReactMarkdown>
                           {result.description}
-                        </p>
-                      )
+                        </ReactMarkdown>
+                      </div>
                     )}
 
                     {/* Date */}

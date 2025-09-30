@@ -29,6 +29,7 @@ interface CategoryComboboxProps {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  excludeValues?: string[];
 }
 
 const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre' | null): string => {
@@ -54,22 +55,28 @@ export function CategoryCombobox({
   disabled = false,
   loading = false,
   className,
+  excludeValues = [],
 }: CategoryComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
-  // Convert categories to combobox options
-  const options = React.useMemo(() => [
-    {
-      value: 'all',
-      label: 'כל הקטגוריות',
-      description: ''
-    },
-    ...categories.map(category => ({
-      value: category.slug,
-      label: category.name,
-      description: getCategoryTypeLabel(category.type)
-    }))
-  ], [categories])
+  // Convert categories to combobox options, filtering out excluded values
+  const options = React.useMemo(() => {
+    const baseOptions = [
+      {
+        value: 'all',
+        label: 'כל הקטגוריות',
+        description: ''
+      },
+      ...categories.map(category => ({
+        value: category.slug,
+        label: category.name,
+        description: getCategoryTypeLabel(category.type)
+      }))
+    ];
+    
+    // Filter out excluded values
+    return baseOptions.filter(option => !excludeValues.includes(option.value));
+  }, [categories, excludeValues])
 
   const selectedOption = value ? options.find((option) => option.value === value) : null
 
@@ -133,7 +140,7 @@ export function CategoryCombobox({
                   key={option.value}
                   value={option.label}
                   onSelect={() => {
-                    onValueChange(option.value === value ? "" : option.value)
+                    onValueChange(option.value)
                     setOpen(false)
                   }}
                   className="text-right cursor-pointer"
@@ -142,7 +149,6 @@ export function CategoryCombobox({
                     // Prevent dialog from intercepting the click
                     e.stopPropagation()
                   }}
-                  disabled={option.value === value}
                 >
                   <div className="flex flex-col items-start text-right flex-1">
                     <span>{option.label}</span>
@@ -153,10 +159,7 @@ export function CategoryCombobox({
                     )}
                   </div>
                   <Check
-                    className={cn(
-                      "ml-auto h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
+                    className="ml-auto h-4 w-4 opacity-0"
                   />
                 </CommandItem>
               ))}
