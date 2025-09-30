@@ -123,7 +123,7 @@ export default () => ({
           const dateB = new Date(b.date || 0).getTime();
           return dateB - dateA;
         })
-        .slice(0, 20);
+        .slice(0, 100);
 
     } catch (error) {
       throw new Error(`Error performing search: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -144,7 +144,7 @@ export default () => ({
       // Use Strapi's Document Service API for searching
       const results = await strapi.documents(`api::${contentType}.${contentType}` as any).findMany({
         filters: searchFilters,
-        limit: 20, // Get up to 20 results per content type
+        limit: 100, // Get up to 100 results per content type
         status: 'published',
         sort: ['publishedAt:desc'],
         populate: config.populate as any
@@ -171,10 +171,22 @@ export default () => ({
 
 // Helper function to build search filters
 function buildSearchFilters(contentType: string, query?: string, categories?: string) {
-  const filters: any[] = [];
+  const hasQuery = query && query.trim();
+  const hasCategories = categories && categories.trim();
 
-  // Add text search across searchable fields
-  if (query && query.trim()) {
+  // Case 1: Only categories (no search text)
+  // Return all content with those categories
+  if (!hasQuery && hasCategories) {
+    return {
+      categories: {
+        slug: { $in: categories.split(',').map(c => c.trim()) }
+      }
+    };
+  }
+
+  // Case 2: Only search text (no categories)
+  // Search across all searchable fields
+  if (hasQuery && !hasCategories) {
     const textFilters = [];
     const config = CONTENT_TYPE_CONFIG[contentType as keyof typeof CONTENT_TYPE_CONFIG];
 
@@ -184,26 +196,42 @@ function buildSearchFilters(contentType: string, query?: string, categories?: st
       }
     }
 
-    if (textFilters.length > 0) {
-      filters.push(textFilters.length === 1 ? textFilters[0] : { $or: textFilters });
-    }
+    return textFilters.length === 0 ? {} : (textFilters.length === 1 ? textFilters[0] : { $or: textFilters });
   }
 
-  // Add category filter if specified
-  if (categories) {
-    filters.push({
-      categories: {
-        slug: { $in: categories.split(',') }
+  // Case 3: Both search text AND categories
+  // Search text across fields AND filter by categories
+  if (hasQuery && hasCategories) {
+    const textFilters = [];
+    const config = CONTENT_TYPE_CONFIG[contentType as keyof typeof CONTENT_TYPE_CONFIG];
+
+    if (config) {
+      for (const field of config.searchableFields) {
+        textFilters.push({ [field]: { $containsi: query } });
       }
-    });
+    }
+
+    const categoryFilter = {
+      categories: {
+        slug: { $in: categories.split(',').map(c => c.trim()) }
+      }
+    };
+
+    if (textFilters.length === 0) {
+      return categoryFilter;
+    }
+
+    return {
+      $and: [
+        textFilters.length === 1 ? textFilters[0] : { $or: textFilters },
+        categoryFilter
+      ]
+    };
   }
 
-  // If no filters, return an empty object to get all content
-  if (filters.length === 0) {
-    return {};
-  }
-
-  return filters.length === 1 ? filters[0] : { $and: filters };
+  // Case 4: Neither query nor categories (shouldn't happen due to controller validation)
+  // Return empty filter to get all content
+  return {};
 }
 
 // Helper function to calculate relevance score

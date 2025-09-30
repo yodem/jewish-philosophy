@@ -29,7 +29,7 @@ export default {
           query,
           contentTypes,
           categories,
-          limit: 20,
+          limit: 100,
           offset: 0,
           total: results.length,
           timestamp: new Date().toISOString()
