@@ -173,7 +173,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
           קטגוריות
         </label>
         <p className="text-xs text-gray-500 text-right">
-         בחרו קטגוריות או השארו "כל הקטגוריות" לחיפוש בכלל
+         בחרו קטגוריות או השארו &quot;כל הקטגוריות&quot; לחיפוש בכלל
         </p>
         <div className="flex flex-col gap-2">
           {/* Selected Categories Display */}
