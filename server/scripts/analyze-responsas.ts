@@ -100,10 +100,17 @@ async function fetchAllResponsas(): Promise<ResponsaData[]> {
       }
     )
     
-    const responsas = response.data.data || []
-    console.log(`❓ Found ${responsas.length} responsas without categories`)
+    const allResponsas = response.data.data || []
     
-    return responsas
+    // Filter to only include responsas that have at least one comment
+    const responsasWithComments = allResponsas.filter(responsa => 
+      responsa.comments && responsa.comments.length > 0
+    )
+    
+    console.log(`❓ Found ${allResponsas.length} responsas without categories`)
+    console.log(`💬 ${responsasWithComments.length} of them have comments`)
+    
+    return responsasWithComments
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     console.error('❌ Failed to fetch responsas:', errorMessage)
@@ -357,7 +364,7 @@ async function main(): Promise<void> {
     }
 
     if (responsas.length === 0) {
-      console.log('✅ No responsas found to analyze')
+      console.log('✅ No responsas (without categories but with comments) found to analyze')
       return
     }
 

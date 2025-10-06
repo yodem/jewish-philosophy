@@ -7,7 +7,7 @@ dotenv.config();
 // Helper function to add delay between API calls
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
+const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'AIzaSyBs29YdmqhmaiPPwV4jmm2uEvUr5O41mHY';
@@ -117,14 +117,16 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
     }
 
     // Update existing video with playlist relation
-    console.log(`Updating playlist relation for existing video: ${video.snippet.title} (ID: ${existingVideo.id})`);
+    // Use documentId for Strapi v5, fallback to id
+    const videoIdentifier = existingVideo.documentId || existingVideo.id;
+    console.log(`Updating playlist relation for existing video: ${video.snippet.title} (documentId: ${videoIdentifier})`);
     const updatePayload = {
       data: {
         playlist: strapiPlaylistId,
       },
     };
 
-    const updateRes = await fetch(`${STRAPI_URL}/videos/${existingVideo.id}`, {
+    const updateRes = await fetch(`${STRAPI_URL}/videos/${videoIdentifier}`, {
       method: 'PUT',
       headers: getStrapiHeaders(),
       body: JSON.stringify(updatePayload),
