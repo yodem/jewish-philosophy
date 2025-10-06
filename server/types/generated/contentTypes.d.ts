@@ -928,6 +928,15 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     pdfFile: Schema.Attribute.Media<'files'>;
+    priority: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 10;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
     publishedAt: Schema.Attribute.DateTime;
     responsas: Schema.Attribute.Relation<
       'manyToMany',

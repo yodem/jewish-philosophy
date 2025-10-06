@@ -462,7 +462,7 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
 // Writing queries
 const allWritingsQuery = qs.stringify({
   populate: '*',
-  sort: ['publishedAt:desc'],
+  sort: ['priority:desc', 'publishedAt:desc'],
   pagination: {
     pageSize: 100
   }
@@ -486,6 +486,7 @@ export async function getWritingsPaginated(
   const query = qs.stringify({
     populate: '*',
     sort: [
+      'priority:desc', // Higher priority first
       'type:desc', // 'book' comes before 'article' alphabetically when sorted descending
       'publishedAt:desc'
     ],
@@ -523,7 +524,7 @@ export async function getWritingsByType(type: 'book' | 'article', page: number =
       }
     },
     populate: '*',
-    sort: ['publishedAt:desc'],
+    sort: ['priority:desc', 'publishedAt:desc'],
     pagination: {
       page,
       pageSize
