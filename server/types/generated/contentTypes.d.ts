@@ -934,12 +934,12 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
     priority: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
         {
-          max: 10;
+          max: 11;
           min: 1;
         },
         number
       > &
-      Schema.Attribute.DefaultTo<1>;
+      Schema.Attribute.DefaultTo<11>;
     publishedAt: Schema.Attribute.DateTime;
     responsas: Schema.Attribute.Relation<
       'manyToMany',
