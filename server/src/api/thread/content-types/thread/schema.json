@@ -52,6 +52,12 @@
       "type": "uid",
       "targetField": "answerer",
       "required": true
+    },
+    "writings": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::writing.writing",
+      "inversedBy": "threads"
     }
   }
 }

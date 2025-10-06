@@ -154,8 +154,9 @@ export default function WritingsPage() {
         </div>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table className="min-w-full">
           <TableHeader>
             <TableRow>
               <TableHead>כותרת</TableHead>
@@ -184,7 +185,7 @@ export default function WritingsPage() {
                   className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                   onClick={() => router.push(`/writings/${writing.slug}`)}
                 >
-                  <TableCell className="font-medium">{writing.title}</TableCell>
+                  <TableCell className="font-medium break-words max-w-xs">{writing.title}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       writing.type === 'book' 
@@ -194,7 +195,7 @@ export default function WritingsPage() {
                       {writing.type === 'book' ? 'ספר' : 'מאמר'}
                     </span>
                   </TableCell>
-                  <TableCell>{writing.author.name}</TableCell>
+                  <TableCell className="break-words">{writing.author.name}</TableCell>
                   <TableCell>
                     <LimitedCategoryList categories={writing.categories} />
                   </TableCell>
@@ -202,7 +203,8 @@ export default function WritingsPage() {
               ))
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
 
       {meta.pagination.pageCount > 1 && (

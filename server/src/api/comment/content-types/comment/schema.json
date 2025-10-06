@@ -48,6 +48,12 @@
       "relation": "oneToMany",
       "target": "api::thread.thread",
       "mappedBy": "parentComment"
+    },
+    "writings": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::writing.writing",
+      "inversedBy": "comments"
     }
   }
 }

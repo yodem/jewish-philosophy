@@ -76,6 +76,18 @@
       "default": 1,
       "min": 1,
       "max": 10
+    },
+    "comments": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::comment.comment",
+      "mappedBy": "writings"
+    },
+    "threads": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::thread.thread",
+      "mappedBy": "writings"
     }
   }
 }

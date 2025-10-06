@@ -152,8 +152,16 @@ export default async function WritingPage({ params }: WritingPageProps) {
           />
         </div>}
 
-        <div className={`dark:prose-invert text-justify`}>
-      <ReactMarkdown>{writing.description}</ReactMarkdown>
+        <div className={`dark:prose-invert text-justify break-words overflow-wrap-anywhere`}>
+      <ReactMarkdown
+        components={{
+          a: ({ children, href }) => {
+            return <Link href={href || '#'}><span>{children}</span></Link>
+          }
+        }}
+      >
+        {writing.description}
+      </ReactMarkdown>
     </div>
 
         {(pdfUrl || writing.linkToWriting?.href) && (

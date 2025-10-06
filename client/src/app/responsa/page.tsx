@@ -91,8 +91,9 @@ export default function ResponsaPage() {
         </form>
       </div>
 
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table className="min-w-full">
           <TableHeader>
             <TableRow>
               <TableHead>כותרת</TableHead>
@@ -122,7 +123,7 @@ export default function ResponsaPage() {
                   className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
                   onClick={() => router.push(`/responsa/${responsa.slug}`)}
                 >
-                  <TableCell className="font-medium">{responsa.title}</TableCell>
+                  <TableCell className="font-medium break-words max-w-xs">{responsa.title}</TableCell>
                   <TableCell>
                     <LimitedCategoryList categories={responsa.categories} isSelectable={false} />
                   </TableCell>
@@ -131,7 +132,8 @@ export default function ResponsaPage() {
               ))
             )}
           </TableBody>
-        </Table>
+          </Table>
+        </div>
       </div>
 
       {meta.pagination.pageCount > 1 && (

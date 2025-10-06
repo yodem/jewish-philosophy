@@ -13,6 +13,19 @@
   -webkit-line-clamp: 3;
 }
 
+/* Text overflow utilities */
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.word-break-all {
+  word-break: break-all;
+}
+
+.text-wrap-balance {
+  text-wrap: balance;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 /* @theme inline {
@@ -179,5 +192,16 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Prevent text overflow by default for long words/URLs */
+  p, div, span, a, h1, h2, h3, h4, h5, h6, td, th, li {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  /* Specific handling for links */
+  a {
+    word-break: break-all;
   }
 }

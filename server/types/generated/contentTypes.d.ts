@@ -513,6 +513,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
 
@@ -860,6 +861,7 @@ export interface ApiThreadThread extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
 
@@ -915,6 +917,7 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::category.category'
     >;
+    comments: Schema.Attribute.Relation<'manyToMany', 'api::comment.comment'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -943,6 +946,7 @@ export interface ApiWritingWriting extends Struct.CollectionTypeSchema {
       'api::responsa.responsa'
     >;
     slug: Schema.Attribute.UID<'title'>;
+    threads: Schema.Attribute.Relation<'manyToMany', 'api::thread.thread'>;
     title: Schema.Attribute.String;
     type: Schema.Attribute.Enumeration<['book', 'article']>;
     updatedAt: Schema.Attribute.DateTime;

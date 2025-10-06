@@ -298,8 +298,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
 
                     {/* Description */}
                     {result.description && (
-                      <div className="text-gray-600 mb-3 line-clamp-3 break-words">
-                        <ReactMarkdown>
+                      <div className="text-gray-600 mb-3 line-clamp-3 break-words overflow-wrap-anywhere">
+                        <ReactMarkdown
+                          components={{
+                            a: ({ children, href }) => {
+                              return <Link href={href || '#'}><span>{children}</span></Link>
+                            }
+                          }}
+                        >
                           {result.description}
                         </ReactMarkdown>
                       </div>

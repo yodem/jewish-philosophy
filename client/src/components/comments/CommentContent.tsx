@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 
 interface CommentContentProps {
   content: string;
@@ -18,8 +19,16 @@ export default function CommentContent({
   };
 
   return (
-    <div className={`${sizeClasses[size]} dark:prose-invert text-justify ${className}`}>
-      <ReactMarkdown>{content}</ReactMarkdown>
+    <div className={`${sizeClasses[size]} dark:prose-invert text-justify break-words overflow-wrap-anywhere ${className}`}>
+      <ReactMarkdown
+        components={{
+          a: ({ children, href }) => {
+            return <Link href={href || '/'}><span>{children}</span></Link>
+          }
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }
