@@ -22,7 +22,7 @@ export default function HeroSection({ data }: { data: HeroSectionProps }) {
         </div>
       )}
       <CardContent className="relative z-10 flex flex-col items-center justify-center text-center py-12 px-4 sm:py-16 sm:px-8 gap-4 w-full">
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg mb-2">{heading}</h1>
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-lg mb-2 break-words text-center">{heading}</h1>
         {cta && (
           <Button
             asChild

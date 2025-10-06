@@ -343,17 +343,28 @@ export async function getResponsaBySlug(slug: string) {
     },
     populate: {
       categories: true,
+      writings: {
+        populate: ['author', 'categories']
+      },
       comments: {
         filters: {
           publishedAt: { $notNull: true }
         },
         sort: ['createdAt:asc'],
         populate: {
+          writings: {
+            populate: ['author', 'categories']
+          },
           threads: {
             filters: {
               publishedAt: { $notNull: true }
             },
             sort: ['createdAt:asc'],
+            populate: {
+              writings: {
+                populate: ['author', 'categories']
+              }
+            },
             fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
           }
         }
@@ -401,11 +412,19 @@ export async function getBlogCommentsBySlug(slug: string) {
     },
     sort: ['createdAt:asc'],
     populate: {
+      writings: {
+        populate: ['author', 'categories']
+      },
       threads: {
         filters: {
           publishedAt: { $notNull: true }
         },
         sort: ['createdAt:asc'],
+        populate: {
+          writings: {
+            populate: ['author', 'categories']
+          }
+        },
         fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
       }
     }
@@ -424,7 +443,12 @@ export async function getResponsaComments(responsaId: number) {
       responsa: { id: { $eq: responsaId } },
       publishedAt: { $notNull: true }
     },
-    sort: ['createdAt:asc']
+    sort: ['createdAt:asc'],
+    populate: {
+      writings: {
+        populate: ['author', 'categories']
+      }
+    }
   });
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
@@ -442,11 +466,19 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
     },
     sort: ['createdAt:asc'],
     populate: {
+      writings: {
+        populate: ['author', 'categories']
+      },
       threads: {
         filters: {
           publishedAt: { $notNull: true }
         },
         sort: ['createdAt:asc'],
+        populate: {
+          writings: {
+            populate: ['author', 'categories']
+          }
+        },
         fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
       }
     }

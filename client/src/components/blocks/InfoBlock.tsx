@@ -4,6 +4,7 @@ import { Button } from '../ui/button';
 import { Card, CardContent, CardTitle, CardDescription } from '../ui/card';
 import { StrapiImage } from '../StrapiImage';
 import ReactMarkdown from 'react-markdown';
+import Link from 'next/link';
 
 export default function InfoBlock({ data }: { data: InfoBlockProps }) {
   const { heading, content, image, cta, reversed } = data;
@@ -22,9 +23,17 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
         </div>
       )}
       <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0 order-2 md:order-none">
-        <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900 text-center md:text-right">{heading}</CardTitle>
-        <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg text-justify">
-          <ReactMarkdown>{content}</ReactMarkdown>
+        <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900 text-center md:text-right break-words">{heading}</CardTitle>
+        <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg text-justify break-words overflow-wrap-anywhere">
+          <ReactMarkdown
+            components={{
+              a: ({ children, href }) => {
+                return <Link href={href || '#'}><span>{children}</span></Link>
+              }
+            }}
+          >
+            {content}
+          </ReactMarkdown>
         </CardDescription>
         {cta && (
           <Button asChild className="mt-2 md:mt-4 w-full md:w-auto">

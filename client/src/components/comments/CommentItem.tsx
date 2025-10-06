@@ -4,6 +4,7 @@ import CommentHeader from "./CommentHeader";
 import CommentContent from "./CommentContent";
 import ThreadItem from "./ThreadItem";
 import CommentForm from "./CommentForm";
+import Link from "next/link";
 
 interface CommentItemProps {
   comment: CommentType;
@@ -46,6 +47,26 @@ export default function CommentItem({
           size="md"
           className="mb-4"
         />
+        
+        {/* Related writings */}
+        {comment.writings && comment.writings.length > 0 && (
+          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              כתבים קשורים:
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {comment.writings.map((writing) => (
+                <Link
+                  key={writing.id}
+                  href={`/writings/${writing.slug}`}
+                  className="inline-block px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-800 dark:text-blue-200 rounded-full transition-colors duration-200"
+                >
+                  {writing.title}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
         
         {/* Reply form */}
         {isReplyActive && (

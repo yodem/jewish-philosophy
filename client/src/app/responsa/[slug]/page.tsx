@@ -9,6 +9,7 @@ import { Comment as CommentType, Responsa } from "@/types";
 import CommentSection from "@/components/CommentSection";
 import { ContentSkeleton, Skeleton } from "@/components/ui/skeleton";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 import { trackContentView } from "@/lib/analytics";
 import { JsonLd } from "@/lib/json-ld";
 import { QAPage, WithContext } from "schema-dts";
@@ -170,8 +171,41 @@ export default function ResponsaPage() {
             </div>
           )}
           
-          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-justify">
-            <ReactMarkdown>{content}</ReactMarkdown>
+          {/* Related writings */}
+          {responsa.writings && responsa.writings.length > 0 && (
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <h4 className="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">
+                כתבים קשורים:
+              </h4>
+              <div className="flex flex-wrap gap-3">
+                {responsa.writings.map((writing) => (
+                  <Link
+                    key={writing.id}
+                    href={`/writings/${writing.slug}`}
+                    className="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-800/30 border border-blue-300 dark:border-blue-600 text-blue-800 dark:text-blue-200 rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <span className="text-sm font-medium">{writing.title}</span>
+                    {writing.type && (
+                      <span className="ml-2 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-full">
+                        {writing.type === 'book' ? 'ספר' : 'מאמר'}
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-justify break-words overflow-wrap-anywhere">
+            <ReactMarkdown
+              components={{
+                a: ({ children, href }) => {
+                  return <Link href={href || '#'}><span>{children}</span></Link>
+                }
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           </div>
         </div>
 
