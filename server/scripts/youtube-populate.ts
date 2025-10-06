@@ -9,18 +9,36 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'AIzaSyBs29YdmqhmaiPPwV4jmm2uEvUr5O41mHY';
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCCveJN9rRmW22wHRcce68ng';
 
+console.log('STRAPI_API_TOKEN', STRAPI_API_TOKEN);
+console.log('STRAPI_BASE_URL', STRAPI_BASE_URL);
+console.log('YOUTUBE_API_KEY', YOUTUBE_API_KEY);
+console.log('CHANNEL_ID', CHANNEL_ID);
+
+// Helper function to get headers for Strapi API requests
+const getStrapiHeaders = () => {
+  if (!STRAPI_API_TOKEN) {
+    console.warn('⚠️  STRAPI_API_TOKEN not found - requests may fail');
+    return { 'Content-Type': 'application/json' };
+  }
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${STRAPI_API_TOKEN}`
+  };
+};
+
 async function fetchPlaylists() {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=30`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=100`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
 }
 
 async function fetchPlaylistItems(playlistId: string) {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=30`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=100`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
@@ -28,7 +46,9 @@ async function fetchPlaylistItems(playlistId: string) {
 
 async function createOrUpdatePlaylist(playlist: any) {
   // Check if playlist already exists
-  const existingRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlist.id}`);
+  const existingRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlist.id}&pagination[limit]=999`, {
+    headers: getStrapiHeaders()
+  });
   const existingData: any = await existingRes.json();
   const existingPlaylist = existingData.data?.[0];
 
@@ -47,7 +67,7 @@ async function createOrUpdatePlaylist(playlist: any) {
       imageUrl300x400: playlist.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: playlist.snippet.thumbnails?.standard?.url || playlist.snippet.thumbnails?.high?.url || '',
       youtubeId: playlist.id,
-      slug: `${playlist.snippet.title.replace(/[^\u0590-\u05FF\u0020-\u007E]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')}-${playlist.id}`,
+      slug: `${playlist.snippet.title.replace(/[^A-Za-z0-9\s-_.~]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}-${playlist.id}`,
     },
   };
 
@@ -55,7 +75,7 @@ async function createOrUpdatePlaylist(playlist: any) {
   console.log(`Creating playlist: ${playlist.snippet.title}`);
   const res = await fetch(`${STRAPI_URL}/playlists`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getStrapiHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -71,7 +91,9 @@ async function createOrUpdatePlaylist(playlist: any) {
 
 async function createOrUpdateVideo(video: any, playlistId: string) {
   // Find the Strapi playlist by youtubeId
-  const playlistRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlistId}`);
+  const playlistRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlistId}&pagination[limit]=999`, {
+    headers: getStrapiHeaders()
+  });
   const playlistData: any = await playlistRes.json();
   const strapiPlaylistId = playlistData.data?.[0]?.id;
   if (!strapiPlaylistId) {
@@ -81,7 +103,9 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
   console.log(`Found Strapi playlist ID: ${strapiPlaylistId} for YouTube playlist: ${playlistId}`);
 
   // Check if video already exists (with playlist relation populated)
-  const existingRes = await fetch(`${STRAPI_URL}/videos?filters[videoId][$eq]=${video.contentDetails.videoId}&populate=playlist`);
+  const existingRes = await fetch(`${STRAPI_URL}/videos?filters[videoId][$eq]=${video.contentDetails.videoId}&populate=playlist&pagination[limit]=999`, {
+    headers: getStrapiHeaders()
+  });
   const existingData: any = await existingRes.json();
   const existingVideo = existingData.data?.[0];
 
@@ -102,7 +126,7 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
 
     const updateRes = await fetch(`${STRAPI_URL}/videos/${existingVideo.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getStrapiHeaders(),
       body: JSON.stringify(updatePayload),
     });
 
@@ -125,7 +149,7 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
       imageUrl300x400: video.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: video.snippet.thumbnails?.standard?.url || video.snippet.thumbnails?.high?.url || '',
       videoId: video.contentDetails.videoId,
-      slug: `${video.snippet.title.replace(/[^\u0590-\u05FF\u0020-\u007E]+/g, '-').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '')}-${video.contentDetails.videoId}`,
+      slug: `${video.snippet.title.replace(/[^A-Za-z0-9\s-_.~]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}-${video.contentDetails.videoId}`,
       playlist: strapiPlaylistId,
     },
   };
@@ -134,7 +158,7 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
   console.log(`Creating video: ${video.snippet.title}`);
   const res = await fetch(`${STRAPI_URL}/videos`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: getStrapiHeaders(),
     body: JSON.stringify(payload),
   });
 
@@ -150,9 +174,11 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
 
 async function verifyRelations() {
   console.log('\n=== Verifying Relations ===');
-  
+
   // Get all playlists with their videos
-  const playlistsRes = await fetch(`${STRAPI_URL}/playlists?populate=*`);
+  const playlistsRes = await fetch(`${STRAPI_URL}/playlists?populate=*&pagination[limit]=999`, {
+    headers: getStrapiHeaders()
+  });
   const playlistsData: any = await playlistsRes.json();
   
   for (const playlist of playlistsData.data || []) {
@@ -165,7 +191,9 @@ async function verifyRelations() {
   }
   
   // Get all videos with their playlists
-  const videosRes = await fetch(`${STRAPI_URL}/videos?populate=*`);
+  const videosRes = await fetch(`${STRAPI_URL}/videos?populate=*&pagination[limit]=999`, {
+    headers: getStrapiHeaders()
+  });
   const videosData: any = await videosRes.json();
   
   let orphanedVideos = 0;

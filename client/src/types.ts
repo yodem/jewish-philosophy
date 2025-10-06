@@ -180,6 +180,7 @@ export type Writing = {
   categories: Category[];
   responsas: Responsa[];
   image?: ImageProps;
+  priority?: number;
 }
 
 export type Term = {
