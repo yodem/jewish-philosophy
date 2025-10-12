@@ -405,6 +405,41 @@ export interface ApiAuthorAuthor extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBannerBanner extends Struct.SingleTypeSchema {
+  collectionName: 'banner';
+  info: {
+    description: 'Site-wide banner displayed below the navbar';
+    displayName: 'Banner';
+    pluralName: 'banners';
+    singularName: 'banner';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.DateTime;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    link: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::banner.banner'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
   collectionName: 'blogs';
   info: {
@@ -1465,6 +1500,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::author.author': ApiAuthorAuthor;
+      'api::banner.banner': ApiBannerBanner;
       'api::blog.blog': ApiBlogBlog;
       'api::category.category': ApiCategoryCategory;
       'api::comment.comment': ApiCommentComment;

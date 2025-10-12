@@ -1,0 +1,37 @@
+{
+  "kind": "singleType",
+  "collectionName": "banner",
+  "info": {
+    "singularName": "banner",
+    "pluralName": "banners",
+    "displayName": "Banner",
+    "description": "Site-wide banner displayed below the navbar"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "link": {
+      "type": "string",
+      "required": false
+    },
+    "date": {
+      "type": "datetime",
+      "required": false
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}

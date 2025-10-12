@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Writing, Term } from "@/types";
+import { Blog, Writing, Term, Banner } from "@/types";
 
 
 const homePageQuery = qs.stringify({
@@ -65,6 +65,12 @@ export async function getGlobalSettings() {
   const url = new URL(path, BASE_URL);
   url.search = globalSettingQuery;
   return fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
+}
+
+export async function getBanner() {
+  const path = "/api/banner";
+  const url = new URL(path, BASE_URL);
+  return fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 5 } }); // Revalidate every 5 minutes for banner updates
 }
 
 const allPlaylistsQuery = qs.stringify({
