@@ -1,7 +1,7 @@
 import { fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Writing, Term, Banner } from "@/types";
+import { Blog, Writing, Term } from "@/types";
 
 
 const homePageQuery = qs.stringify({
