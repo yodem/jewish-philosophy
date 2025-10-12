@@ -261,3 +261,16 @@ export interface SearchFilters {
   offset?: number;
   sort?: string[];
 }
+
+export type Banner = {
+  id: number;
+  documentId: string;
+  title: string;
+  description: string;
+  link?: string;
+  date?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
