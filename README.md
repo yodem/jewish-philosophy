@@ -230,10 +230,6 @@ The platform primarily supports Hebrew content with English fallbacks:
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
 - [Radix UI Documentation](https://www.radix-ui.com/)
 
-## 📄 License
-
-[Add your license information here]
-
 ---
 
 **Built with ❤️ for Jewish Philosophy Education**
