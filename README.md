@@ -2,6 +2,7 @@
 
 A full-stack content platform dedicated to Jewish philosophy, featuring Hebrew/RTL support and modern web technologies.
 
+Demo - https://jewish-philosophy.vercel.app/
 ## 🌟 Project Overview
 
 This platform provides educational content on Jewish philosophy, including articles, videos, terms, and responsa. The project consists of a Next.js frontend with a Strapi CMS backend, designed to handle both Hebrew and English content with proper RTL support.
