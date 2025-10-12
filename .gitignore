@@ -1,6 +1,11 @@
 # Integration services
-youtube-integ/**/* 
-gemini-integ/**/*
+youtube-integ/
+gemini-integ/
+n8n/
+
+# Integration environment files specifically
+youtube-integ/.env
+youtube-integ/api.txt
 gemini-integ/.env
 gemini-integ/logs/
 
