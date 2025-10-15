@@ -367,9 +367,6 @@ export async function getResponsaBySlug(slug: string) {
           responsas: {
             populate: ['categories']
           },
-          blogs: {
-            populate: ['author', 'categories']
-          },
           threads: {
             filters: {
               publishedAt: { $notNull: true }
@@ -384,9 +381,6 @@ export async function getResponsaBySlug(slug: string) {
               },
               responsas: {
                 populate: ['categories']
-              },
-              blogs: {
-                populate: ['author', 'categories']
               }
             },
             fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
