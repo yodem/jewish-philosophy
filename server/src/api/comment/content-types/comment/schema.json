@@ -64,6 +64,11 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::responsa.responsa"
+    },
+    "blogs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::blog.blog"
     }
   }
 }
