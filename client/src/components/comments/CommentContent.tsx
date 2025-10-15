@@ -1,5 +1,6 @@
-import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface CommentContentProps {
   content: string;
@@ -19,13 +20,14 @@ export default function CommentContent({
   };
 
   return (
-    <div className={`${sizeClasses[size]} dark:prose-invert text-justify break-words overflow-wrap-anywhere ${className}`}>
+    <div className={`${sizeClasses[size]} dark:prose-invert break-words text-justify overflow-wrap-anywhere ${className}`}>
       <ReactMarkdown
         components={{
           a: ({ children, href }) => {
-            return <Link href={href || '/'}><span>{children}</span></Link>
+            return <span className="flex"><Link href={href || '/'}><span>{children}</span></Link></span>
           }
         }}
+        remarkPlugins={[remarkGfm]}
       >
         {content}
       </ReactMarkdown>
