@@ -132,6 +132,8 @@ export type Thread = {
   blogSlug?: string;
   parentCommentSlug: string;
   writings?: Writing[];
+  videos?: Video[];
+  responsas?: Responsa[];
 }
 
 export type Comment = {
@@ -149,6 +151,8 @@ export type Comment = {
   blogSlug?: string;
   threads?: Thread[];
   writings?: Writing[];
+  videos?: Video[];
+  responsas?: Responsa[];
 }
 
 export type Responsa = {
