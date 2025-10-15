@@ -57,7 +57,7 @@ export default function ContentChip({ content, type, size = 'md' }: ContentChipP
       href={path}
       className={`inline-flex items-center ${sizeClasses} rounded-full transition-colors duration-200 hover:opacity-80 ${config.color}`}
     >
-      <Icon className={`${iconSize} mr-1`} />
+      <Icon className={`${iconSize} mx-1`} />
       {content.title}
     </Link>
   );

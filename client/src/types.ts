@@ -153,6 +153,7 @@ export type Comment = {
   writings?: Writing[];
   videos?: Video[];
   responsas?: Responsa[];
+  blogs?: Blog[];
 }
 
 export type Responsa = {

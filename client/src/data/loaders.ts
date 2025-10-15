@@ -143,7 +143,7 @@ export async function getPlaylistBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
-  if (res.data.length === 0) return null;
+  if (!res?.data || res.data.length === 0) return null;
   
   const item = res.data?.[0]
   return item
@@ -212,7 +212,7 @@ export async function getVideoBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
-  if (res.data.length === 0) return null;
+  if (!res?.data || res.data.length === 0) return null;
   const item = res.data[0]
   return item
 }
@@ -284,7 +284,7 @@ export async function getBlogBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
-  if (res.data.length === 0) return null;
+  if (!res?.data || res.data.length === 0) return null;
   
   return res.data[0]
 }
@@ -367,6 +367,9 @@ export async function getResponsaBySlug(slug: string) {
           responsas: {
             populate: ['categories']
           },
+          blogs: {
+            populate: ['author', 'categories']
+          },
           threads: {
             filters: {
               publishedAt: { $notNull: true }
@@ -381,6 +384,9 @@ export async function getResponsaBySlug(slug: string) {
               },
               responsas: {
                 populate: ['categories']
+              },
+              blogs: {
+                populate: ['author', 'categories']
               }
             },
             fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
@@ -393,7 +399,7 @@ export async function getResponsaBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET" });
-  if (res.data.length === 0) return null;
+  if (!res?.data || res.data.length === 0) return null;
 
   return res.data[0];
 }
@@ -631,7 +637,7 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 30 } });
-  if (res.data.length === 0) return null;
+  if (!res?.data || res.data.length === 0) return null;
   
   return res.data[0];
 }
