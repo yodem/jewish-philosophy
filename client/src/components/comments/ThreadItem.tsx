@@ -3,7 +3,7 @@ import { CommentType } from "@/constants/comments";
 import CommentHeader from "./CommentHeader";
 import CommentContent from "./CommentContent";
 import CommentForm from "./CommentForm";
-import Link from "next/link";
+import ContentChip from "../ContentChip";
 
 interface ThreadItemProps {
   thread: Thread;
@@ -52,21 +52,38 @@ export default function ThreadItem({
         className="mb-3"
       />
 
-      {/* Related writings */}
-      {thread.writings && thread.writings.length > 0 && (
+      {/* Related content */}
+      {((thread.writings && thread.writings.length > 0) || 
+        (thread.videos && thread.videos.length > 0) || 
+        (thread.responsas && thread.responsas.length > 0)) && (
         <div className="mb-3 p-2 bg-gray-100 dark:bg-gray-600 rounded-md">
           <h5 className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-            כתבים קשורים:
+            תוכן קשור:
           </h5>
           <div className="flex flex-wrap gap-1">
-            {thread.writings.map((writing) => (
-              <Link
-                key={writing.id}
-                href={`/writings/${writing.slug}`}
-                className="inline-block px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-800 dark:hover:bg-blue-700 text-blue-800 dark:text-blue-200 rounded-full transition-colors duration-200"
-              >
-                {writing.title}
-              </Link>
+            {thread.writings?.map((writing) => (
+              <ContentChip
+                key={`writing-${writing.id}`}
+                content={writing}
+                type="writing"
+                size="sm"
+              />
+            ))}
+            {thread.videos?.map((video) => (
+              <ContentChip
+                key={`video-${video.id}`}
+                content={video}
+                type="video"
+                size="sm"
+              />
+            ))}
+            {thread.responsas?.map((responsa) => (
+              <ContentChip
+                key={`responsa-${responsa.id}`}
+                content={responsa}
+                type="responsa"
+                size="sm"
+              />
             ))}
           </div>
         </div>

@@ -361,6 +361,12 @@ export async function getResponsaBySlug(slug: string) {
           writings: {
             populate: ['author', 'categories']
           },
+          videos: {
+            populate: ['playlist']
+          },
+          responsas: {
+            populate: ['categories']
+          },
           threads: {
             filters: {
               publishedAt: { $notNull: true }
@@ -369,6 +375,12 @@ export async function getResponsaBySlug(slug: string) {
             populate: {
               writings: {
                 populate: ['author', 'categories']
+              },
+              videos: {
+                populate: ['playlist']
+              },
+              responsas: {
+                populate: ['categories']
               }
             },
             fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
@@ -421,6 +433,12 @@ export async function getBlogCommentsBySlug(slug: string) {
       writings: {
         populate: ['author', 'categories']
       },
+      videos: {
+        populate: ['playlist']
+      },
+      responsas: {
+        populate: ['categories']
+      },
       threads: {
         filters: {
           publishedAt: { $notNull: true }
@@ -429,6 +447,12 @@ export async function getBlogCommentsBySlug(slug: string) {
         populate: {
           writings: {
             populate: ['author', 'categories']
+          },
+          videos: {
+            populate: ['playlist']
+          },
+          responsas: {
+            populate: ['categories']
           }
         },
         fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']
@@ -475,6 +499,12 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
       writings: {
         populate: ['author', 'categories']
       },
+      videos: {
+        populate: ['playlist']
+      },
+      responsas: {
+        populate: ['categories']
+      },
       threads: {
         filters: {
           publishedAt: { $notNull: true }
@@ -483,6 +513,12 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
         populate: {
           writings: {
             populate: ['author', 'categories']
+          },
+          videos: {
+            populate: ['playlist']
+          },
+          responsas: {
+            populate: ['categories']
           }
         },
         fields: ['id', 'documentId', 'slug', 'answer', 'answerer', 'createdAt', 'updatedAt', 'publishedAt', 'parentCommentSlug', 'responsaSlug', 'blogSlug']

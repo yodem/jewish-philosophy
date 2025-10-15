@@ -54,6 +54,16 @@
       "relation": "manyToMany",
       "target": "api::writing.writing",
       "inversedBy": "comments"
+    },
+    "videos": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::video.video"
+    },
+    "responsas": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::responsa.responsa"
     }
   }
 }
