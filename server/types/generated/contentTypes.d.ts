@@ -530,6 +530,7 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
     answer: Schema.Attribute.RichText & Schema.Attribute.Required;
     answerer: Schema.Attribute.String & Schema.Attribute.Required;
     blog: Schema.Attribute.Relation<'manyToOne', 'api::blog.blog'>;
+    blogs: Schema.Attribute.Relation<'manyToMany', 'api::blog.blog'>;
     blogSlug: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -542,12 +543,17 @@ export interface ApiCommentComment extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
     responsa: Schema.Attribute.Relation<'manyToOne', 'api::responsa.responsa'>;
+    responsas: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::responsa.responsa'
+    >;
     responsaSlug: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'answerer'> & Schema.Attribute.Required;
     threads: Schema.Attribute.Relation<'oneToMany', 'api::thread.thread'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    videos: Schema.Attribute.Relation<'manyToMany', 'api::video.video'>;
     writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
@@ -891,11 +897,16 @@ export interface ApiThreadThread extends Struct.CollectionTypeSchema {
     parentCommentSlug: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     responsa: Schema.Attribute.Relation<'manyToOne', 'api::responsa.responsa'>;
+    responsas: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::responsa.responsa'
+    >;
     responsaSlug: Schema.Attribute.String;
     slug: Schema.Attribute.UID<'answerer'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    videos: Schema.Attribute.Relation<'manyToMany', 'api::video.video'>;
     writings: Schema.Attribute.Relation<'manyToMany', 'api::writing.writing'>;
   };
 }
