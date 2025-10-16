@@ -56,6 +56,11 @@
       "relation": "oneToMany",
       "target": "api::thread.thread",
       "mappedBy": "responsa"
+    },
+    "views": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
     }
   }
 }

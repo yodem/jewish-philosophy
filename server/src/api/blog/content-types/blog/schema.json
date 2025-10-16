@@ -65,6 +65,11 @@
       "relation": "oneToMany",
       "target": "api::thread.thread",
       "mappedBy": "blog"
+    },
+    "views": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
     }
   }
 }
