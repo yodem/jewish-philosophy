@@ -14,6 +14,7 @@ import { JsonLd } from "@/lib/json-ld";
 import { QAPage, WithContext } from "schema-dts";
 import SefariaLinker from "@/components/SefariaLinker";
 import remarkGfm from "remark-gfm";
+import ViewCountTracker from "@/components/ViewCountTracker";
 
 export default function ResponsaPage() {
   const params = useParams();
@@ -149,6 +150,7 @@ export default function ResponsaPage() {
   return (
     <div className="container mx-auto py-8">
       <JsonLd data={structuredData} />
+      {responsa && <ViewCountTracker contentType="responsas" contentId={responsa.id.toString()} />}
       <Breadcrumbs items={[
         { label: "בית", href: "/" },
         { label: "שו״ת", href: "/responsa" },

@@ -88,6 +88,11 @@
       "relation": "manyToMany",
       "target": "api::thread.thread",
       "mappedBy": "writings"
+    },
+    "views": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
     }
   }
 }

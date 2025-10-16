@@ -37,5 +37,31 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
     }
 
     return response;
-  }
+  },
+
+  async updateViewCount(ctx) {
+    try {
+      const { id } = ctx.params;
+      const responsa = await strapi.db.query("api::responsa.responsa").findOne({
+        where: { id },
+        select: ["views"],  
+      });
+
+      if (!responsa) {
+        return ctx.notFound("Responsa not found");
+      }
+      
+      const updatedResponsa = await strapi.db.query("api::responsa.responsa").update({
+        where: { id },
+        data: {
+          views: (responsa.views || 0) + 1,
+        },
+      });
+
+      return ctx.send({ message: "View count updated", data: updatedResponsa });
+    } catch (error) {
+      console.error("Error updating view count:", error);
+      return ctx.badRequest("Failed to update view count");
+    }
+  },
 })); 

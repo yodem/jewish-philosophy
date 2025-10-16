@@ -12,6 +12,7 @@ import BlogContentWrapper from "@/components/BlogContentWrapper";
 import { JsonLd } from "@/lib/json-ld";
 import { Article as ArticleSchema, WithContext } from "schema-dts";
 import SefariaLinker from "@/components/SefariaLinker";
+import ViewCountTracker from "@/components/ViewCountTracker";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -136,6 +137,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <>
       <JsonLd data={structuredData} />
+      <ViewCountTracker contentType="blogs" contentId={blog.id.toString()} />
       <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
         {/* Track blog post view */}
         <WritingViewTracker 

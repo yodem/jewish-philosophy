@@ -12,6 +12,7 @@ import { JsonLd } from "@/lib/json-ld";
 import { Article, Book, WithContext } from "schema-dts";
 import { BASE_URL } from "../../../../consts";
 import ReactMarkdown from "react-markdown";
+import ViewCountTracker from "@/components/ViewCountTracker";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -101,6 +102,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
   return (
     <>
       <JsonLd data={structuredData} />
+      <ViewCountTracker contentType="writings" contentId={writing.id.toString()} />
       <div className="container mx-auto py-8 px-4">
         {/* Track writing page view */}
         <WritingViewTracker 

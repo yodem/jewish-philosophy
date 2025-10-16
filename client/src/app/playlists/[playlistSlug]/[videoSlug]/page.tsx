@@ -12,6 +12,7 @@ import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import { JsonLd } from "@/lib/json-ld";
 import { VideoObject, WithContext } from "schema-dts";
+import ViewCountTracker from "@/components/ViewCountTracker";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
@@ -94,6 +95,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
   return (
     <>
       <JsonLd data={videoStructuredData} />
+      <ViewCountTracker contentType="videos" contentId={video.id.toString()} />
       
       <div className="container mx-auto px-2 my-4 sm:my-8 flex flex-col items-center justify-center w-full">
         <Card className="flex-1 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">
