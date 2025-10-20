@@ -30,6 +30,7 @@ export default function ResponsaPageClient() {
     pagination: { page: 1, pageSize: 10, total: 0, pageCount: 0 }
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [sortFilter, setSortFilter] = useState<'recent' | 'popular'>('recent');
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 10;
@@ -37,12 +38,19 @@ export default function ResponsaPageClient() {
   // Use the debounced search hook
   const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
-  // Fetch data when debounced search or page changes
+  // Handle sort filter change
+  const handleSortFilter = (filter: 'recent' | 'popular') => {
+    setSortFilter(filter);
+    // Reset to page 1 when changing filter
+    router.push('/responsa');
+  };
+
+  // Fetch data when debounced search, page, or sort filter changes
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getAllResponsas(page, pageSize, debouncedSearchTerm);
+        const result = await getAllResponsas(page, pageSize, debouncedSearchTerm, sortFilter);
         setResponsas(result.data);
         setMeta(result.meta);
       } catch (error) {
@@ -53,7 +61,7 @@ export default function ResponsaPageClient() {
     }
 
     fetchData();
-  }, [page, debouncedSearchTerm]);
+  }, [page, debouncedSearchTerm, sortFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,15 +88,32 @@ export default function ResponsaPageClient() {
             חפשו בארכיון השאלות והתשובות או הוסיפו שאלה משלכם.
           </p>
         
-        <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-          <Input
-            placeholder="חפשו שאלה..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="flex-1"
-          />
-          <Button type="submit">חפשו</Button>
-        </form>
+        <div className="flex flex-col gap-4 mb-6">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <Input
+              placeholder="חפשו שאלה..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit">חפשו</Button>
+          </form>
+          
+          <div className="flex gap-2">
+            <Button 
+              variant={sortFilter === 'recent' ? 'default' : 'outline'}
+              onClick={() => handleSortFilter('recent')}
+            >
+              חדשות
+            </Button>
+            <Button 
+              variant={sortFilter === 'popular' ? 'default' : 'outline'}
+              onClick={() => handleSortFilter('popular')}
+            >
+              פופולריות
+            </Button>
+          </div>
+        </div>
       </div>
 
       <div className="rounded-md border overflow-hidden">
