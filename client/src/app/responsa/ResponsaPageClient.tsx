@@ -99,20 +99,21 @@ export default function ResponsaPageClient() {
               <TableHead>כותרת</TableHead>
               <TableHead>קטגוריות</TableHead>
               <TableHead>מספר תגובות</TableHead>
+              <TableHead>מספר צפיות</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <>
-                <TableRowSkeleton columns={3} />
-                <TableRowSkeleton columns={3} />
-                <TableRowSkeleton columns={3} />
-                <TableRowSkeleton columns={3} />
-                <TableRowSkeleton columns={3} />
+                <TableRowSkeleton columns={4} />
+                <TableRowSkeleton columns={4} />
+                <TableRowSkeleton columns={4} />
+                <TableRowSkeleton columns={4} />
+                <TableRowSkeleton columns={4} />
               </>
             ) : responsas.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   לא נמצאו שאלות
                 </TableCell>
               </TableRow>
@@ -128,6 +129,7 @@ export default function ResponsaPageClient() {
                     <LimitedCategoryList categories={responsa.categories} isSelectable={false} />
                   </TableCell>
                   <TableCell>{responsa.comments?.length || 0}</TableCell>
+                  <TableCell>{responsa.views || 0}</TableCell>
                 </TableRow>
               ))
             )}

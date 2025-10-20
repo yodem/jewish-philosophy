@@ -169,6 +169,7 @@ export type Responsa = {
   categories: Category[];
   comments: Comment[];
   writings?: Writing[];
+  views?: number | null;
 }
 
 export type Writing = {
