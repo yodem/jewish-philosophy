@@ -28,25 +28,21 @@ export async function generateMetadata({ params }: VideoPageProps): Promise<Meta
   
   if (!video || !playlist) {
     return {
-      title: "שיעור וידאו לא נמצא - פילוסופיה יהודית | לימוד פילוסופיה יהודית מקוונת",
-      description: "השיעור המבוקש לא נמצא. חזרו לעמוד הראשי לגישה לכל השיעורים בפילוסופיה יהודית, הרמב\"ם, הלכה ואגדה.",
+      title: "שיעור וידאו לא נמצא | שלום צדיק - פילוסופיה יהודית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
     };
   }
 
-  // Create rich, keyword-heavy title and description
-  const enhancedTitle = `${video.title} | ${playlist.title} - שיעורי וידאו בפילוסופיה יהודית | הרמב"ם, הלכה ואגדה מקוונת עם שלום צדיק`;
-  const enhancedDescription = `${video.description} | שיעור מקוון מסדרת ${playlist.title} - לימוד פילוסופיה יהודית, הרמב"ם, הלכה ואגדה. שיעורים איכותיים עם שלום צדיק. פילוסופיה דתית, מוסר יהודי, ביקורת החילון, יהדות רציונלית.`.slice(0, 160);
-
   return createMetadata({
-    title: enhancedTitle,
-    description: enhancedDescription,
+    title: `${video.title} | ${playlist.title} | שלום צדיק - פילוסופיה יהודית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
     url: `/playlists/${playlistSlug}/${videoSlug}`,
     type: "article",
     image: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
-    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה יהודית, פילוסופיה דתית, הרמב"ם, מבוא לפילוסופיה יהודית, שלום צדיק, הלכה, אגדה, מוסר יהודי, יהדות רציונלית, ביקורת החילון, דרך האמצע, טעמי המצוות, השגחה, בחירה חופשית, ידיעת האל, לימוד מקוון, שיעורים יהודיים, פלטפורמה יהודית`,
+    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה יהודית, פילוסופיה דתית, הרמב"ם, מבוא לפילוסופיה יהודית, שלום צדיק, מוסר יהודי, יהדות רציונלית, ביקורת החילון, דרך האמצע, טעמי המצוות, השגחה, בחירה חופשית, ידיעת האל, לימוד מקוון, שיעורים יהודיים`,
     publishedTime: new Date().toISOString(),
     authors: ["שלום צדיק"],
-    tags: ["פילוסופיה יהודית", "שיעורי וידאו", "הרמב״ם", "הלכה", "אגדה"]
+    tags: ["פילוסופיה יהודית", "שיעורי וידאו", "הרמב״ם"]
   });
 }
 

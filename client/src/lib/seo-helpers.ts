@@ -24,9 +24,9 @@ export async function getSiteConfig(): Promise<SiteConfig> {
 
   // Default fallback config
   const defaultConfig: SiteConfig = {
-    siteName: 'פילוסופיה יהודית',
-    siteDescription: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורים, ספרים, מאמרים ושאלות ותשובות. גלו תכנים איכותיים בהלכה, אגדה, פילוסופיה יהודית ועוד.',
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://beit-midrash-digital.com',
+    siteName: 'שלום צדיק - פילוסופיה יהודית',
+    siteDescription: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app',
     keywords: [
       'פילוסופיה יהודית',
       'פילוסופיה דתית',
@@ -174,11 +174,11 @@ export function generateContextualKeywords(
   const baseKeywords = getCommonKeywords();
   
   const typeSpecificKeywords = {
-    blog: ['מאמרי הלכה', 'פרשת השבוע', 'דברי תורה', 'מאמרים רבניים', 'חידושי תורה'],
+    blog: ['מאמרי פילוסופיה', 'פרשת השבוע', 'דברי תורה', 'מאמרים', 'חידושי תורה'],
     video: ['שיעורי וידאו', 'הרצאות', 'לימוד מקוון', 'שיעור וידאו'],
     playlist: ['סדרת שיעורים', 'קורס מקוון', 'לימוד ברצף', 'שיעורים מובנים'],
     writing: ['ספר יהודי', 'מאמר יהודי', 'כתבי עת', 'ספרות יהודית'],
-    responsa: ['שאלות ותשובות', 'פסיקה הלכתית', 'הלכה פסוקה', 'תשובות רבניות']
+    responsa: ['שאלות ותשובות', 'תשובות', 'שאלות בפילוסופיה']
   };
 
   const allKeywords = [
@@ -233,7 +233,7 @@ export function generateSEOMetadata(params: GenerateSEOMetadataParams): Metadata
     keywords
   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://beit-midrash-digital.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
   const url = path ? `${baseUrl}${path}` : baseUrl;
   
   // Generate contextual keywords

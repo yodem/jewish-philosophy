@@ -13,6 +13,7 @@ import { JsonLd } from "@/lib/json-ld";
 import { Article as ArticleSchema, WithContext } from "schema-dts";
 import SefariaLinker from "@/components/SefariaLinker";
 import ViewCountTracker from "@/components/ViewCountTracker";
+import { generateMetadata as createMetadata } from "@/lib/metadata";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -28,48 +29,24 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   
   if (!blog) {
     return {
-      title: "הפוסט לא נמצא | פילוסופיה יהודית",
-      description: "הפוסט המבוקש לא נמצא במערכת פילוסופיה יהודית",
+      title: "הפוסט לא נמצא | שלום צדיק - פילוסופיה יהודית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
-  const pageUrl = `${baseUrl}/blog/${slug}`;
-  const imageUrl = blog.coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${blog.coverImage.url}` : undefined;
+  const imageUrl = blog.coverImage?.url;
 
-  return {
-    title: `${blog.title} | בלוג - פילוסופיה יהודית`,
-    description: blog.description || blog.content.slice(0, 160),
+  return createMetadata({
+    title: `${blog.title} | בלוג | שלום צדיק - פילוסופיה יהודית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    url: `/blog/${slug}`,
+    type: "article",
+    image: imageUrl,
+    publishedTime: blog.publishedAt,
+    authors: [blog.author.name],
+    tags: blog.categories?.map((cat: Category) => cat.name),
     keywords: blog.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה יהודית, בלוג',
-    authors: [{ name: blog.author.name }],
-    openGraph: {
-      title: blog.title,
-      description: blog.description || blog.content.slice(0, 160),
-      url: pageUrl,
-      siteName: 'פילוסופיה יהודית',
-      locale: 'he_IL',
-      type: 'article',
-      publishedTime: blog.publishedAt,
-      authors: [blog.author.name],
-      images: imageUrl ? [{
-        url: imageUrl,
-        width: 1200,
-        height: 630,
-        alt: blog.title
-      }] : undefined,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  };
+  });
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {

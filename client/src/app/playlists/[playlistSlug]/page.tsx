@@ -25,13 +25,14 @@ export async function generateMetadata({ params }: PlaylistPageProps): Promise<M
   
   if (!playlist) {
     return {
-      title: "Playlist Not Found",
+      title: "סדרה לא נמצאה | שלום צדיק - פילוסופיה יהודית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
     };
   }
 
   return createMetadata({
-    title: `${playlist.title} | סדרות שיעורים - פילוסופיה יהודית`,
-    description: playlist.description,
+    title: `${playlist.title} | סדרות שיעורים | שלום צדיק - פילוסופיה יהודית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
     url: `/playlists/${playlistSlug}`,
     type: "website",
     image: getImageUrl(playlist.imageUrl300x400 || playlist.imageUrlStandard),

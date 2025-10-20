@@ -5,11 +5,11 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import TermsPageClient from "./TermsPageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "מושגים | פילוסופיה יהודית - מושגים ומונחים",
-  description: "אוסף מושגים בפילוסופיה יהודית, הלכה ומחשבת ישראל. מילון מושגים עם הסברים מפורטים מאת רבנים וחוקרים מובילים.",
+  title: "מושגים | שלום צדיק - פילוסופיה יהודית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
   url: "/terms",
   type: "website",
-  keywords: "מושגים פילוסופיה יהודית, מילון מושגים, מונחים יהודיים, הרמב״ם, הלכה, אגדה, מחשבת ישראל, פילוסופיה דתית, מורה נבוכים, משנה תורה, כוזרי",
+  keywords: "מושגים פילוסופיה יהודית, מילון מושגים, מונחים יהודיים, הרמב״ם, מחשבת ישראל, פילוסופיה דתית, מורה נבוכים, משנה תורה, כוזרי",
 });
 
 export default async function TermsPage() {

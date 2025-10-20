@@ -4,11 +4,11 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import ContactPageClient from "./ContactPageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "צרו קשר | פילוסופיה יהודית",
-  description: "יש לכם שאלה או משוב? צרו קשר עם צוות פילוסופיה יהודית. אנו כאן כדי לעזור לכם בלימוד התורה והפילוסופיה היהודית.",
+  title: "צרו קשר | שלום צדיק - פילוסופיה יהודית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
   url: "/contact",
   type: "website",
-  keywords: "צרו קשר, פילוסופיה יהודית, שאלות, משוב, תמיכה, ייעוץ, לימוד תורה, פילוסופיה דתית",
+  keywords: "צרו קשר, פילוסופיה יהודית, שאלות, משוב, תמיכה, ייעוץ, פילוסופיה דתית",
 });
 
 export default function ContactPage() {
