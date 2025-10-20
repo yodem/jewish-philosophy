@@ -307,7 +307,19 @@ export async function getResponsaPage() {
   return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 3 } });
 }
 
-export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
+export async function getAllResponsas(page = 1, pageSize = 10, search = '', sortBy: 'recent' | 'popular' = 'recent') {
+  // Determine sort order based on sortBy parameter
+  let sort: string[];
+  switch (sortBy) {
+    case 'popular':
+      sort = ['views:desc'];
+      break;
+    case 'recent':
+    default:
+      sort = ['createdAt:desc'];
+      break;
+  }
+
   const query = qs.stringify({
     populate: {
       categories: true,
@@ -317,7 +329,7 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '') {
         }
       }
     },
-    sort: ['createdAt:desc'],
+    sort,
     pagination: {
       page,
       pageSize
