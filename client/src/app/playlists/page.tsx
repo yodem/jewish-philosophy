@@ -10,8 +10,8 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PlaylistsPageClient from "./PlaylistsPageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "סדרות שיעורים | פילוסופיה יהודית - שיעורי וידאו ברצף",
-  description: "סדרות שיעורים מקיפות ברצף בנושאי הלכה, גמרא, תנ\"ך, פילוסופיה יהודית ועוד. למדו עם המרצים המובילים במתכונת של קורסים מובנים.",
+  title: "סדרות שיעורים | שלום צדיק - פילוסופיה יהודית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
   url: "/playlists",
   type: "website",
   keywords: "סדרות שיעורים, שיעורי וידאו, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, כוזרי, קורסים יהודיים, שלום צדיק, מבוא לפילוסופיה יהודית, לימוד ברצף, יהדות רציונלית",

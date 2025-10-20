@@ -24,20 +24,21 @@ export async function generateMetadata({ params }: WritingPageProps): Promise<Me
   
   if (!writing) {
     return {
-      title: "Writing Not Found",
+      title: "כתב לא נמצא | שלום צדיק - פילוסופיה יהודית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
     };
   }
 
   return createMetadata({
-    title: `${writing.title} | כתבים - פילוסופיה יהודית`,
-    description: writing.description,
+    title: `${writing.title} | כתבים | שלום צדיק - פילוסופיה יהודית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
     url: `/writings/${slug}`,
     type: "article",
     image: getImageUrl(writing.image?.url),
     publishedTime: writing.publishedAt,
     authors: [writing.author.name],
     tags: writing.categories?.map(cat => cat.name) || undefined,
-    keywords: `${writing.type === 'book' ? 'ספר יהודי' : 'מאמר יהודי'}, ${writing.categories?.map(cat => cat.name).join(', ')}, ${writing.author.name}, לימודי יהדות, בית מדרש דיגיטלי`,
+    keywords: `${writing.type === 'book' ? 'ספר יהודי' : 'מאמר יהודי'}, ${writing.categories?.map(cat => cat.name).join(', ')}, ${writing.author.name}, פילוסופיה יהודית`,
   });
 }
 

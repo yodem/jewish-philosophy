@@ -15,8 +15,8 @@ export interface SEOData {
 }
 
 export function generateMetadata(seoData: SEOData): Metadata {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
-  const siteName = 'פילוסופיה יהודית';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const siteName = 'שלום צדיק - פילוסופיה יהודית';
   
   const {
     title,
@@ -42,6 +42,10 @@ export function generateMetadata(seoData: SEOData): Metadata {
     authors: authors?.map(name => ({ name })),
     alternates: {
       canonical: fullUrl,
+      languages: {
+        'he': fullUrl,
+        'he-IL': fullUrl,
+      },
     },
     openGraph: {
       title,
@@ -63,30 +67,13 @@ export function generateMetadata(seoData: SEOData): Metadata {
       ...(authors && { authors }),
       ...(tags && { tags }),
     },
-    // Enhanced Twitter Card support
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      creator: '@jewish_philosophy',
-      site: '@jewish_philosophy',
+      creator: '@shalomtzadik',
+      site: '@shalomtzadik',
       images: [imageUrl],
-    },
-    // Additional meta tags for better SEO
-    other: {
-      // Facebook specific meta tags
-      'fb:app_id': '123456789', // Replace with actual Facebook App ID
-      'article:publisher': 'https://www.facebook.com/jewish.philosophy',
-      'article:author': 'שלום צדיק',
-      // Additional SEO tags
-      'theme-color': '#3b82f6',
-      'msapplication-TileColor': '#3b82f6',
-      'apple-mobile-web-app-capable': 'yes',
-      'apple-mobile-web-app-status-bar-style': 'default',
-      'format-detection': 'telephone=no',
-      // Schema.org for rich snippets
-      'application-name': siteName,
-      'mobile-web-app-capable': 'yes',
     },
     robots: {
       index: true,
@@ -99,11 +86,14 @@ export function generateMetadata(seoData: SEOData): Metadata {
         'max-snippet': -1,
       },
     },
-    // Enhanced verification tags
-    verification: {
-      google: 'your-google-verification-code',
-      yandex: 'your-yandex-verification-code',
-      yahoo: 'your-yahoo-verification-code',
+    other: {
+      'theme-color': '#3b82f6',
+      'msapplication-TileColor': '#3b82f6',
+      'apple-mobile-web-app-capable': 'yes',
+      'apple-mobile-web-app-status-bar-style': 'default',
+      'format-detection': 'telephone=no',
+      'application-name': siteName,
+      'mobile-web-app-capable': 'yes',
     },
   };
 }

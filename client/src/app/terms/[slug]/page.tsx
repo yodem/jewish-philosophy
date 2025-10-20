@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { getTermBySlug } from '@/data/loaders';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { FullCategoryList } from '@/components/LimitedCategoryList';
-import { generateSEOMetadata } from '@/lib/seo-helpers';
 
 interface TermPageProps {
   params: Promise<{ slug: string }>;
@@ -80,18 +79,47 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
 
   if (!term) {
     return {
-      title: 'מושג לא נמצא',
+      title: 'מושג לא נמצא | שלום צדיק - פילוסופיה יהודית',
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
     };
   }
 
-  return generateSEOMetadata({
-    title: term.title,
-    description: term.description.substring(0, 160),
-    path: `/terms/${slug}`,
-    publishedTime: term.publishedAt,
-    modifiedTime: term.updatedAt,
-    authors: term.author ? [term.author.name] : undefined,
-    section: 'מושגים',
-    tags: term.categories?.map(cat => cat.name) || [],
-  });
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const pageUrl = `${baseUrl}/terms/${slug}`;
+
+  return {
+    title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    keywords: term.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה יהודית, מושגים',
+    authors: term.author ? [{ name: term.author.name }] : undefined,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+      url: pageUrl,
+      siteName: 'שלום צדיק - פילוסופיה יהודית',
+      locale: 'he_IL',
+      type: 'article',
+      publishedTime: term.publishedAt,
+      modifiedTime: term.updatedAt,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+  };
 }
