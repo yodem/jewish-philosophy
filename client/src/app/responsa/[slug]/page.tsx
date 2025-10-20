@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getResponsaBySlug } from "@/data/loaders";
 import { generateMetadata as createMetadata } from "@/lib/metadata";
 import { Category } from "@/types";
-import ResponsaPageClient from "./ResponsaPageClient";
+import ResponsaPage from "./ResponsaPage";
 
 interface ResponsaPageProps {
   params: Promise<{ slug: string }>;
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: ResponsaPageProps): Promise<M
   });
 }
 
-export default async function ResponsaPage({ params }: ResponsaPageProps) {
+export default async function ResponsaServerPage({ params }: ResponsaPageProps) {
   const { slug } = await params;
   const responsa = await getResponsaBySlug(slug);
 
@@ -42,6 +42,6 @@ export default async function ResponsaPage({ params }: ResponsaPageProps) {
   }
 
   return (
-    <ResponsaPageClient initialResponsa={responsa} slug={slug} />
+    <ResponsaPage responsa={responsa} slug={slug} />
   );
 }
