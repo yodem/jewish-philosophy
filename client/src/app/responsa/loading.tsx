@@ -33,17 +33,20 @@ export default function ResponsaListLoading() {
               <th className="p-4">
                 <Skeleton className="h-4 w-24 bg-gray-200" />
               </th>
+              <th className="p-4">
+                <Skeleton className="h-4 w-20 bg-gray-200" />
+              </th>
             </tr>
           </thead>
           <tbody>
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
-            <TableRowSkeleton columns={3} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
+            <TableRowSkeleton columns={4} />
           </tbody>
         </table>
       </div>
