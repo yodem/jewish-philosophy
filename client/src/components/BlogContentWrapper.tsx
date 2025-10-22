@@ -10,7 +10,7 @@ interface BlogContentWrapperProps {
 
 export default function BlogContentWrapper({
   content,
-  className = "prose prose-lg max-w-none dark:prose-invert text-justify break-words overflow-wrap-anywhere"
+  className = "prose prose-lg max-w-none dark:prose-invert text-justify"
 }: BlogContentWrapperProps) {
   return (
     <article className={className}>
