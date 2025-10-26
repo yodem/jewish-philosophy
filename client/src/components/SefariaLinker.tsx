@@ -51,7 +51,7 @@ export default function SefariaLinker({
   // Default options optimized for Hebrew/Romanian content
   const defaultOptions: SefariaLinkOptions = {
     mode: 'popup-click',
-    contentLang: 'bilingual', // Show both Hebrew and English
+    contentLang: 'hebrew', // Show Hebrew only
     interfaceLang: 'hebrew',  // Hebrew interface for RTL support
     hidePopupsOnMobile: false, // Enable popups on mobile for better UX
     dynamic: false, // Content is static on these pages
