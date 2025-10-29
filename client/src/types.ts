@@ -169,6 +169,7 @@ export type Responsa = {
   categories: Category[];
   comments: Comment[];
   writings?: Writing[];
+  views?: number | null;
 }
 
 export type Writing = {
@@ -191,6 +192,7 @@ export type Writing = {
   priority?: number;
   comments?: Comment[];
   threads?: Thread[];
+  views?: number | null;
 }
 
 export type Term = {
