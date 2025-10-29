@@ -24,7 +24,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
       )}
       <CardContent className="flex-1 flex flex-col justify-center items-start gap-2 md:gap-4 px-0 order-2 md:order-none">
         <CardTitle className="text-xl md:text-2xl font-bold mb-1 md:mb-2 text-gray-900 text-center md:text-right break-words">{heading}</CardTitle>
-        <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg text-justify">
+        <CardDescription className="text-gray-700 mb-2 md:mb-4 text-base md:text-lg text-justify overflow-hidden">
           <ReactMarkdown
             components={{
               a: ({ children, href }) => {
