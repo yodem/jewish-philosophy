@@ -192,6 +192,7 @@ export type Writing = {
   priority?: number;
   comments?: Comment[];
   threads?: Thread[];
+  views?: number | null;
 }
 
 export type Term = {
