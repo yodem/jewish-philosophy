@@ -155,7 +155,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
           />
         </div>}
 
-        <div className={`dark:prose-invert text-justify`}>
+        <div className={`dark:prose-invert text-justify overflow-hidden`}>
       <ReactMarkdown
         components={{
           a: ({ children, href }) => {

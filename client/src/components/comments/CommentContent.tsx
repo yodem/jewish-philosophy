@@ -20,7 +20,7 @@ export default function CommentContent({
   };
 
   return (
-    <div className={`${sizeClasses[size]} dark:prose-invert text-justify ${className}`}>
+    <div className={`${sizeClasses[size]} dark:prose-invert text-justify overflow-hidden ${className}`}>
       <ReactMarkdown
         components={{
           a: ({ children, href }) => {

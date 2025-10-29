@@ -84,7 +84,7 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
             </div>
           )}
           
-          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-justify">
+          <div className="prose prose-lg max-w-none dark:prose-invert bg-gray-50 dark:bg-gray-800 p-6 rounded-lg text-justify overflow-hidden">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
             >
