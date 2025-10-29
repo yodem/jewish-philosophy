@@ -568,16 +568,13 @@ export async function getWritingsPaginated(
   pageSize: number = 12,
   typeFilter?: 'book' | 'article' | 'all',
   searchTerm?: string,
-  sortBy: 'recent' | 'popular' | 'priority' = 'priority'
+  sortBy: 'popular' | 'priority' = 'priority'
 ): Promise<{ data: Writing[]; meta: { pagination: { page: number; pageSize: number; total: number; pageCount: number } } }> {
   // Determine sort order based on sortBy parameter
   let sort: string[];
   switch (sortBy) {
     case 'popular':
       sort = ['views:desc', 'publishedAt:desc'];
-      break;
-    case 'recent':
-      sort = ['publishedAt:desc'];
       break;
     case 'priority':
     default:

@@ -32,7 +32,7 @@ export default function WritingsPageClient() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'book' | 'article'>(
     (searchParams.get("type") as 'all' | 'book' | 'article') || 'all'
   );
-  const [sortFilter, setSortFilter] = useState<'priority' | 'recent' | 'popular'>('priority');
+  const [sortFilter, setSortFilter] = useState<'priority' | 'popular'>('priority');
   const [blocks, setBlocks] = useState<Block[]>([]);
 
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -101,7 +101,7 @@ export default function WritingsPageClient() {
   };
 
   // Handle sort filter change
-  const handleSortFilter = (filter: 'priority' | 'recent' | 'popular') => {
+  const handleSortFilter = (filter: 'priority' | 'popular') => {
     setSortFilter(filter);
     // Reset to page 1 when changing filter
     router.push('/writings');
@@ -168,12 +168,6 @@ export default function WritingsPageClient() {
                 onClick={() => handleSortFilter('priority')}
               >
                 עדיפות
-              </Button>
-              <Button 
-                variant={sortFilter === 'recent' ? 'default' : 'outline'}
-                onClick={() => handleSortFilter('recent')}
-              >
-                חדשות
               </Button>
               <Button 
                 variant={sortFilter === 'popular' ? 'default' : 'outline'}
