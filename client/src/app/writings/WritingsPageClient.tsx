@@ -32,6 +32,7 @@ export default function WritingsPageClient() {
   const [typeFilter, setTypeFilter] = useState<'all' | 'book' | 'article'>(
     (searchParams.get("type") as 'all' | 'book' | 'article') || 'all'
   );
+  const [sortFilter, setSortFilter] = useState<'priority' | 'recent' | 'popular'>('priority');
   const [blocks, setBlocks] = useState<Block[]>([]);
 
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -62,7 +63,8 @@ export default function WritingsPageClient() {
           page, 
           pageSize, 
           typeFilter, 
-          debouncedSearchTerm || undefined
+          debouncedSearchTerm || undefined,
+          sortFilter
         );
 
         setWritings(result.data);
@@ -75,7 +77,7 @@ export default function WritingsPageClient() {
     }
 
     fetchData();
-  }, [page, debouncedSearchTerm, typeFilter]);
+  }, [page, debouncedSearchTerm, typeFilter, sortFilter]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +98,13 @@ export default function WritingsPageClient() {
     }
     params.set("page", "1"); // Reset to first page
     router.push(`/writings?${params.toString()}`);
+  };
+
+  // Handle sort filter change
+  const handleSortFilter = (filter: 'priority' | 'recent' | 'popular') => {
+    setSortFilter(filter);
+    // Reset to page 1 when changing filter
+    router.push('/writings');
   };
 
   const handlePageChange = (newPage: number) => {
@@ -131,25 +140,48 @@ export default function WritingsPageClient() {
             <Button type="submit">חפשו</Button>
           </form>
           
-          <div className="flex gap-2">
-            <Button 
-              variant={typeFilter === 'all' ? 'default' : 'outline'}
-              onClick={() => handleTypeFilter('all')}
-            >
-              הכל
-            </Button>
-            <Button 
-              variant={typeFilter === 'book' ? 'default' : 'outline'}
-              onClick={() => handleTypeFilter('book')}
-            >
-              ספרים
-            </Button>
-            <Button 
-              variant={typeFilter === 'article' ? 'default' : 'outline'}
-              onClick={() => handleTypeFilter('article')}
-            >
-              מאמרים
-            </Button>
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              <Button 
+                variant={typeFilter === 'all' ? 'default' : 'outline'}
+                onClick={() => handleTypeFilter('all')}
+              >
+                הכל
+              </Button>
+              <Button 
+                variant={typeFilter === 'book' ? 'default' : 'outline'}
+                onClick={() => handleTypeFilter('book')}
+              >
+                ספרים
+              </Button>
+              <Button 
+                variant={typeFilter === 'article' ? 'default' : 'outline'}
+                onClick={() => handleTypeFilter('article')}
+              >
+                מאמרים
+              </Button>
+            </div>
+            
+            <div className="flex gap-2">
+              <Button 
+                variant={sortFilter === 'priority' ? 'default' : 'outline'}
+                onClick={() => handleSortFilter('priority')}
+              >
+                עדיפות
+              </Button>
+              <Button 
+                variant={sortFilter === 'recent' ? 'default' : 'outline'}
+                onClick={() => handleSortFilter('recent')}
+              >
+                חדשות
+              </Button>
+              <Button 
+                variant={sortFilter === 'popular' ? 'default' : 'outline'}
+                onClick={() => handleSortFilter('popular')}
+              >
+                פופולריות
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -163,18 +195,19 @@ export default function WritingsPageClient() {
               <TableHead>סוג</TableHead>
               <TableHead>מחבר</TableHead>
               <TableHead>קטגוריות</TableHead>
+              <TableHead>מספר צפיות</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">
+                <TableCell colSpan={5} className="text-center py-10">
                   טוענים...
                 </TableCell>
               </TableRow>
             ) : writings.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">
+                <TableCell colSpan={5} className="text-center py-10">
                   לא נמצאו כתבים
                 </TableCell>
               </TableRow>
@@ -199,6 +232,7 @@ export default function WritingsPageClient() {
                   <TableCell>
                     <LimitedCategoryList categories={writing.categories} />
                   </TableCell>
+                  <TableCell>{writing.views || 0}</TableCell>
                 </TableRow>
               ))
             )}

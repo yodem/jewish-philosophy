@@ -567,15 +567,31 @@ export async function getWritingsPaginated(
   page: number = 1, 
   pageSize: number = 12,
   typeFilter?: 'book' | 'article' | 'all',
-  searchTerm?: string
+  searchTerm?: string,
+  sortBy: 'recent' | 'popular' | 'priority' = 'priority'
 ): Promise<{ data: Writing[]; meta: { pagination: { page: number; pageSize: number; total: number; pageCount: number } } }> {
+  // Determine sort order based on sortBy parameter
+  let sort: string[];
+  switch (sortBy) {
+    case 'popular':
+      sort = ['views:desc', 'publishedAt:desc'];
+      break;
+    case 'recent':
+      sort = ['publishedAt:desc'];
+      break;
+    case 'priority':
+    default:
+      sort = [
+        'priority:asc', // Lower numbers = higher priority (1 is most prioritized)
+        'type:desc', // 'book' comes before 'article' alphabetically when sorted descending
+        'publishedAt:desc'
+      ];
+      break;
+  }
+
   const query = qs.stringify({
     populate: '*',
-    sort: [
-      'priority:asc', // Lower numbers = higher priority (1 is most prioritized)
-      'type:desc', // 'book' comes before 'article' alphabetically when sorted descending
-      'publishedAt:desc'
-    ],
+    sort,
     pagination: {
       page,
       pageSize
