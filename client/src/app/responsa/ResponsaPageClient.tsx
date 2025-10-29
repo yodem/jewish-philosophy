@@ -123,7 +123,7 @@ export default function ResponsaPageClient() {
             <TableRow>
               <TableHead>כותרת</TableHead>
               <TableHead>קטגוריות</TableHead>
-              <TableHead>מספר תגובות</TableHead>
+              <TableHead className="hidden sm:table-cell">מספר תגובות</TableHead>
               <TableHead>מספר צפיות</TableHead>
             </TableRow>
           </TableHeader>
@@ -153,7 +153,7 @@ export default function ResponsaPageClient() {
                   <TableCell>
                     <LimitedCategoryList categories={responsa.categories} isSelectable={false} />
                   </TableCell>
-                  <TableCell>{responsa.comments?.length || 0}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{responsa.comments?.length || 0}</TableCell>
                   <TableCell>{responsa.views || 0}</TableCell>
                 </TableRow>
               ))
