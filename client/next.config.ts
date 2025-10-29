@@ -16,6 +16,7 @@ const strapiRemotePattern = {
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
+    unoptimized: true,
     remotePatterns: [
       strapiRemotePattern,
       // Add specific pattern for Strapi Cloud media URLs
