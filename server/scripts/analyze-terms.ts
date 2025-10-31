@@ -155,6 +155,11 @@ async function updateTermInStrapi(term: any, analysisResult: any, categories: an
         set: categoryDocumentIds
       }
     }
+    
+    // Preserve views field if it exists
+    if (term.views !== undefined && term.views !== null) {
+      updatePayload.data.views = term.views
+    }
 
     // Only update if there's something to update
     if (Object.keys(updatePayload.data).length === 0) {

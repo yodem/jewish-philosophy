@@ -13,6 +13,8 @@ import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata"
 import { JsonLd } from "@/lib/json-ld";
 import { VideoObject, WithContext } from "schema-dts";
 import ViewCountTracker from "@/components/ViewCountTracker";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 // Force dynamic rendering to prevent build-time data fetching issues
 export const dynamic = 'force-dynamic';
@@ -130,8 +132,10 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
             <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-800">
               תיאור השיעור
             </h3>
-            <div className="prose prose-lg max-w-none">
-              <p className="text-gray-700 leading-relaxed text-justify mb-4">{video.description}</p>
+            <div className="prose prose-lg max-w-none text-justify">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {video.description}
+              </ReactMarkdown>
             </div>
           </article>
 

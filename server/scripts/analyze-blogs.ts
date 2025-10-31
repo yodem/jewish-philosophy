@@ -25,6 +25,7 @@ interface BlogData {
   content: string
   description?: string
   slug: string
+  views?: number
   categories?: CategoryData[]
 }
 
@@ -241,12 +242,18 @@ async function updateBlogInStrapi(
     console.log(`🏷️  Matched category names: ${matchedNames.join(', ')}`)
 
     // Prepare update payload - use 'set' to override existing categories
-    const updatePayload = {
+    // Preserve views field if it exists
+    const updatePayload: any = {
       data: {
         categories: {
           set: categoryDocumentIds
         }
       }
+    }
+    
+    // Preserve views field if it exists
+    if (blog.views !== undefined && blog.views !== null) {
+      updatePayload.data.views = blog.views
     }
 
     console.log(`💾 Updating blog with data:`, JSON.stringify(updatePayload, null, 2))

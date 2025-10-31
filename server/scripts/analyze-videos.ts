@@ -162,6 +162,11 @@ async function updateVideoInStrapi(video: any, analysisResult: any, categories: 
         set: categoryDocumentIds
       }
     }
+    
+    // Preserve views field if it exists
+    if (video.views !== undefined && video.views !== null) {
+      updatePayload.data.views = video.views
+    }
 
     // Only update if there's something to update
     if (Object.keys(updatePayload.data).length === 0) {

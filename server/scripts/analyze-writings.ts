@@ -25,6 +25,7 @@ interface WritingData {
   description?: string
   type?: 'book' | 'article'
   slug: string
+  views?: number
   categories?: CategoryData[]
 }
 
@@ -237,12 +238,18 @@ async function updateWritingInStrapi(
     console.log(`🏷️  Matched category names: ${matchedNames.join(', ')}`)
 
     // Prepare update payload - use 'set' to override existing categories
-    const updatePayload = {
+    // Preserve views field if it exists
+    const updatePayload: any = {
       data: {
         categories: {
           set: categoryDocumentIds
         }
       }
+    }
+    
+    // Preserve views field if it exists
+    if (writing.views !== undefined && writing.views !== null) {
+      updatePayload.data.views = writing.views
     }
 
     console.log(`💾 Updating writing with data:`, JSON.stringify(updatePayload, null, 2))
