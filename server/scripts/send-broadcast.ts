@@ -1,7 +1,8 @@
 /**
  * Send Broadcast Script
  * 
- * Sends weekly content broadcast to the Resend audience
+ * Sends monthly content broadcast to the Resend audience
+ * Shows the 5 most recent items from each content type with a "View more" button
  * Audience ID: e5d7ecb0-d089-49a1-908e-6423de637cf9
  * 
  * Usage: pnpm send-broadcast
@@ -23,12 +24,13 @@ interface ContentItem {
   title: string;
   slug: string;
   createdAt: string;
+  playlistSlug?: string; // For videos - playlist slug needed for URL construction
 }
 
 interface WeeklyContent {
   blogs: ContentItem[];
   writings: ContentItem[];
-  videos: ContentItem[];
+  videos: ContentItem[]; // Videos have playlistSlug property
   terms: ContentItem[];
   responsas: ContentItem[];
 }
@@ -38,6 +40,7 @@ class BroadcastSender {
   private fromEmail: string;
   private siteUrl: string;
   private strapiUrl: string;
+  private strapiApiToken: string | undefined;
 
   constructor() {
     if (!process.env.RESEND_API_KEY) {
@@ -48,17 +51,18 @@ class BroadcastSender {
     this.fromEmail = process.env.RESEND_DEFAULT_FROM_EMAIL || 'onboarding@resend.dev';
     this.siteUrl = process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app';
     this.strapiUrl = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
+    this.strapiApiToken = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
   }
 
   /**
-   * Fetch content from Strapi API for the last week
+   * Fetch content from Strapi API for the last month
    */
   async fetchWeeklyContent(): Promise<WeeklyContent> {
-    console.log('📚 Fetching content from Strapi API for the last week...');
+    console.log('📚 Fetching content from Strapi API for the last month...');
     
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    const weekAgoISO = oneWeekAgo.toISOString();
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    const monthAgoISO = oneMonthAgo.toISOString();
 
     const content: WeeklyContent = {
       blogs: [],
@@ -70,12 +74,21 @@ class BroadcastSender {
 
     try {
       // Helper function to fetch from Strapi API
-      const fetchFromStrapi = async (endpoint: string): Promise<ContentItem[]> => {
-        const url = `${this.strapiUrl}/api/${endpoint}?filters[createdAt][$gte]=${weekAgoISO}&sort=createdAt:desc&fields[0]=title&fields[1]=slug&fields[2]=createdAt`;
+      const fetchFromStrapi = async (endpoint: string, populate?: string): Promise<ContentItem[]> => {
+        const populateParam = populate ? `&populate=${populate}` : '';
+        const url = `${this.strapiUrl}/api/${endpoint}?filters[createdAt][$gte]=${monthAgoISO}&sort=createdAt:desc&fields[0]=title&fields[1]=slug&fields[2]=createdAt${populateParam}`;
         
         console.log(`🔍 Fetching ${endpoint} from: ${url}`);
         
-        const response = await fetch(url);
+        const headers: Record<string, string> = {
+          'Content-Type': 'application/json'
+        };
+        
+        if (this.strapiApiToken) {
+          headers['Authorization'] = `Bearer ${this.strapiApiToken}`;
+        }
+        
+        const response = await fetch(url, { headers });
         if (!response.ok) {
           throw new Error(`Failed to fetch ${endpoint}: ${response.statusText}`);
         }
@@ -85,15 +98,17 @@ class BroadcastSender {
           id: item.id,
           title: item.title,
           slug: item.slug,
-          createdAt: item.createdAt
+          createdAt: item.createdAt,
+          playlistSlug: item.playlist?.slug || item.playlists?.[0]?.slug // Get playlist slug for videos
         })) || [];
       };
 
       // Fetch all content types in parallel
+      // Videos need playlist relationship populated to get playlist slug
       const [blogs, writings, videos, terms, responsas] = await Promise.all([
         fetchFromStrapi('blogs'),
         fetchFromStrapi('writings'), 
-        fetchFromStrapi('videos'),
+        fetchFromStrapi('videos', 'playlists'),
         fetchFromStrapi('terms'),
         fetchFromStrapi('responsas')
       ]);
@@ -107,7 +122,7 @@ class BroadcastSender {
       const totalItems = content.blogs.length + content.writings.length + 
                         content.videos.length + content.terms.length + content.responsas.length;
 
-      console.log(`✅ Found ${totalItems} new content items this week:`);
+      console.log(`✅ Found ${totalItems} new content items this month:`);
       console.log(`   📝 Blogs: ${content.blogs.length}`);
       console.log(`   ✍️  Writings: ${content.writings.length}`);
       console.log(`   🎥 Videos: ${content.videos.length}`);
@@ -116,7 +131,7 @@ class BroadcastSender {
 
       return content;
     } catch (error) {
-      console.error('❌ Error fetching weekly content from Strapi:', error);
+      console.error('❌ Error fetching monthly content from Strapi:', error);
       throw error;
     }
   }
@@ -136,15 +151,29 @@ class BroadcastSender {
     const generateContentSection = (items: ContentItem[], title: string, emoji: string, urlPath: string) => {
       if (items.length === 0) return '';
       
+      // Show only the first 5 items
+      const displayedItems = items.slice(0, 5);
+      const remainingCount = items.length - displayedItems.length;
+      
+      // Helper function to generate URL - videos need playlist slug
+      const getItemUrl = (item: ContentItem) => {
+        if (urlPath === 'playlists' && item.playlistSlug) {
+          // Videos: /playlists/[playlistSlug]/[videoSlug]
+          return `${this.siteUrl}/${urlPath}/${item.playlistSlug}/${item.slug}`;
+        }
+        // Other content types: /[urlPath]/[slug]
+        return `${this.siteUrl}/${urlPath}/${item.slug}`;
+      };
+      
       return `
         <div style="margin: 30px 0;">
           <h3 style="color: #333; font-size: 20px; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
             ${emoji} ${title} (${items.length})
           </h3>
           <div style="background: #f8f9fa; border-radius: 8px; padding: 20px;">
-            ${items.map(item => `
+            ${displayedItems.map(item => `
               <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee;">
-                <a href="${this.siteUrl}/${urlPath}/${item.slug}" 
+                <a href="${getItemUrl(item)}" 
                    style="color: #667eea; text-decoration: none; font-weight: bold; font-size: 16px;">
                   ${item.title}
                 </a>
@@ -153,6 +182,22 @@ class BroadcastSender {
                 </p>
               </div>
             `).join('')}
+            ${remainingCount > 0 ? `
+              <div style="margin-top: 20px; text-align: center;">
+                <a href="${this.siteUrl}/${urlPath}" 
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                          color: white; 
+                          text-decoration: none; 
+                          padding: 12px 30px; 
+                          border-radius: 25px; 
+                          font-weight: bold;
+                          font-size: 15px;
+                          display: inline-block;
+                          box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);">
+                  צפו בעוד ${remainingCount}
+                </a>
+              </div>
+            ` : ''}
           </div>
         </div>
       `;
@@ -166,15 +211,15 @@ class BroadcastSender {
         <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון השבועי</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון החודשי</h1>
             <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה יהודית</p>
           </div>
           
           <!-- Content -->
           <div style="background: white; padding: 40px 30px; text-align: center;">
-            <h2 style="color: #333; margin-top: 0; font-size: 24px;">🌟 שבוע שקט</h2>
+            <h2 style="color: #333; margin-top: 0; font-size: 24px;">🌟 חודש שקט</h2>
             <p style="font-size: 16px; line-height: 1.8; color: #555;">
-              השבוע לא פורסמו תכנים חדשים באתר. אנחנו עובדים על תכנים מרתקים לשבוع הבא!
+              החודש לא פורסמו תכנים חדשים באתר. אנחנו עובדים על תכנים מרתקים לחודש הבא!
             </p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${this.siteUrl}" 
@@ -207,23 +252,23 @@ class BroadcastSender {
       <div style="direction: rtl; text-align: right; font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f8f9fa;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון השבועי</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון החודשי</h1>
           <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה יהודית</p>
         </div>
         
         <!-- Content -->
         <div style="background: white; padding: 40px 30px;">
           <h2 style="color: #333; margin-top: 0; font-size: 24px; text-align: center;">
-            🌟 תכנים חדשים השבוע (${totalItems})
+            🌟 תכנים חדשים החודש (${totalItems})
           </h2>
           
           <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px; text-align: center;">
-            השבוע פורסמו ${totalItems} תכנים חדשים באתר שלנו. הנה מה שחדש:
+            החודש פורסמו ${totalItems} תכנים חדשים באתר שלנו. הנה מה שחדש:
           </p>
           
           ${generateContentSection(content.blogs, 'מאמרים ובלוגים', '📝', 'blog')}
           ${generateContentSection(content.writings, 'כתבים', '✍️', 'writings')}
-          ${generateContentSection(content.videos, 'וידאו ושיעורים', '🎥', 'video')}
+          ${generateContentSection(content.videos, 'וידאו ושיעורים', '🎥', 'playlists')}
           ${generateContentSection(content.terms, 'מונחים ומושגים', '📖', 'terms')}
           ${generateContentSection(content.responsas, 'שאלות ותשובות', '💬', 'responsa')}
           
@@ -251,7 +296,7 @@ class BroadcastSender {
         <!-- Footer -->
         <div style="background: #f1f3f4; padding: 25px; text-align: center; border-top: 1px solid #e0e0e0;">
           <p style="margin: 0 0 10px 0; color: #888; font-size: 12px;">
-            ניוזלטר שבועי - עדכונים על תכנים חדשים באתר
+            ניוזלטר חודשי - עדכונים על תכנים חדשים באתר
           </p>
           <p style="margin: 0; color: #888; font-size: 12px;">
             <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color: #667eea; text-decoration: none;">
@@ -295,8 +340,8 @@ class BroadcastSender {
                       content.videos.length + content.terms.length + content.responsas.length;
 
     const subject = totalItems > 0 
-      ? `📰 עדכון שבועי: ${totalItems} תכנים חדשים באתר פילוסופיה יהודית`
-      : `📰 עדכון שבועי מפילוסופיה יהודית`;
+      ? `📰 עדכון חודשי: ${totalItems} תכנים חדשים באתר פילוסופיה יהודית`
+      : `📰 עדכון חודשי מפילוסופיה יהודית`;
 
     const htmlContent = this.generateEmailTemplate(content);
 
@@ -422,7 +467,7 @@ class BroadcastSender {
    */
   async run(): Promise<void> {
     try {
-      console.log('🚀 Starting weekly broadcast process...\n');
+      console.log('🚀 Starting monthly broadcast process...\n');
 
       // Fetch weekly content
       const content = await this.fetchWeeklyContent();
@@ -430,10 +475,10 @@ class BroadcastSender {
       // Create and send broadcast
       await this.createAndSendBroadcast(content);
 
-      console.log('\n🎉 Weekly broadcast process completed successfully!');
+      console.log('\n🎉 Monthly broadcast process completed successfully!');
 
     } catch (error) {
-      console.error('\n❌ Weekly broadcast process failed:', error);
+      console.error('\n❌ Monthly broadcast process failed:', error);
       process.exit(1);
     } finally {
       this.cleanup();
