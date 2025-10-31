@@ -25,6 +25,7 @@ interface ResponsaData {
   content: string
   questioneer: string
   slug: string
+  views?: number
   categories?: CategoryData[]
   comments?: CommentData[]
 }
@@ -259,12 +260,18 @@ async function updateResponsaInStrapi(
     console.log(`🏷️  Matched category names: ${matchedNames.join(', ')}`)
 
     // Prepare update payload - use 'set' to override existing categories
-    const updatePayload = {
+    // Preserve views field if it exists
+    const updatePayload: any = {
       data: {
         categories: {
           set: categoryDocumentIds
         }
       }
+    }
+    
+    // Preserve views field if it exists
+    if (responsa.views !== undefined && responsa.views !== null) {
+      updatePayload.data.views = responsa.views
     }
 
     console.log(`💾 Updating responsa with data:`, JSON.stringify(updatePayload, null, 2))

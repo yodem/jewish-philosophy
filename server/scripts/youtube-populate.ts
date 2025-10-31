@@ -31,14 +31,14 @@ const getStrapiHeaders = () => {
 };
 
 async function fetchPlaylists() {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=100`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=200`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
 }
 
 async function fetchPlaylistItems(playlistId: string) {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=100`;
+  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=200`;
   const res = await fetch(url);
   const data: any = await res.json();
   return data.items || [];
@@ -90,6 +90,13 @@ async function createOrUpdatePlaylist(playlist: any) {
 }
 
 async function createOrUpdateVideo(video: any, playlistId: string) {
+
+  // Skip private videos
+  if (video.snippet.title === 'Private video') {
+    console.log(`Skipping private video: ${video.contentDetails.videoId}`);
+    return;
+  }
+
   // Find the Strapi playlist by youtubeId
   const playlistRes = await fetch(`${STRAPI_URL}/playlists?filters[youtubeId][$eq]=${playlistId}&pagination[limit]=999`, {
     headers: getStrapiHeaders()
