@@ -52,6 +52,8 @@ export const CATEGORY_BACKGROUNDS: Record<string, string> = {
   "rabbi-hoter-ben-shelomo": "bg-amber-900 text-white",
   "new-platonism": "bg-lime-900 text-white",
   "rabbi-abraham-bibago": "bg-green-900 text-white",
+  "kant": "bg-slate-600 text-white",
+  "modern-science": "bg-sky-600 text-white",
 };
 
 // Helper function to get category color class based on category slug
