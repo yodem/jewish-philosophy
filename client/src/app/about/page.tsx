@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import DonateButton from "@/components/DonateButton";
 
 export const metadata: Metadata = generateMetadata({
   title: "אודות | שלום צדיק - פילוסופיה יהודית",
@@ -59,6 +60,7 @@ export default async function AboutPage() {
           <BlockRenderer blocks={blocks} />
         </Suspense>
       </ErrorBoundary>
+      <DonateButton />
     </div>
   );
 } 

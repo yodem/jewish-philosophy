@@ -19,3 +19,14 @@ export const CONTENT_TYPE_CONFIG = {
   writing: { icon: 'BookOpen', label: 'כתבים', color: 'bg-orange-100 text-orange-800', path: '/writings' },
   term: { icon: 'Tag', label: 'מושגים', color: 'bg-indigo-100 text-indigo-800', path: '/terms' },
 };
+
+// Donate button constants
+export const DONATE_BUTTON = {
+  HEADLINE: 'תמכו בנו',
+  CONTENT: 'פלטפורמה זו פועלת על מנת להנגיש תוכן איכותי בפילוסופיה דתית לקהל הרחב. עזרו לנו להמשיך להפיץ את התכנים שלנו!',
+  BUTTON_TEXT: 'לתרומה מאובטחת',
+  PAYPAL_BUTTON_ID: 'HE7NFPH5BHPSC',
+  PAYPAL_ACTION_URL: 'https://www.paypal.com/donate',
+  PAYPAL_PIXEL_URL: 'https://www.paypal.com/he_IL/i/scr/pixel.gif',
+  TITLE: 'תרומה באמצעות PayPal'
+};
