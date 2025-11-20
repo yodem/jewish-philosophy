@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import DonateButton from "@/components/DonateButton";
 
 // Dynamic import for Subscribe component
 const Subscribe = dynamic(() => import("@/components/blocks/Subscribe").then(mod => mod.Subscribe), {
@@ -13,7 +14,7 @@ const Subscribe = dynamic(() => import("@/components/blocks/Subscribe").then(mod
 
 export default function HomePageClient() {
   return (
-    <div className="w-full">
+    <div className="w-full flex flex-col gap-4">
       <Subscribe
         id={1}
         headline="הצטרפו אלינו!"
@@ -21,6 +22,7 @@ export default function HomePageClient() {
         placeholder="הכניסו את כתובת האימייל שלכם"
         buttonText="הרשמה"
       />
+      <DonateButton />
     </div>
   );
 }
