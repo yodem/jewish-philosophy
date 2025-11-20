@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
 import { Heart } from "lucide-react";
 import { DONATE_BUTTON } from "../../consts";
 
@@ -36,6 +35,7 @@ export default function DonateButton({
           >
             {buttonText}
           </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="" src={DONATE_BUTTON.PAYPAL_PIXEL_URL} width="1" height="1" />
         </form>
       </CardContent>
