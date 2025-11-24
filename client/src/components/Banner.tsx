@@ -42,22 +42,24 @@ const Banner: React.FC<BannerProps> = ({ banner }) => {
         </div>
 
         {/* Date and link row - Horizontal on mobile, same line on desktop */}
-        <div className="flex items-center justify-between sm:justify-end sm:gap-4 shrink-0">
-          {/* Date indicator */}
-          {formattedDate && (
-            <div className="flex items-center gap-1.5 text-blue-100">
-              <Calendar className="h-4 w-4 shrink-0" />
-              <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
-                {formattedDate}
-              </span>
-            </div>
-          )}
-          
-          {/* External link indicator */}
-          {banner.link && (
-            <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 text-blue-200 shrink-0" />
-          )}
-        </div>
+        {(formattedDate || banner.link) && (
+          <div className="flex items-center justify-between sm:justify-end sm:gap-4 shrink-0">
+            {/* Date indicator */}
+            {formattedDate && (
+              <div className="flex items-center gap-1.5 text-blue-100">
+                <Calendar className="h-4 w-4 shrink-0" />
+                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">
+                  {formattedDate}
+                </span>
+              </div>
+            )}
+            
+            {/* External link indicator */}
+            {banner.link && (
+              <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 text-blue-200 shrink-0" />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
