@@ -46,7 +46,7 @@ Your environment variables are already set up in `/server/.env`:
 ```bash
 RESEND_API_KEY=REDACTED_RESEND_API_KEY  ✅ Already configured
 RESEND_DEFAULT_FROM_EMAIL=onboarding@resend.dev
-FRONTEND_URL=https://jewish-philosophy.vercel.app/
+FRONTEND_URL=https://religousphilosophy.com/
 ```
 
 ## 📊 Sample Output

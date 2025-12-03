@@ -65,7 +65,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
               </div>
               
               <div style="text-align: center; margin: 35px 0;">
-                <a href="${data.siteUrl || process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app/'}" 
+                <a href="${data.siteUrl || process.env.FRONTEND_URL || 'https://religousphilosophy.com/'}" 
                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                           color: white; 
                           text-decoration: none; 
@@ -91,7 +91,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כאישור להרשמה לניוזלטר
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://religousphilosophy.com/unsubscribe'}" 
                    style="color: #667eea; text-decoration: none;">
                   ביטול מנוי
                 </a>
@@ -148,7 +148,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כהודעה על תשובה לשאלתכם
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://religousphilosophy.com/unsubscribe'}" 
                    style="color: #4caf50; text-decoration: none;">
                   ביטול מנוי
                 </a>
@@ -215,7 +215,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כאישור קבלת השאלה שלכם
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://religousphilosophy.com/unsubscribe'}" 
                    style="color: #2196f3; text-decoration: none;">
                   ביטול מנוי
                 </a>
@@ -273,7 +273,7 @@ export default factories.createCoreService('api::email.email', ({ strapi }) => (
                 אימייל זה נשלח אוטומטית כהודעה על תגובה חדשה לפוסט שלכם
               </p>
               <p style="margin: 0; color: #888; font-size: 12px;">
-                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://jewish-philosophy.vercel.app/unsubscribe'}" 
+                <a href="${data.unsubscribeUrl || process.env.FRONTEND_URL + '/unsubscribe' || 'https://religousphilosophy.com/unsubscribe'}" 
                    style="color: #ff6b35; text-decoration: none;">
                   ביטול מנוי
                 </a>
