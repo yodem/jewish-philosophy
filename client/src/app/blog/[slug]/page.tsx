@@ -69,7 +69,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   });
 
   // Generate structured data for the blog post
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const pageUrl = `${baseUrl}/blog/${slug}`;
   const imageUrl = coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${coverImage.url}` : undefined;
   

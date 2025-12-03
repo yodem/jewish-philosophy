@@ -26,7 +26,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
   const defaultConfig: SiteConfig = {
     siteName: 'שלום צדיק - פילוסופיה דתית',
     siteDescription: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app',
+    siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/',
     keywords: [
       'פילוסופיה דתית',
       'פילוסופיה דתית',
@@ -233,7 +233,7 @@ export function generateSEOMetadata(params: GenerateSEOMetadataParams): Metadata
     keywords
   } = params;
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const url = path ? `${baseUrl}${path}` : baseUrl;
   
   // Generate contextual keywords

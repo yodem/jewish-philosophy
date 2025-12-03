@@ -49,7 +49,7 @@ class BroadcastSender {
     
     this.resend = new Resend(process.env.RESEND_API_KEY);
     this.fromEmail = process.env.RESEND_DEFAULT_FROM_EMAIL || 'onboarding@resend.dev';
-    this.siteUrl = process.env.FRONTEND_URL || 'https://jewish-philosophy.vercel.app';
+    this.siteUrl = process.env.FRONTEND_URL || 'https://religousphilosophy.com/';
     this.strapiUrl = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
     this.strapiApiToken = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
   }
