@@ -15,7 +15,7 @@ export interface SEOData {
 }
 
 export function generateMetadata(seoData: SEOData): Metadata {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const siteName = 'שלום צדיק - פילוסופיה דתית';
   
   const {
@@ -99,7 +99,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
 }
 
 export function getImageUrl(strapiImageUrl?: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   
   if (!strapiImageUrl) {
     return `${baseUrl}/og-default.jpg`;

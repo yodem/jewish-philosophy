@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
     };
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const pageUrl = `${baseUrl}/terms/${slug}`;
 
   return {
