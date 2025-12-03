@@ -4,7 +4,7 @@ import { Blog, Playlist, Writing, Video } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Validate environment variables
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const strapiBaseUrl = process.env.NEXT_PUBLIC_STRAPI_BASE_URL;
   
   // Ensure baseUrl always ends with "/"

@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/'),
   alternates: {
     canonical: '/',
   },
@@ -90,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const header = globalRes?.data?.header;
   const banner: BannerType | null = bannerRes?.data;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app/';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const logoUrl = `${siteUrl}logo.png`;
 
   const organizationSchema: Schema = {
