@@ -79,8 +79,8 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
 
   if (!term) {
     return {
-      title: 'מושג לא נמצא | שלום צדיק - פילוסופיה יהודית',
-      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+      title: 'מושג לא נמצא | שלום צדיק - פילוסופיה דתית',
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     };
   }
 
@@ -88,18 +88,18 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
   const pageUrl = `${baseUrl}/terms/${slug}`;
 
   return {
-    title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
-    keywords: term.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה יהודית, מושגים',
+    title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
+    keywords: term.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה דתית, מושגים',
     authors: term.author ? [{ name: term.author.name }] : undefined,
     alternates: {
       canonical: pageUrl,
     },
     openGraph: {
-      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
-      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
       url: pageUrl,
-      siteName: 'שלום צדיק - פילוסופיה יהודית',
+      siteName: 'שלום צדיק - פילוסופיה דתית',
       locale: 'he_IL',
       type: 'article',
       publishedTime: term.publishedAt,
@@ -107,8 +107,8 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה יהודית`,
-      description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
+      description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     },
     robots: {
       index: true,

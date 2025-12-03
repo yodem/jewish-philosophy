@@ -48,7 +48,7 @@ export default function SocialShare({ url, title, description }: SocialShareProp
   return (
     <Card className="p-4 bg-gray-50 border border-gray-200">
       <h4 className="text-lg font-semibold mb-3 text-gray-800">שתפו את השיעור</h4>
-      <p className="text-sm text-gray-600 mb-4">עזרו לאחרים לגלות תכנים איכותיים בפילוסופיה יהודית</p>
+      <p className="text-sm text-gray-600 mb-4">עזרו לאחרים לגלות תכנים איכותיים בפילוסופיה דתית</p>
       
       <div className="flex flex-wrap gap-2 mb-4">
         <Button 

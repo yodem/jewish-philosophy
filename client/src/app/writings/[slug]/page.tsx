@@ -24,21 +24,21 @@ export async function generateMetadata({ params }: WritingPageProps): Promise<Me
   
   if (!writing) {
     return {
-      title: "כתב לא נמצא | שלום צדיק - פילוסופיה יהודית",
-      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+      title: "כתב לא נמצא | שלום צדיק - פילוסופיה דתית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
     };
   }
 
   return createMetadata({
-    title: `${writing.title} | כתבים | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    title: `${writing.title} | כתבים | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/writings/${slug}`,
     type: "article",
     image: getImageUrl(writing.image?.url),
     publishedTime: writing.publishedAt,
     authors: [writing.author.name],
     tags: writing.categories?.map(cat => cat.name) || undefined,
-    keywords: `${writing.type === 'book' ? 'ספר יהודי' : 'מאמר יהודי'}, ${writing.categories?.map(cat => cat.name).join(', ')}, ${writing.author.name}, פילוסופיה יהודית`,
+    keywords: `${writing.type === 'book' ? 'ספר יהודי' : 'מאמר יהודי'}, ${writing.categories?.map(cat => cat.name).join(', ')}, ${writing.author.name}, פילוסופיה דתית`,
   });
 }
 
@@ -80,7 +80,7 @@ export default async function WritingPage({ params }: WritingPageProps) {
     },
     "publisher": {
       "@type": "Organization",
-      "name": "פילוסופיה יהודית",
+      "name": "פילוסופיה דתית",
       "logo": {
         "@type": "ImageObject",
         "url": `${baseUrl}/logo.png`

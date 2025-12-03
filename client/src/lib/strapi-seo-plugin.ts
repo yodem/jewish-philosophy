@@ -121,7 +121,7 @@ export function strapiSEOPluginToMetadata(
   const coverImageData = attributes.coverImage?.data?.attributes;
   const imageUrl = metaImageData?.url || coverImageData?.url;
   const imageAlt = metaImageData?.alternativeText || coverImageData?.alternativeText || 
-    `${title} - פילוסופיה יהודית`;
+    `${title} - פילוסופיה דתית`;
   const imageWidth = metaImageData?.width || coverImageData?.width || 1200;
   const imageHeight = metaImageData?.height || coverImageData?.height || 630;
 
@@ -139,7 +139,7 @@ export function strapiSEOPluginToMetadata(
       title: facebookMeta?.title || title,
       description: facebookMeta?.description || description,
       url: canonical,
-      siteName: 'פילוסופיה יהודית',
+      siteName: 'פילוסופיה דתית',
       locale: 'he_IL',
       type: 'article',
       publishedTime: attributes.publishedAt,
@@ -216,7 +216,7 @@ export function generateSEOPluginStructuredData(
     "isAccessibleForFree": true,
     "publisher": {
       "@type": "EducationalOrganization",
-      "name": "פילוסופיה יהודית",
+      "name": "פילוסופיה דתית",
       "url": baseUrl,
       "logo": {
         "@type": "ImageObject",

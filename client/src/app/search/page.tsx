@@ -13,11 +13,11 @@ import Breadcrumbs from '@/components/Breadcrumbs';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = generateMetadata({
-  title: 'חיפוש | שלום צדיק - פילוסופיה יהודית',
-  description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+  title: 'חיפוש | שלום צדיק - פילוסופיה דתית',
+  description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
   url: '/search',
   type: 'website',
-  keywords: 'חיפוש פילוסופיה יהודית, מנוע חיפוש יהודי, חיפוש הרמב"ם, חיפוש מושגים פילוסופיים, חיפוש מאמרים, פילוסופיה דתית, מבוא לפילוסופיה יהודית, מורה נבוכים, כוזרי, שלום צדיק',
+  keywords: 'חיפוש פילוסופיה דתית, מנוע חיפוש יהודי, חיפוש הרמב"ם, חיפוש מושגים פילוסופיים, חיפוש מאמרים, פילוסופיה דתית, מבוא לפילוסופיה דתית, מורה נבוכים, כוזרי, שלום צדיק',
 });
 
 interface SearchPageProps {

@@ -10,11 +10,11 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import PlaylistsPageClient from "./PlaylistsPageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "סדרות שיעורים | שלום צדיק - פילוסופיה יהודית",
-  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+  title: "סדרות שיעורים | שלום צדיק - פילוסופיה דתית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
   url: "/playlists",
   type: "website",
-  keywords: "סדרות שיעורים, שיעורי וידאו, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, כוזרי, קורסים יהודיים, שלום צדיק, מבוא לפילוסופיה יהודית, לימוד ברצף, יהדות רציונלית",
+  keywords: "סדרות שיעורים, שיעורי וידאו, פילוסופיה דתית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, כוזרי, קורסים יהודיים, שלום צדיק, מבוא לפילוסופיה דתית, לימוד ברצף, יהדות רציונלית",
 });
 
 function LoadingFallback() {

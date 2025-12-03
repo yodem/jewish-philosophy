@@ -29,23 +29,23 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   
   if (!blog) {
     return {
-      title: "הפוסט לא נמצא | שלום צדיק - פילוסופיה יהודית",
-      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+      title: "הפוסט לא נמצא | שלום צדיק - פילוסופיה דתית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
     };
   }
 
   const imageUrl = blog.coverImage?.url;
 
   return createMetadata({
-    title: `${blog.title} | בלוג | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    title: `${blog.title} | בלוג | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/blog/${slug}`,
     type: "article",
     image: imageUrl,
     publishedTime: blog.publishedAt,
     authors: [blog.author.name],
     tags: blog.categories?.map((cat: Category) => cat.name),
-    keywords: blog.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה יהודית, בלוג',
+    keywords: blog.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה דתית, בלוג',
   });
 }
 
@@ -87,7 +87,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     },
     "publisher": {
       "@type": "EducationalOrganization",
-      "name": "פילוסופיה יהודית",
+      "name": "פילוסופיה דתית",
       "url": baseUrl,
       "logo": {
         "@type": "ImageObject",
