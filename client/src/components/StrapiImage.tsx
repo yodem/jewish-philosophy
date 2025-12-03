@@ -40,7 +40,7 @@ export function StrapiImage({
     if (!imageUrl) return null;
 
     // Enhanced alt text for better SEO and accessibility
-    const enhancedAlt = alt || 'תמונה מפילוסופיה יהודית';
+    const enhancedAlt = alt || 'תמונה מפילוסופיה דתית';
 
     // Calculate dimensions based on aspect ratio to prevent distortion
     const getOptimizedDimensions = () => {

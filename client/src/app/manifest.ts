@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'פילוסופיה יהודית - לימוד פילוסופיה יהודית מקוונת',
-    short_name: 'פילוסופיה יהודית',
-    description: 'פלטפורמה מובילה ללימוד פילוסופיה יהודית מקוונת - שיעורי וידאו, הרמב״ם, הלכה ואגדה עם שלום צדיק. תכנים איכותיים בפילוסופיה דתית, יהדות רציונלית, ביקורת החילון.',
+    name: 'פילוסופיה דתית - לימוד פילוסופיה דתית מקוונת',
+    short_name: 'פילוסופיה דתית',
+    description: 'פלטפורמה מובילה ללימוד פילוסופיה דתית מקוונת - שיעורי וידאו, הרמב״ם, הלכה ואגדה עם שלום צדיק. תכנים איכותיים בפילוסופיה דתית, יהדות רציונלית, ביקורת החילון.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
@@ -47,21 +47,21 @@ export default function manifest(): MetadataRoute.Manifest {
       {
         name: 'סדרות שיעורים',
         short_name: 'סדרות',
-        description: 'גישה לכל סדרות השיעורים בפילוסופיה יהודית',
+        description: 'גישה לכל סדרות השיעורים בפילוסופיה דתית',
         url: '/playlists',
         icons: [{ src: '/favicon-96x96.png', sizes: '96x96' }],
       },
       {
         name: 'כתבים',
         short_name: 'כתבים',
-        description: 'מאמרים וכתבים בפילוסופיה יהודית',
+        description: 'מאמרים וכתבים בפילוסופיה דתית',
         url: '/writings',
         icons: [{ src: '/favicon-96x96.png', sizes: '96x96' }],
       },
       {
         name: 'שאלות ותשובות',
         short_name: 'רספונסא',
-        description: 'שאלות ותשובות בנושאי פילוסופיה יהודית',
+        description: 'שאלות ותשובות בנושאי פילוסופיה דתית',
         url: '/responsa',
         icons: [{ src: '/favicon-96x96.png', sizes: '96x96' }],
       },

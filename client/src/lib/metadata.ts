@@ -16,7 +16,7 @@ export interface SEOData {
 
 export function generateMetadata(seoData: SEOData): Metadata {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app';
-  const siteName = 'שלום צדיק - פילוסופיה יהודית';
+  const siteName = 'שלום צדיק - פילוסופיה דתית';
   
   const {
     title,

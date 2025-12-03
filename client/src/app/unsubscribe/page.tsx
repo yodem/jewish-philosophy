@@ -3,8 +3,8 @@ import Link from 'next/link';
 import UnsubscribeForm from '@/components/UnsubscribeForm';
 
 export const metadata: Metadata = {
-  title: 'ביטול מנוי | פילוסופיה יהודית',
-  description: 'ביטול מנוי מהניוזלטר של פילוסופיה יהודית',
+  title: 'ביטול מנוי | פילוסופיה דתית',
+  description: 'ביטול מנוי מהניוזלטר של פילוסופיה דתית',
   robots: {
     index: false,
     follow: false

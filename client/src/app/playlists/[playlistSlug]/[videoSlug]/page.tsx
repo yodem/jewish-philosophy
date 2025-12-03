@@ -30,21 +30,21 @@ export async function generateMetadata({ params }: VideoPageProps): Promise<Meta
   
   if (!video || !playlist) {
     return {
-      title: "שיעור וידאו לא נמצא | שלום צדיק - פילוסופיה יהודית",
-      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+      title: "שיעור וידאו לא נמצא | שלום צדיק - פילוסופיה דתית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
     };
   }
 
   return createMetadata({
-    title: `${video.title} | ${playlist.title} | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    title: `${video.title} | ${playlist.title} | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/playlists/${playlistSlug}/${videoSlug}`,
     type: "article",
     image: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
-    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה יהודית, פילוסופיה דתית, הרמב"ם, מבוא לפילוסופיה יהודית, שלום צדיק, מוסר יהודי, יהדות רציונלית, ביקורת החילון, דרך האמצע, טעמי המצוות, השגחה, בחירה חופשית, ידיעת האל, לימוד מקוון, שיעורים יהודיים`,
+    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה דתית, פילוסופיה דתית, הרמב"ם, מבוא לפילוסופיה דתית, שלום צדיק, מוסר יהודי, יהדות רציונלית, ביקורת החילון, דרך האמצע, טעמי המצוות, השגחה, בחירה חופשית, ידיעת האל, לימוד מקוון, שיעורים יהודיים`,
     publishedTime: new Date().toISOString(),
     authors: ["שלום צדיק"],
-    tags: ["פילוסופיה יהודית", "שיעורי וידאו", "הרמב״ם"]
+    tags: ["פילוסופיה דתית", "שיעורי וידאו", "הרמב״ם"]
   });
 }
 
@@ -73,7 +73,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     embedUrl: `https://www.youtube.com/embed/${video.videoId}`,
     publisher: {
       '@type': 'Organization',
-      name: 'פילוסופיה יהודית',
+      name: 'פילוסופיה דתית',
       logo: {
         '@type': 'ImageObject',
         url: `${baseUrl}/logo.png`,

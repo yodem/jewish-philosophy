@@ -4,11 +4,11 @@ import { Suspense } from "react";
 import ResponsaPageClient from "./ResponsaPageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "שאלות ותשובות | שלום צדיק - פילוסופיה יהודית",
-  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+  title: "שאלות ותשובות | שלום צדיק - פילוסופיה דתית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
   url: "/responsa",
   type: "website",
-  keywords: "שאלות ותשובות, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, שלום צדיק",
+  keywords: "שאלות ותשובות, פילוסופיה דתית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, שלום צדיק",
 });
 
 export default function ResponsaPage() {

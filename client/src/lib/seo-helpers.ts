@@ -24,11 +24,11 @@ export async function getSiteConfig(): Promise<SiteConfig> {
 
   // Default fallback config
   const defaultConfig: SiteConfig = {
-    siteName: 'שלום צדיק - פילוסופיה יהודית',
-    siteDescription: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    siteName: 'שלום צדיק - פילוסופיה דתית',
+    siteDescription: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://jewish-philosophy.vercel.app',
     keywords: [
-      'פילוסופיה יהודית',
+      'פילוסופיה דתית',
       'פילוסופיה דתית',
       'הרמב"ם',
       'בחירה חופשית',
@@ -46,8 +46,8 @@ export async function getSiteConfig(): Promise<SiteConfig> {
       'יהדות רציונלית',
       'דטרמיניזם',
       'הגלגלים בפילוסופיה',
-      'מושגים בפילוסופיה יהודית',
-      'מבוא לפילוסופיה יהודית',
+      'מושגים בפילוסופיה דתית',
+      'מבוא לפילוסופיה דתית',
       'על-טבעי ביהדות',
       'חילון ליברלי',
       'קיום מצוות',
@@ -113,7 +113,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
 
 export function getCommonKeywords(): string[] {
   return [
-    'פילוסופיה יהודית',
+    'פילוסופיה דתית',
     'פילוסופיה דתית',
     'הרמב"ם',
     'בחירה חופשית',
@@ -131,8 +131,8 @@ export function getCommonKeywords(): string[] {
     'יהדות רציונלית',
     'דטרמיניזם',
     'הגלגלים בפילוסופיה',
-    'מושגים בפילוסופיה יהודית',
-    'מבוא לפילוסופיה יהודית',
+    'מושגים בפילוסופיה דתית',
+    'מבוא לפילוסופיה דתית',
     'על-טבעי ביהדות',
     'חילון ליברלי',
     'קיום מצוות',

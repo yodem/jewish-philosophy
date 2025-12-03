@@ -9,11 +9,11 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import DonateButton from "@/components/DonateButton";
 
 export const metadata: Metadata = generateMetadata({
-  title: "אודות | שלום צדיק - פילוסופיה יהודית",
-  description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+  title: "אודות | שלום צדיק - פילוסופיה דתית",
+  description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
   url: "/about",
   type: "website",
-  keywords: "שלום צדיק, פילוסופיה יהודית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, חזון, ערכי יהדות, פילוסופיה דתית מתונה, מבוא לפילוסופיה יהודית",
+  keywords: "שלום צדיק, פילוסופיה דתית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, חזון, ערכי יהדות, פילוסופיה דתית מתונה, מבוא לפילוסופיה דתית",
 });
 
 function LoadingFallback() {

@@ -25,18 +25,18 @@ export async function generateMetadata({ params }: PlaylistPageProps): Promise<M
   
   if (!playlist) {
     return {
-      title: "סדרה לא נמצאה | שלום צדיק - פילוסופיה יהודית",
-      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+      title: "סדרה לא נמצאה | שלום צדיק - פילוסופיה דתית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
     };
   }
 
   return createMetadata({
-    title: `${playlist.title} | סדרות שיעורים | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    title: `${playlist.title} | סדרות שיעורים | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/playlists/${playlistSlug}`,
     type: "website",
     image: getImageUrl(playlist.imageUrl300x400 || playlist.imageUrlStandard),
-    keywords: `סדרת שיעורים, ${playlist.title}, פילוסופיה יהודית, פילוסופיה דתית, הרמב"ם, שיעורי וידאו, מבוא לפילוסופיה יהודית, שלום צדיק`,
+    keywords: `סדרת שיעורים, ${playlist.title}, פילוסופיה דתית, פילוסופיה דתית, הרמב"ם, שיעורי וידאו, מבוא לפילוסופיה דתית, שלום צדיק`,
   });
 }
 

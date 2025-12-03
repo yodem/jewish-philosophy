@@ -86,7 +86,7 @@ export async function getEnhancedSEOData(): Promise<EnhancedSEOData> {
     };
 
     const enhancedData: EnhancedSEOData = {
-      siteName: globalRes?.data?.title || 'פילוסופיה יהודית',
+      siteName: globalRes?.data?.title || 'פילוסופיה דתית',
       siteDescription: globalRes?.data?.description || 
         'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורים, ספרים, מאמרים ושאלות ותשובות.',
       authors: Array.from(allAuthors),
@@ -104,7 +104,7 @@ export async function getEnhancedSEOData(): Promise<EnhancedSEOData> {
     
     // Return minimal fallback data
     return {
-      siteName: 'פילוסופיה יהודית',
+      siteName: 'פילוסופיה דתית',
       siteDescription: 'פלטפורמה מובילה ללימוד יהודי מקוון',
       authors: [],
       categories: [],
@@ -114,7 +114,7 @@ export async function getEnhancedSEOData(): Promise<EnhancedSEOData> {
         totalPlaylists: 0,
         totalWritings: 0
       },
-      popularTopics: ['הלכה', 'אגדה', 'פילוסופיה יהודית'],
+      popularTopics: ['הלכה', 'אגדה', 'פילוסופיה דתית'],
       latestContent: {
         blogs: [],
         writings: [],

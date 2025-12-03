@@ -15,21 +15,21 @@ export async function generateMetadata({ params }: ResponsaPageProps): Promise<M
   
   if (!responsa) {
     return {
-      title: "שאלה לא נמצאה | שלום צדיק - פילוסופיה יהודית",
-      description: "פלטפורמה מקוונת ללימוד פילוסופיה יהודית",
+      title: "שאלה לא נמצאה | שלום צדיק - פילוסופיה דתית",
+      description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
     };
   }
   
   return createMetadata({
-    title: `${responsa.title} | שאלות ותשובות | שלום צדיק - פילוסופיה יהודית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה יהודית',
+    title: `${responsa.title} | שאלות ותשובות | שלום צדיק - פילוסופיה דתית`,
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/responsa/${slug}`,
     type: "article",
     publishedTime: responsa.publishedAt,
     modifiedTime: responsa.updatedAt,
     authors: ['שלום צדיק'],
     tags: responsa.categories?.map((cat: Category) => cat.name),
-    keywords: `שאלות ותשובות, ${responsa.categories?.map((cat: Category) => cat.name).join(', ')}, פילוסופיה יהודית`,
+    keywords: `שאלות ותשובות, ${responsa.categories?.map((cat: Category) => cat.name).join(', ')}, פילוסופיה דתית`,
   });
 }
 
