@@ -35,6 +35,10 @@ interface WeeklyContent {
   responsas: ContentItem[];
 }
 
+interface BroadcastStats {
+  newSignups: number;
+}
+
 class BroadcastSender {
   private resend: Resend;
   private fromEmail: string;
@@ -75,8 +79,8 @@ class BroadcastSender {
     try {
       // Helper function to fetch from Strapi API
       const fetchFromStrapi = async (endpoint: string, populate?: string): Promise<ContentItem[]> => {
-        const populateParam = populate ? `&populate=${populate}` : '';
-        const url = `${this.strapiUrl}/api/${endpoint}?filters[createdAt][$gte]=${monthAgoISO}&sort=createdAt:desc&fields[0]=title&fields[1]=slug&fields[2]=createdAt${populateParam}`;
+        const populateParam = populate ? `&populate[0]=${populate}` : '';
+        const url = `${this.strapiUrl}/api/${endpoint}?filters[createdAt][$gte]=${monthAgoISO}&sort=createdAt:desc&pagination[limit]=9999&fields[0]=title&fields[1]=slug&fields[2]=createdAt${populateParam}`;
         
         console.log(`🔍 Fetching ${endpoint} from: ${url}`);
         
@@ -90,6 +94,8 @@ class BroadcastSender {
         
         const response = await fetch(url, { headers });
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`❌ API Error for ${endpoint}:`, errorText);
           throw new Error(`Failed to fetch ${endpoint}: ${response.statusText}`);
         }
         
@@ -99,7 +105,7 @@ class BroadcastSender {
           title: item.title,
           slug: item.slug,
           createdAt: item.createdAt,
-          playlistSlug: item.playlist?.slug || item.playlists?.[0]?.slug // Get playlist slug for videos
+          playlistSlug: item.playlist?.slug // Get playlist slug for videos
         })) || [];
       };
 
@@ -108,7 +114,7 @@ class BroadcastSender {
       const [blogs, writings, videos, terms, responsas] = await Promise.all([
         fetchFromStrapi('blogs'),
         fetchFromStrapi('writings'), 
-        fetchFromStrapi('videos', 'playlists'),
+        fetchFromStrapi('videos', 'playlist'),
         fetchFromStrapi('terms'),
         fetchFromStrapi('responsas')
       ]);
@@ -135,6 +141,7 @@ class BroadcastSender {
       throw error;
     }
   }
+
 
   /**
    * Generate Hebrew/RTL email template for weekly content
@@ -212,7 +219,7 @@ class BroadcastSender {
           <!-- Header -->
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון החודשי</h1>
-            <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה יהודית</p>
+            <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה דתית</p>
           </div>
           
           <!-- Content -->
@@ -221,7 +228,28 @@ class BroadcastSender {
             <p style="font-size: 16px; line-height: 1.8; color: #555;">
               החודש לא פורסמו תכנים חדשים באתר. אנחנו עובדים על תכנים מרתקים לחודש הבא!
             </p>
-            <div style="text-align: center; margin: 30px 0;">
+            
+            <!-- Donation Block -->
+            <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+              <h3 style="color: #dc2626; font-size: 20px; margin-top: 0; margin-bottom: 12px;">❤️ תמכו בנו</h3>
+              <p style="font-size: 15px; line-height: 1.8; color: #555; margin: 0 0 15px 0;">
+                פלטפורמה זו מוקדשת להנגשת פילוסופיה דתית איכותית לקהל רחב. כל תרומה עוזרת לנו להמשיך להפיץ ידע ותכנים מרתקים לקהילה.
+              </p>
+              <a href="https://www.paypal.com/donate?hosted_button_id=HE7NFPH5BHPSC" 
+                 style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+                        color: white; 
+                        text-decoration: none; 
+                        padding: 15px 35px; 
+                        border-radius: 30px; 
+                        font-weight: bold;
+                        font-size: 16px;
+                        display: inline-block;
+                        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+                ❤️ תמכו בנו
+              </a>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
               <a href="${this.siteUrl}" 
                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
                         color: white; 
@@ -239,7 +267,7 @@ class BroadcastSender {
           <!-- Footer -->
           <div style="background: #f1f3f4; padding: 25px; text-align: center;">
             <p style="margin: 0; color: #888; font-size: 12px;">
-              <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color: #667eea; text-decoration: none;">
+              <a href="${this.siteUrl}/unsubscribe" style="color: #667eea; text-decoration: none;">
                 ביטול מנוי
               </a>
             </p>
@@ -253,7 +281,7 @@ class BroadcastSender {
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
           <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">📰 העדכון החודשי</h1>
-          <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה יהודית</p>
+          <p style="color: #e8e8e8; margin: 10px 0 0 0; font-size: 16px;">פילוסופיה דתית</p>
         </div>
         
         <!-- Content -->
@@ -272,6 +300,27 @@ class BroadcastSender {
           ${generateContentSection(content.terms, 'מונחים ומושגים', '📖', 'terms')}
           ${generateContentSection(content.responsas, 'שאלות ותשובות', '💬', 'responsa')}
           
+          <!-- Donation Block -->
+          <div style="background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%); border: 2px solid #ef4444; border-radius: 12px; padding: 25px; margin: 30px 0; text-align: center;">
+            <h3 style="color: #dc2626; font-size: 20px; margin-top: 0; margin-bottom: 12px;">❤️ תמכו בנו</h3>
+            <p style="font-size: 15px; line-height: 1.8; color: #555; margin: 0 0 15px 0;">
+              פלטפורמה זו מוקדשת להנגשת פילוסופיה דתית איכותית לקהל רחב. כל תרומה עוזרת לנו להמשיך להפיץ ידע ותכנים מרתקים לקהילה.
+              (היכנסו לקישור דרך עמוד הבית של האתר)
+            </p>
+            <a href="${this.siteUrl}" 
+               style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); 
+                      color: white; 
+                      text-decoration: none; 
+                      padding: 15px 35px; 
+                      border-radius: 30px; 
+                      font-weight: bold;
+                      font-size: 16px;
+                      display: inline-block;
+                      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);">
+              ❤️ תמכו בנו
+            </a>
+          </div>
+          
           <div style="text-align: center; margin: 40px 0;">
             <a href="${this.siteUrl}" 
                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
@@ -283,13 +332,13 @@ class BroadcastSender {
                       font-size: 16px;
                       display: inline-block;
                       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">
-              🏠 בקר באתר לתכנים נוספים
+              🏠 בקרו באתר לתכנים נוספים
             </a>
           </div>
           
           <p style="color: #666; font-size: 16px; text-align: center; margin-top: 40px; line-height: 1.6;">
             תודה שאתם חלק מהקהילה שלנו!<br>
-            <strong style="color: #667eea;">צוות פילוסופיה יהודית</strong>
+            <strong style="color: #667eea;">צוות פילוסופיה דתית</strong>
           </p>
         </div>
         
@@ -299,7 +348,7 @@ class BroadcastSender {
             ניוזלטר חודשי - עדכונים על תכנים חדשים באתר
           </p>
           <p style="margin: 0; color: #888; font-size: 12px;">
-            <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color: #667eea; text-decoration: none;">
+            <a href="${this.siteUrl}/unsubscribe" style="color: #667eea; text-decoration: none;">
               ביטול מנוי
             </a>
           </p>
@@ -340,8 +389,8 @@ class BroadcastSender {
                       content.videos.length + content.terms.length + content.responsas.length;
 
     const subject = totalItems > 0 
-      ? `📰 עדכון חודשי: ${totalItems} תכנים חדשים באתר פילוסופיה יהודית`
-      : `📰 עדכון חודשי מפילוסופיה יהודית`;
+      ? `📰 עדכון חודשי: ${totalItems} תכנים חדשים באתר פילוסופיה דתית`
+      : `📰 עדכון חודשי מפילוסופיה דתית`;
 
     const htmlContent = this.generateEmailTemplate(content);
 
@@ -406,6 +455,16 @@ class BroadcastSender {
       }
 
       console.log(`🚀 Sending emails to ${emails.length} subscribers...`);
+      console.log(`📧 Using from address: ${this.fromEmail}`);
+      
+      // Check if using test email address
+      if (this.fromEmail === 'onboarding@resend.dev') {
+        console.warn('⚠️  WARNING: Using test email address (onboarding@resend.dev)');
+        console.warn('⚠️  This will only send to your own email address.');
+        console.warn('⚠️  To send to all subscribers, verify a domain at resend.com/domains');
+        console.warn('⚠️  and update RESEND_DEFAULT_FROM_EMAIL in your .env file');
+        console.warn('⚠️  Example: RESEND_DEFAULT_FROM_EMAIL=noreply@religousphilosophy.com\n');
+      }
 
       let successCount = 0;
       let errorCount = 0;
@@ -440,7 +499,7 @@ class BroadcastSender {
         }
       }
 
-      console.log(`📊 Email sending completed!`);
+      console.log(`\n📊 Email sending completed!`);
       console.log(`   ✅ Successful: ${successCount}`);
       console.log(`   ❌ Failed: ${errorCount}`);
       console.log(`📊 Final campaign details:`);

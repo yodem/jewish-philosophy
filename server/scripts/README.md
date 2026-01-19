@@ -147,3 +147,46 @@ npx tsx scripts/analyze-blogs.ts
 - `DELAY_MS` - Delay between requests (default: 2000ms)
 
 **Environment:** All scripts automatically load `.env` file using `dotenv`. See `../.env.example` for available variables.
+
+### import-view-counts.ts
+Imports view counts from a CSV file into Strapi content types.
+
+```bash
+# Run from server directory
+cd server
+pnpm tsx scripts/import-view-counts.ts <path-to-csv-file>
+```
+
+**What it does:**
+1. Reads view count data from a CSV file
+2. Matches content by slug across blogs, videos, responsas, writings, and terms
+3. Updates the `views` field in Strapi for matched content
+4. Provides detailed progress and summary statistics
+
+**CSV Format:**
+- Column 1: page (slug)
+- Column 2: visitors (number)
+- Column 3: total (number - used as view count)
+
+**See:** `README-import-view-counts.md` for detailed documentation.
+
+### view-view-counts.ts
+Displays all view counts from Strapi content types.
+
+```bash
+# Run from server directory
+cd server
+pnpm tsx scripts/view-view-counts.ts
+```
+
+**What it does:**
+1. Fetches all content from blogs, videos, responsas, writings, and terms
+2. Displays summary statistics (total views, averages, etc.)
+3. Shows top 20 items by view count
+4. Lists items with zero views
+5. Optionally exports results to CSV
+
+**Options:**
+- `--export-csv` - Export results to CSV file
+
+**See:** `README-view-view-counts.md` for detailed documentation.
