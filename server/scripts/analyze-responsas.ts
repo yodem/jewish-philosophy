@@ -91,6 +91,7 @@ async function fetchAllResponsas(): Promise<ResponsaData[]> {
       },
       sort: ['createdAt:desc']
     })
+    console.log(STRAPI_URL, STRAPI_API_TOKEN);
     
     const response: AxiosResponse<StrapiResponse<ResponsaData[]>> = await axios.get(
       `${STRAPI_URL}/responsas?${query}`,
