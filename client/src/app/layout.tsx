@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'פילוסופיה דתית: בית | שלום צדיק',
-    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, ספרים, מאמרים ושאלות ותשובות. תכנים איכותיים בפילוסופיה דתית, הרמב"ם,, אגדה ומוסר יהודי עם שלום צדיק.',
+    title: 'בית | שלום צדיק - פילוסופיה דתית',
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: '/',
     siteName: 'פילוסופיה דתית',
     locale: 'he_IL',
@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary',
-    title: 'פילוסופיה דתית: בית | שלום צדיק',
-    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, הרמב"ם, ואגדה עם שלום צדיק',
+    title: 'בית | שלום צדיק - פילוסופיה דתית',
+    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     creator: '@jewish_philosophy',
     site: '@jewish_philosophy',
   },
