@@ -21,7 +21,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
   const {
     title,
     description,
-    image = `${baseUrl}/og-default.jpg`,
+    image = `${baseUrl.replace(/\/$/, '')}/api/og`,
     url = baseUrl,
     type = 'website',
     publishedTime,
@@ -102,7 +102,7 @@ export function getImageUrl(strapiImageUrl?: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   
   if (!strapiImageUrl) {
-    return `${baseUrl}/og-default.jpg`;
+    return `${baseUrl.replace(/\/$/, '')}/api/og`;
   }
   
   if (strapiImageUrl.startsWith('http')) {
