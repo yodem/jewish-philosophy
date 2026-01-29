@@ -58,23 +58,23 @@ export function generateMetadata(seoData: SEOData): Metadata {
       siteName,
       locale,
       type,
-      ...(imageUrl && {
-        images: [
-          {
-            url: imageUrl,
-            width: 1200,
-            height: 630,
-            alt: title,
-          }
-        ],
-      }),
+      images: imageUrl
+        ? [
+            {
+              url: imageUrl,
+              width: 1200,
+              height: 630,
+              alt: title,
+            },
+          ]
+        : [],
       ...(publishedTime && { publishedTime }),
       ...(modifiedTime && { modifiedTime }),
       ...(authors && { authors }),
       ...(tags && { tags }),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: imageUrl ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: '@shalomtzadik',
