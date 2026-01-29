@@ -43,7 +43,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${normalizedBaseUrl}sitemap-index.xml`,
+    sitemap: `${normalizedBaseUrl}sitemap.xml`,
     host: normalizedBaseUrl,
   };
 } 

@@ -336,6 +336,34 @@ export function extractQuestionFromResponsa(content: string, maxLength: number =
   return extractTextFromMarkdown(content, maxLength);
 }
 
+/** Truncate text for OG image display (single line or multi-line safe) */
+export function truncateForOg(text: string, maxChars: number): string {
+  if (!text) return '';
+  const cleaned = text.replace(/\s+/g, ' ').trim();
+  if (cleaned.length <= maxChars) return cleaned;
+  const cut = cleaned.substring(0, maxChars);
+  const lastSpace = cut.lastIndexOf(' ');
+  const end = lastSpace > maxChars * 0.6 ? lastSpace : maxChars;
+  return cut.substring(0, end).trim() + '...';
+}
+
+/** Split truncated text into lines for OG image (e.g. max ~40 chars per line) */
+export function wrapOgText(text: string, maxPerLine: number): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines: string[] = [];
+  let current = '';
+  for (const w of words) {
+    if (current.length + w.length + 1 <= maxPerLine) {
+      current = current ? current + ' ' + w : w;
+    } else {
+      if (current) lines.push(current);
+      current = w.length > maxPerLine ? w.substring(0, maxPerLine) + '...' : w;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 4); // max 4 lines
+}
+
 /**
  * Generates a description from blog content
  * Uses the description field if available, otherwise extracts from content

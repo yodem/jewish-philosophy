@@ -2,7 +2,31 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const origin = new URL(request.url).origin;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || origin;
+  const siteBase = baseUrl.replace(/\/$/, '');
+  let logoSrc: string | null = null;
+
+  try {
+    const res = await fetch(`${siteBase}/favicon.ico`);
+    if (res.ok) {
+      const buf = await res.arrayBuffer();
+      const bytes = new Uint8Array(buf);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const b64 = btoa(binary);
+      const contentType = res.headers.get('content-type') || 'image/x-icon';
+      logoSrc = `data:${contentType};base64,${b64}`;
+    }
+  } catch {
+    // ignore
+  }
+
+  const siteTitle = 'שלום צדיק - פילוסופיה דתית';
+
   return new ImageResponse(
     (
       <div
@@ -10,44 +34,25 @@ export async function GET() {
           height: '100%',
           width: '100%',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          gap: 32,
           background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
-          padding: 48,
           direction: 'rtl',
+          fontFamily: 'system-ui, sans-serif',
         }}
       >
-        <div
-          style={{
-            fontSize: 64,
-            fontWeight: 'bold',
-            color: 'white',
-            textAlign: 'center',
-            lineHeight: 1.2,
-          }}
-        >
-          שלום צדיק
-        </div>
-        <div
-          style={{
-            fontSize: 36,
-            color: 'rgba(255,255,255,0.95)',
-            textAlign: 'center',
-            marginTop: 16,
-          }}
-        >
-          פילוסופיה דתית
-        </div>
-        <div
-          style={{
-            fontSize: 24,
-            color: 'rgba(255,255,255,0.85)',
-            textAlign: 'center',
-            marginTop: 12,
-          }}
-        >
-          פלטפורמה ללימוד פילוסופיה דתית
+        {logoSrc && (
+          <img
+            src={logoSrc}
+            alt=""
+            width={120}
+            height={120}
+            style={{ objectFit: 'contain' }}
+          />
+        )}
+        <div style={{ fontSize: 42, fontWeight: 'bold', color: 'white' }}>
+          {siteTitle}
         </div>
       </div>
     ),
