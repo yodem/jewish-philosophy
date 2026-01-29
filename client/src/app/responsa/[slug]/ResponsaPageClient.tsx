@@ -5,7 +5,6 @@ import { Responsa } from "@/types";
 import ReactMarkdown from "react-markdown";
 import { JsonLd } from "@/lib/json-ld";
 import { QAPage, WithContext } from "schema-dts";
-import SefariaLinker from "@/components/SefariaLinker";
 import remarkGfm from "remark-gfm";
 import ViewCountTracker from "@/components/ViewCountTracker";
 import ResponsaCommentWrapper from "./ResponsaCommentWrapper";
@@ -92,9 +91,6 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
             </ReactMarkdown>
           </div>
         </div>
-
-        {/* Sefaria Linker for automatic citation linking */}
-        <SefariaLinker />
 
         <ResponsaCommentWrapper 
           initialComments={responsa.comments || []}

@@ -15,7 +15,7 @@
  * @param options - Custom options to override defaults
  */
 
-import { useRef } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import Script from 'next/script';
 
 declare global {
@@ -41,15 +41,18 @@ interface SefariaLinkOptions {
 
 interface SefariaLinkerProps {
   options?: SefariaLinkOptions;
+  /** When these values change, the linker is re-applied (e.g. after comments load/refresh). */
+  reRunDeps?: React.DependencyList;
 }
 
 export default function SefariaLinker({
-  options = {}
+  options = {},
+  reRunDeps
 }: SefariaLinkerProps) {
   const initialized = useRef(false);
 
   // Default options optimized for Hebrew/Romanian content
-  const defaultOptions: SefariaLinkOptions = {
+  const defaultOptions: SefariaLinkOptions = useMemo(() => ({
     mode: 'popup-click',
     contentLang: 'hebrew', // Show Hebrew only
     interfaceLang: 'hebrew',  // Hebrew interface for RTL support
@@ -57,7 +60,17 @@ export default function SefariaLinker({
     dynamic: false, // Content is static on these pages
     debug: false, // No debug borders, just clean underlines
     ...options
-  };
+  }), [options]);
+
+  // Re-apply linker when reRunDeps change (e.g. after comments are loaded/refreshed)
+  useEffect(() => {
+    if (!reRunDeps || !initialized.current || !window.sefaria) return;
+    try {
+      window.sefaria.link(defaultOptions);
+    } catch (error) {
+      console.error('Failed to re-apply Sefaria Linker:', error);
+    }
+  }, reRunDeps ?? []);
 
   const handleScriptLoad = () => {
     console.log('Sefaria Linker script loaded successfully');
