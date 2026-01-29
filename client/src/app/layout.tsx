@@ -40,9 +40,10 @@ export const metadata: Metadata = {
     siteName: 'פילוסופיה דתית',
     locale: 'he_IL',
     type: 'website',
+    images: [],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     title: 'פילוסופיה דתית: בית | שלום צדיק',
     description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, הרמב"ם, ואגדה עם שלום צדיק',
     creator: '@jewish_philosophy',
