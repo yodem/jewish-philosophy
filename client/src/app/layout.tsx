@@ -40,14 +40,6 @@ export const metadata: Metadata = {
     siteName: 'פילוסופיה דתית',
     locale: 'he_IL',
     type: 'website',
-    images: [
-      {
-        url: '/api/og',
-        width: 1200,
-        height: 630,
-        alt: 'פילוסופיה דתית - פלטפורמה ללימוד פילוסופיה דתית מקוונת עם שלום צדיק',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -55,7 +47,6 @@ export const metadata: Metadata = {
     description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, הרמב"ם, ואגדה עם שלום צדיק',
     creator: '@jewish_philosophy',
     site: '@jewish_philosophy',
-    images: ['/api/og'],
   },
   robots: {
     index: true,
@@ -171,9 +162,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 
         {/* Force Google to crawl immediately */}
         <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
-        {/* Preload critical resources */}
-        <link rel="preload" href="/api/og" as="image" />
-        
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
