@@ -21,8 +21,8 @@ export async function generateMetadata({ params }: ResponsaPageProps): Promise<M
     };
   }
 
-  // Extract question text for description
-  const questionPreview = extractQuestionFromResponsa(responsa.content, 155);
+  // Extract question text for description (longer for sharing previews)
+  const questionPreview = extractQuestionFromResponsa(responsa.content, 280);
 
   return createMetadata({
     title: `${responsa.title} | שאלות ותשובות | שלום צדיק - פילוסופיה דתית`,
