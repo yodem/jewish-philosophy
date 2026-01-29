@@ -21,7 +21,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
   const {
     title,
     description,
-    image = `${baseUrl.replace(/\/$/, '')}/favicon.ico`,
+    image = `${baseUrl.replace(/\/$/, '')}/api/og`,
     url = baseUrl,
     type = 'website',
     publishedTime,
