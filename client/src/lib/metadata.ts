@@ -21,7 +21,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
   const {
     title,
     description,
-    image = `${baseUrl.replace(/\/$/, '')}/api/og`,
+    image,
     url = baseUrl,
     type = 'website',
     publishedTime,
@@ -33,7 +33,10 @@ export function generateMetadata(seoData: SEOData): Metadata {
   } = seoData;
 
   const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
-  const imageUrl = image?.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${image}`;
+  // Only set image URLs when caller explicitly passes image; otherwise layout's openGraph.images is used (same as /)
+  const imageUrl = image !== undefined
+    ? (image.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${image}`)
+    : undefined;
 
   return {
     title,
@@ -54,14 +57,16 @@ export function generateMetadata(seoData: SEOData): Metadata {
       siteName,
       locale,
       type,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: title,
-        }
-      ],
+      ...(imageUrl && {
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: title,
+          }
+        ],
+      }),
       ...(publishedTime && { publishedTime }),
       ...(modifiedTime && { modifiedTime }),
       ...(authors && { authors }),
@@ -73,7 +78,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
       description,
       creator: '@shalomtzadik',
       site: '@shalomtzadik',
-      images: [imageUrl],
+      ...(imageUrl && { images: [imageUrl] }),
     },
     robots: {
       index: true,
