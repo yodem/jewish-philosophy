@@ -33,10 +33,11 @@ export function generateMetadata(seoData: SEOData): Metadata {
   } = seoData;
 
   const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
-  // Only set image URLs when caller explicitly passes image; otherwise layout's openGraph.images is used (same as /)
-  const imageUrl = image !== undefined
-    ? (image.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${image}`)
-    : undefined;
+  // Only set image when caller passes a valid image URL; otherwise no og:image (same as /)
+  const imageUrl =
+    image !== undefined && image !== ''
+      ? (image.startsWith('http') ? image : `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${image}`)
+      : undefined;
 
   return {
     title,
@@ -103,17 +104,13 @@ export function generateMetadata(seoData: SEOData): Metadata {
   };
 }
 
-export function getImageUrl(strapiImageUrl?: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
-  
+export function getImageUrl(strapiImageUrl?: string): string | undefined {
   if (!strapiImageUrl) {
-    return `${baseUrl.replace(/\/$/, '')}/api/og`;
+    return undefined;
   }
-  
   if (strapiImageUrl.startsWith('http')) {
     return strapiImageUrl;
   }
-  
   return `${process.env.NEXT_PUBLIC_STRAPI_BASE_URL || ''}${strapiImageUrl}`;
 } 
 
