@@ -1,9 +1,6 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'פילוסופיה דתית - פלטפורמה ללימוד פילוסופיה דתית מקוונת עם שלום צדיק';
-export const size = { width: 1200, height: 630 };
-export const contentType = 'image/png';
 
 export async function GET() {
   return new ImageResponse(
@@ -55,7 +52,8 @@ export async function GET() {
       </div>
     ),
     {
-      ...size,
+      width: 1200,
+      height: 630,
     }
   );
 }
