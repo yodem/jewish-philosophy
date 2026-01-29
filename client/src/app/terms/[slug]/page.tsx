@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTermBySlug } from '@/data/loaders';
+import { generateMetadata as createMetadata } from '@/lib/metadata';
 import Breadcrumbs from '@/components/Breadcrumbs';
 import { FullCategoryList } from '@/components/LimitedCategoryList';
 
@@ -80,58 +81,23 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
   const term = await getTermBySlug(slug);
 
   if (!term) {
-    return {
+    return createMetadata({
       title: 'מושג לא נמצא | שלום צדיק - פילוסופיה דתית',
       description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
-    };
+      url: `/terms/${slug}`,
+    });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
-  const pageUrl = `${baseUrl}/terms/${slug}`;
   const description = term.description || 'פלטפורמה מקוונת ללימוד פילוסופיה דתית';
 
-  return {
+  return createMetadata({
     title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
-    description: description,
+    description,
+    url: `/terms/${slug}`,
+    type: 'article',
+    publishedTime: term.publishedAt,
+    modifiedTime: term.updatedAt,
+    authors: term.author ? [term.author.name] : undefined,
     keywords: term.categories?.map(cat => cat.name).join(', ') || 'פילוסופיה דתית, מושגים',
-    authors: term.author ? [{ name: term.author.name }] : undefined,
-    alternates: {
-      canonical: pageUrl,
-    },
-    openGraph: {
-      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
-      description: description,
-      url: pageUrl,
-      siteName: 'שלום צדיק - פילוסופיה דתית',
-      locale: 'he_IL',
-      type: 'article',
-      publishedTime: term.publishedAt,
-      modifiedTime: term.updatedAt,
-      images: [
-        {
-          url: `${baseUrl.replace(/\/$/, '')}/favicon.ico`,
-          width: 1200,
-          height: 630,
-          alt: term.title,
-        }
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: `${term.title} | מושגים | שלום צדיק - פילוסופיה דתית`,
-      description: description,
-      images: [`${baseUrl.replace(/\/$/, '')}/favicon.ico`],
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  };
+  });
 }
