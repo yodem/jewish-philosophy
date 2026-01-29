@@ -259,4 +259,91 @@ export function generateSEOMetadata(params: GenerateSEOMetadataParams): Metadata
   };
 
   return generateMetadata(seoData);
+}
+
+/**
+ * Extracts plain text from markdown content
+ * Removes markdown syntax and returns clean text
+ */
+export function extractTextFromMarkdown(markdown: string, maxLength: number = 160): string {
+  if (!markdown) return '';
+
+  // Remove markdown links but keep the text: [text](url) -> text
+  let text = markdown.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+
+  // Remove images: ![alt](url) -> ''
+  text = text.replace(/!\[([^\]]*)\]\([^)]+\)/g, '');
+
+  // Remove headers: ### Header -> Header
+  text = text.replace(/^#{1,6}\s+/gm, '');
+
+  // Remove bold/italic: **text** or *text* -> text
+  text = text.replace(/\*\*([^*]+)\*\*/g, '$1');
+  text = text.replace(/\*([^*]+)\*/g, '$1');
+
+  // Remove strikethrough: ~~text~~ -> text
+  text = text.replace(/~~([^~]+)~~/g, '$1');
+
+  // Remove code blocks: ```code``` -> ''
+  text = text.replace(/```[\s\S]*?```/g, '');
+
+  // Remove inline code: `code` -> code
+  text = text.replace(/`([^`]+)`/g, '$1');
+
+  // Remove HTML tags
+  text = text.replace(/<[^>]+>/g, '');
+
+  // Remove blockquotes: > text -> text
+  text = text.replace(/^>\s+/gm, '');
+
+  // Remove list markers: - item or * item or 1. item -> item
+  text = text.replace(/^[\s]*[-*+]\s+/gm, '');
+  text = text.replace(/^[\s]*\d+\.\s+/gm, '');
+
+  // Normalize whitespace
+  text = text.replace(/\s+/g, ' ').trim();
+
+  // Truncate to maxLength with ellipsis
+  if (text.length > maxLength) {
+    text = text.substring(0, maxLength).trim();
+    // Try to break at last space to avoid cutting words
+    const lastSpace = text.lastIndexOf(' ');
+    if (lastSpace > maxLength * 0.8) { // Only if we're not losing too much
+      text = text.substring(0, lastSpace);
+    }
+    text += '...';
+  }
+
+  return text;
+}
+
+/**
+ * Extracts the question from responsa content
+ * Assumes question is in the first paragraph or before first line break
+ */
+export function extractQuestionFromResponsa(content: string, maxLength: number = 160): string {
+  if (!content) return 'שאלה ותשובה בפילוסופיה דתית';
+
+  // Split by double newline (paragraph break)
+  const paragraphs = content.split(/\n\n+/);
+
+  if (paragraphs.length > 0) {
+    // Extract text from first paragraph
+    return extractTextFromMarkdown(paragraphs[0], maxLength);
+  }
+
+  // Fallback to extracting from full content
+  return extractTextFromMarkdown(content, maxLength);
+}
+
+/**
+ * Generates a description from blog content
+ * Uses the description field if available, otherwise extracts from content
+ */
+export function generateBlogDescription(blog: { description?: string; content: string }): string {
+  if (blog.description && blog.description.trim().length > 0) {
+    return blog.description;
+  }
+
+  return extractTextFromMarkdown(blog.content, 160);
 } 

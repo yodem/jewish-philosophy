@@ -40,18 +40,18 @@ All dynamic pages follow the format: `"content name | page | שלום צדיק -
 
 3. ✅ **Writings** (`/client/src/app/writings/[slug]/page.tsx`)
    - Format: `{writing.title} | כתבים | שלום צדיק - פילוסופיה יהודית`
-   - Removed: הלכה/אגדה references
+   - Removed:/אגדה references
 
 4. ✅ **Playlist Detail** (`/client/src/app/playlists/[playlistSlug]/page.tsx`)
    - Format: `{playlist.title} | סדרות שיעורים | שלום צדיק - פילוסופיה יהודית`
 
 5. ✅ **Video Pages** (`/client/src/app/playlists/[playlistSlug]/[videoSlug]/page.tsx`)
    - Format: `{video.title} | {playlist.title} | שלום צדיק - פילוסופיה יהודית`
-   - Removed: הלכה/אגדה emphasis
+   - Removed:/אגדה emphasis
 
 6. ✅ **Responsa Detail** (`/client/src/app/responsa/[slug]/metadata.ts`)
    - Format: `{responsa.title} | שאלות ותשובות | שלום צדיק - פילוסופיה יהודית`
-   - Removed: הלכה פסוקה references
+   - Removed: פסוקה references
 
 ### Phase 3: Server-Side SEO for Client Pages (4 files created)
 
@@ -79,8 +79,8 @@ All dynamic pages follow the format: `"content name | page | שלום צדיק -
    - Updated site name to "שלום צדיק - פילוסופיה יהודית"
    - Updated description to "פלטפורמה מקוונת ללימוד פילוסופיה יהודית"
    - Updated base URL
-   - Removed הלכה/אגדה emphasis from type-specific keywords
-   - Changed blog keywords from "מאמרי הלכה" to "מאמרי פילוסופיה"
+   - Removed/אגדה emphasis from type-specific keywords
+   - Changed blog keywords from "מאמרי" to "מאמרי פילוסופיה"
    - Changed responsa keywords to focus on philosophy
 
 ## Key SEO Improvements
@@ -102,7 +102,7 @@ All dynamic pages follow the format: `"content name | page | שלום צדיק -
 8. **Structured Data**: JSON-LD remains on dynamic pages (Article, QAPage, VideoObject, etc.)
 
 ### Content Focus Changes ✅
-- **Removed**: הלכה/אגדה emphasis
+- **Removed**:/אגדה emphasis
 - **Added**: פילוסופיה יהודית focus throughout
 - **Unified**: All descriptions to "פלטפורמה מקוונת ללימוד פילוסופיה יהודית"
 - **Standardized**: Title format across all pages

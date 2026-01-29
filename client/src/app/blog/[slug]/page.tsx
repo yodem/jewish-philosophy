@@ -14,6 +14,7 @@ import { Article as ArticleSchema, WithContext } from "schema-dts";
 import SefariaLinker from "@/components/SefariaLinker";
 import ViewCountTracker from "@/components/ViewCountTracker";
 import { generateMetadata as createMetadata } from "@/lib/metadata";
+import { generateBlogDescription } from "@/lib/seo-helpers";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -23,10 +24,10 @@ interface BlogPostPageProps {
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  
+
   // Fetch blog content using standard getBlogBySlug
   const blog = await getBlogBySlug(slug) as Blog | null;
-  
+
   if (!blog) {
     return {
       title: "הפוסט לא נמצא | שלום צדיק - פילוסופיה דתית",
@@ -35,10 +36,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   const imageUrl = blog.coverImage?.url;
+  // Generate description from blog content
+  const blogDescription = generateBlogDescription(blog);
 
   return createMetadata({
     title: `${blog.title} | בלוג | שלום צדיק - פילוסופיה דתית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
+    description: blogDescription,
     url: `/blog/${slug}`,
     type: "article",
     image: imageUrl,

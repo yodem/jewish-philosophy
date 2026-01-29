@@ -16,10 +16,10 @@ import { fredoka } from '@/lib/fonts';
 
 export const metadata: Metadata = {
   title: {
-    default: 'פילוסופיה דתית | לימוד פילוסופיה דתית מקוונת - שיעורי וידאו, הרמב"ם, הלכה ואגדה עם שלום צדיק',
-    template: '%s | פילוסופיה דתית - פלטפורמה ללימוד יהודי מקוון',
+    default: 'פילוסופיה דתית: בית | שלום צדיק',
+    template: '%s | שלום צדיק',
   },
-  description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, ספרים, מאמרים ושאלות ותשובות בפילוסופיה דתית. לימוד הרמב"ם, הלכה, אגדה, מוסר יהודי עם שלום צדיק. תכנים איכותיים בפילוסופיה דתית, יהדות רציונלית, ביקורת החילון.',
+  description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, ספרים, מאמרים ושאלות ותשובות בפילוסופיה דתית. לימוד הרמב"ם,, אגדה, מוסר יהודי עם שלום צדיק. תכנים איכותיים בפילוסופיה דתית, יהדות רציונלית, ביקורת החילון.',
   keywords: ['פילוסופיה דתית', 'פילוסופיה דתית', 'הרמב"ם', 'בחירה חופשית', 'ידיעת האל', 'השגחה', 'טעמי המצוות', 'מוסר הרמב"ם', 'דרך האמצע', 'נבל ברשות התורה', 'הוכחה לקיום האל', 'מהות האל', 'הכרחי המציאות', 'טרנסצנדנטיות האל', 'ביקורת החילון', 'יהדות רציונלית', 'דטרמיניזם', 'הגלגלים בפילוסופיה', 'מושגים בפילוסופיה דתית', 'מבוא לפילוסופיה דתית', 'על-טבעי ביהדות', 'חילון ליברלי', 'קיום מצוות', 'רוח החוק', 'סכלים נבדלים', 'אמת מהותית', 'השגה שכלית', 'תורה מן השמיים', 'הגדרת דת', 'הגדרת פילוסופיה', 'פילוסופיה דתית מתונה', 'פילוסופיה דתית רדיקלית', 'ספקות דתיות', 'אחדות האל', 'שכר ועונש', 'רבי יהודה הלוי', 'רבי סעדיה גאון', 'אריסטו', 'אבן רושד', 'מורה נבוכים', 'משנה תורה', 'שמונה פרקים', 'הלכות יסודי התורה', 'הלכות דעות', 'כוזרי', 'שלום צדיק', 'סדרות שיעורים', 'שיעורי וידאו', 'קורסים יהודיים', 'לימוד ברצף', 'הלכה', 'אגדה', 'מוסר יהודי', 'מחשבה יהודית', 'פלטפורמה יהודית', 'לימוד מקוון'],
   authors: [{ name: 'שלום צדיק' }],
   creator: 'שלום צדיק',
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'פילוסופיה דתית | לימוד פילוסופיה דתית מקוונת - שיעורי וידאו, הרמב"ם, הלכה ואגדה',
-    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, ספרים, מאמרים ושאלות ותשובות. תכנים איכותיים בפילוסופיה דתית, הרמב"ם, הלכה, אגדה ומוסר יהודי עם שלום צדיק.',
+    title: 'פילוסופיה דתית: בית | שלום צדיק',
+    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, ספרים, מאמרים ושאלות ותשובות. תכנים איכותיים בפילוסופיה דתית, הרמב"ם,, אגדה ומוסר יהודי עם שלום צדיק.',
     url: '/',
     siteName: 'פילוסופיה דתית',
     locale: 'he_IL',
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'פילוסופיה דתית | לימוד פילוסופיה דתית מקוונת',
-    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, הרמב"ם, הלכה ואגדה עם שלום צדיק',
+    title: 'פילוסופיה דתית: בית | שלום צדיק',
+    description: 'פלטפורמה מובילה ללימוד יהודי מקוון - שיעורי וידאו, הרמב"ם, ואגדה עם שלום צדיק',
     creator: '@jewish_philosophy',
     site: '@jewish_philosophy',
     images: ['/og-default.jpg'],
@@ -129,13 +129,31 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     url: siteUrl,
     description: 'פלטפורמה מובילה ללימוד פילוסופיה דתית מקוונת',
     inLanguage: 'he-IL',
-          potentialAction: {
-        '@type': 'SearchAction',
-        target: {
-          '@type': 'EntryPoint',
-          urlTemplate: `${siteUrl}search?q={search_term_string}`,
-        },
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${siteUrl}search?q={search_term_string}`,
       },
+    },
+  };
+
+  // Sitelinks: main site sections for search engines (like YouTube's sub-links in results)
+  const siteNavSchema: Schema = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'ניווט האתר',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'בית', url: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'בלוג', url: `${siteUrl}blog` },
+      { '@type': 'ListItem', position: 3, name: 'סדרות', url: `${siteUrl}playlists` },
+      { '@type': 'ListItem', position: 4, name: 'שו"ת', url: `${siteUrl}responsa` },
+      { '@type': 'ListItem', position: 5, name: 'כתבים', url: `${siteUrl}writings` },
+      { '@type': 'ListItem', position: 6, name: 'מושגים', url: `${siteUrl}terms` },
+      { '@type': 'ListItem', position: 7, name: 'אודות', url: `${siteUrl}about` },
+      { '@type': 'ListItem', position: 8, name: 'צור קשר', url: `${siteUrl}contact` },
+      { '@type': 'ListItem', position: 9, name: 'חיפוש', url: `${siteUrl}search` },
+    ],
   };
 
   return (
@@ -143,6 +161,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <head>
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
+        <JsonLd data={siteNavSchema} />
         {/* Google Tag Manager */}
 
         {/* End Google Tag Manager */}

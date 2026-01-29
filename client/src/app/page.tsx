@@ -8,7 +8,7 @@ import { generateMetadata } from "@/lib/metadata";
 import HomePageClient from "./HomePageClient";
 
 export const metadata: Metadata = generateMetadata({
-  title: "בית | שלום צדיק - פילוסופיה דתית",
+  title: "פילוסופיה דתית: בית",
   description: "פלטפורמה מקוונת ללימוד פילוסופיה דתית",
   url: "/",
   type: "website",
