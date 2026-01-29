@@ -186,8 +186,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         
         {/* Social media and manifest files */}
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         
         {/* Enhanced structured data for organization */}
 
