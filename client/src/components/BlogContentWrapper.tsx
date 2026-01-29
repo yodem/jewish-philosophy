@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
 interface BlogContentWrapperProps {
@@ -20,6 +21,7 @@ export default function BlogContentWrapper({
             return <Link href={href || '#'}><span>{children}</span></Link>
           }
         }}
+        remarkPlugins={[remarkGfm]}
       >
         {content}
       </ReactMarkdown>

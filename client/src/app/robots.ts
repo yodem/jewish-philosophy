@@ -16,6 +16,7 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/_next/',
           '/private/',
+          '/playlists/--*',
         ],
       },
       // Allow specific search engines
@@ -27,6 +28,7 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/_next/',
           '/private/',
+          '/playlists/--*',
         ],
       },
       {
@@ -37,6 +39,7 @@ export default function robots(): MetadataRoute.Robots {
           '/admin/',
           '/_next/',
           '/private/',
+          '/playlists/--*',
         ],
       },
     ],

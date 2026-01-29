@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
-import { getAllBlogs, getAllPlaylists, getAllWritings } from '@/data/loaders';
-import { Blog, Playlist, Writing, Video } from '@/types';
+import { getAllBlogs, getAllPlaylists, getAllWritings, getAllResponsas } from '@/data/loaders';
+import { Blog, Playlist, Writing, Video, Responsa } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Validate environment variables
@@ -96,14 +96,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
 
     // Get dynamic content with timeout protection
-    const [blogs, playlists, writings] = await Promise.allSettled([
+    const [blogs, playlists, writings, responsas] = await Promise.allSettled([
       fetchWithTimeout(() => getAllBlogs(), 7000),
       fetchWithTimeout(() => getAllPlaylists(), 7000),
       fetchWithTimeout(() => getAllWritings(), 7000),
+      fetchWithTimeout(() => getAllResponsas(1, 100), 7000),
     ]).then(results => [
       results[0].status === 'fulfilled' ? results[0].value : [],
       results[1].status === 'fulfilled' ? results[1].value : [],
       results[2].status === 'fulfilled' ? results[2].value : [],
+      results[3].status === 'fulfilled' ? results[3].value.data : [],
     ]);
 
     // Blog pages
@@ -117,31 +119,43 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     }));
 
-    // Playlist pages
-    const playlistPages: MetadataRoute.Sitemap = playlists.map((playlist: Playlist) => ({
-      url: formatUrl(`/playlists/${playlist.slug}`),
-      lastModified: new Date(playlist.updatedAt || playlist.createdAt),
-      changeFrequency: 'weekly',
-      priority: 0.6,
-      images: [
-        getImageUrl(playlist.imageUrl300x400),
-        getImageUrl(playlist.imageUrlStandard),
-      ].filter(Boolean) as string[],
-    }));
-
-    // Individual video pages
-    const videoPages: MetadataRoute.Sitemap = playlists.flatMap((playlist: Playlist) => 
-      (playlist.videos || []).map((video: Video) => ({
-        url: formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
+    // Playlist pages - filter out playlists with -- prefix
+    const playlistPages: MetadataRoute.Sitemap = playlists
+      .filter((playlist: Playlist) => !playlist.slug.startsWith('--'))
+      .map((playlist: Playlist) => ({
+        url: formatUrl(`/playlists/${playlist.slug}`),
         lastModified: new Date(playlist.updatedAt || playlist.createdAt),
         changeFrequency: 'weekly',
-        priority: 0.8,
+        priority: 0.6,
         images: [
-          getImageUrl(video.imageUrl300x400),
-          getImageUrl(video.imageUrlStandard),
+          getImageUrl(playlist.imageUrl300x400),
+          getImageUrl(playlist.imageUrlStandard),
         ].filter(Boolean) as string[],
-      }))
-    );
+      }));
+
+    // Individual video pages - filter playlists with -- prefix
+    const videoPages: MetadataRoute.Sitemap = playlists
+      .filter((playlist: Playlist) => !playlist.slug.startsWith('--'))
+      .flatMap((playlist: Playlist) =>
+        (playlist.videos || []).map((video: Video) => ({
+          url: formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
+          lastModified: new Date(playlist.updatedAt || playlist.createdAt),
+          changeFrequency: 'weekly',
+          priority: 0.8,
+          images: [
+            getImageUrl(video.imageUrl300x400),
+            getImageUrl(video.imageUrlStandard),
+          ].filter(Boolean) as string[],
+        }))
+      );
+
+    // Responsa pages
+    const responsaPages: MetadataRoute.Sitemap = responsas.map((responsa: Responsa) => ({
+      url: formatUrl(`/responsa/${responsa.slug}`),
+      lastModified: new Date(responsa.updatedAt || responsa.publishedAt),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    }));
 
     // Writing pages
     const writingPages: MetadataRoute.Sitemap = writings.map((writing: Writing) => ({
@@ -156,10 +170,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Combine all pages
     return [
-      ...staticPages, 
-      ...blogPages, 
-      ...playlistPages, 
+      ...staticPages,
+      ...blogPages,
+      ...playlistPages,
       ...videoPages,
+      ...responsaPages,
       ...writingPages,
     ];
 

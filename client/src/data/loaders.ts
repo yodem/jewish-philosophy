@@ -329,18 +329,19 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '', sort
         }
       }
     },
+    filters: {
+      publishedAt: { $notNull: true },
+      ...(search ? {
+        title: {
+          $containsi: search
+        }
+      } : {})
+    },
     sort,
     pagination: {
       page,
       pageSize
-    },
-    ...(search ? {
-      filters: {
-        title: {
-          $containsi: search
-        }
-      }
-    } : {})
+    }
   });
   
   const path = "/api/responsas";
@@ -358,6 +359,7 @@ export async function getResponsaBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
       slug: { $eq: slug },
+      publishedAt: { $notNull: true },
     },
     populate: {
       categories: true,
