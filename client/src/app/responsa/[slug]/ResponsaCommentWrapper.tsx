@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { getResponsaBySlug } from "@/data/loaders";
 import { Comment as CommentType } from "@/types";
 import CommentSection from "@/components/CommentSection";
+import SefariaLinker from "@/components/SefariaLinker";
 import { trackContentView } from "@/lib/analytics";
 
 interface ResponsaCommentWrapperProps {
@@ -44,11 +45,15 @@ export default function ResponsaCommentWrapper({
   }, [initialComments]);
 
   return (
-    <CommentSection 
-      initialComments={commentsData}
-      responsaSlug={responsaSlug}
-      commentType="responsa"
-      onCommentsRefresh={refreshComments}
-    />
+    <>
+      <CommentSection 
+        initialComments={commentsData}
+        responsaSlug={responsaSlug}
+        commentType="responsa"
+        onCommentsRefresh={refreshComments}
+      />
+      {/* Sefaria Linker after comments; re-applies when comments are loaded/refreshed */}
+      <SefariaLinker reRunDeps={[commentsData]} />
+    </>
   );
 }
