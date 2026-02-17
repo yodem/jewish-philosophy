@@ -1,6 +1,12 @@
 import type { MetadataRoute } from 'next';
-import { getAllBlogs, getAllPlaylists, getAllWritings, getAllResponsas } from '@/data/loaders';
-import { Blog, Playlist, Writing, Video, Responsa } from '@/types';
+import {
+  getAllBlogsForSitemap,
+  getAllPlaylistsForSitemap,
+  getAllWritingsForSitemap,
+  getAllResponsasForSitemap,
+  getAllTermsForSitemap,
+} from '@/data/loaders';
+import { Blog, Playlist, Writing, Video, Responsa, Term } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Validate environment variables
@@ -78,11 +84,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       {
         url: formatUrl('/responsa'),
         lastModified: new Date(),
-        changeFrequency: 'weekly',
-        priority: 0.7,
+        changeFrequency: 'daily',
+        priority: 0.9,
       },
       {
-        url: formatUrl('/contact'),
+        url: formatUrl('/contact'), // Contact page (צור קשר)
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.6,
@@ -95,17 +101,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     ];
 
-    // Get dynamic content with timeout protection
-    const [blogs, playlists, writings, responsas] = await Promise.allSettled([
-      fetchWithTimeout(() => getAllBlogs(), 7000),
-      fetchWithTimeout(() => getAllPlaylists(), 7000),
-      fetchWithTimeout(() => getAllWritings(), 7000),
-      fetchWithTimeout(() => getAllResponsas(1, 100), 7000),
+    // Get dynamic content with timeout protection (uses paginated fetch-all for sitemap)
+    const [blogs, playlists, writings, responsas, terms] = await Promise.allSettled([
+      fetchWithTimeout(() => getAllBlogsForSitemap(), 15000),
+      fetchWithTimeout(() => getAllPlaylistsForSitemap(), 15000),
+      fetchWithTimeout(() => getAllWritingsForSitemap(), 15000),
+      fetchWithTimeout(() => getAllResponsasForSitemap(), 15000),
+      fetchWithTimeout(() => getAllTermsForSitemap(), 15000),
     ]).then(results => [
       results[0].status === 'fulfilled' ? results[0].value : [],
       results[1].status === 'fulfilled' ? results[1].value : [],
       results[2].status === 'fulfilled' ? results[2].value : [],
-      results[3].status === 'fulfilled' ? results[3].value.data : [],
+      results[3].status === 'fulfilled' ? results[3].value : [],
+      results[4].status === 'fulfilled' ? results[4].value : [],
     ]);
 
     // Blog pages
@@ -149,13 +157,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }))
       );
 
-    // Responsa pages
-    const responsaPages: MetadataRoute.Sitemap = responsas.map((responsa: Responsa) => ({
-      url: formatUrl(`/responsa/${responsa.slug}`),
-      lastModified: new Date(responsa.updatedAt || responsa.publishedAt),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    }));
+    // Responsa pages (highest priority - include lastModified from comments for fresh indexing)
+    const responsaPages: MetadataRoute.Sitemap = responsas.map((responsa: Responsa) => {
+      const dates = [
+        responsa.updatedAt,
+        responsa.publishedAt,
+        ...(responsa.comments || []).map((c: { updatedAt?: string }) => c.updatedAt),
+        ...(responsa.comments || []).flatMap((c: { threads?: { updatedAt?: string }[] }) =>
+          (c.threads || []).map((t) => t.updatedAt)
+        ),
+      ].filter(Boolean) as string[];
+      const lastModified = dates.length
+        ? new Date(dates.sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0])
+        : new Date(responsa.updatedAt || responsa.publishedAt);
+      return {
+        url: formatUrl(`/responsa/${responsa.slug}`),
+        lastModified,
+        changeFrequency: 'daily' as const,
+        priority: 0.9,
+      };
+    });
 
     // Writing pages
     const writingPages: MetadataRoute.Sitemap = writings.map((writing: Writing) => ({
@@ -168,6 +189,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
     }));
 
+    // Term pages (glossary entries)
+    const termPages: MetadataRoute.Sitemap = terms.map((term: Term) => ({
+      url: formatUrl(`/terms/${term.slug}`),
+      lastModified: new Date(term.updatedAt || term.createdAt),
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    }));
+
     // Combine all pages
     return [
       ...staticPages,
@@ -176,11 +205,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...videoPages,
       ...responsaPages,
       ...writingPages,
+      ...termPages,
     ];
 
   } catch (error) {
     console.error('Error generating sitemap:', error);
-    // Return at least static pages if dynamic content fails
+    // Return at least static pages if dynamic content fails (including contact)
     return [
       {
         url: normalizedBaseUrl.slice(0, -1), // Remove trailing slash for homepage
@@ -199,6 +229,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 0.9,
+      },
+      {
+        url: `${normalizedBaseUrl}contact`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly',
+        priority: 0.6,
       },
     ];
   }

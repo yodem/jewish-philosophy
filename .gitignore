@@ -23,6 +23,8 @@ settings.json
 .DS_Store
 .cursorrules
 .cursor
+.claude
+.instance
 
 # Logs
 *.log
