@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getAllPlaylists } from '@/data/loaders';
+import { getAllPlaylistsForSitemap } from '@/data/loaders';
 import { Playlist, Video } from '@/types';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -18,10 +18,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return Promise.race([fetchFn(), timeoutPromise]);
     };
 
-    const playlists = await fetchWithTimeout(() => getAllPlaylists(), 7000).catch((error) => {
+    const allPlaylists = await fetchWithTimeout(() => getAllPlaylistsForSitemap(), 15000).catch((error) => {
       console.error('Failed to fetch playlists for video sitemap:', error);
       return [];
     });
+
+    // Filter out playlists with -- prefix (private/unlisted)
+    const playlists = allPlaylists.filter((p: Playlist) => !p.slug.startsWith('--'));
     
     // Helper function to get image URL
     const getImageUrl = (strapiUrl?: string) => {

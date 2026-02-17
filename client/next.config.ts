@@ -87,23 +87,6 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: '/sitemaps/(.*).xml',
-        headers: [
-          {
-            key: 'Content-Type',
-            value: 'application/xml; charset=utf-8',
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=1800, s-maxage=3600',
-          },
-          {
-            key: 'X-Robots-Tag',
-            value: 'noindex',
-          },
-        ],
-      },
-      {
         source: '/robots.txt',
         headers: [
           {

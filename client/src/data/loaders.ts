@@ -98,6 +98,23 @@ export async function getAllPlaylists() {
   return res.data
 }
 
+/** Fetches all playlists for sitemap (paginates beyond 100 limit, includes videos) */
+export async function getAllPlaylistsForSitemap() {
+  const pageSize = 100;
+  let page = 1;
+  let allPlaylists: Awaited<ReturnType<typeof getPlaylistsPaginated>> = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    const playlists = await getPlaylistsPaginated(page, pageSize);
+    allPlaylists = allPlaylists.concat(playlists);
+    hasMore = playlists.length === pageSize;
+    page++;
+  }
+
+  return allPlaylists;
+}
+
 export async function getPlaylistsPaginated(page: number = 1, pageSize: number = 12) {
   const query = qs.stringify({
     populate: {
@@ -251,9 +268,26 @@ export async function getAllBlogs(): Promise<Blog[]> {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = allBlogsQuery;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
   
   return res.data
+}
+
+/** Fetches all blogs for sitemap (paginates beyond 100 limit) */
+export async function getAllBlogsForSitemap(): Promise<Blog[]> {
+  const pageSize = 100;
+  let page = 1;
+  let allBlogs: Blog[] = [];
+  let hasMore = true;
+
+  while (hasMore) {
+    const blogs = await getBlogsPaginated(page, pageSize);
+    allBlogs = allBlogs.concat(blogs);
+    hasMore = blogs.length === pageSize;
+    page++;
+  }
+
+  return allBlogs;
 }
 
 export async function getBlogsPaginated(page: number = 1, pageSize: number = 12): Promise<Blog[]> {
@@ -268,7 +302,7 @@ export async function getBlogsPaginated(page: number = 1, pageSize: number = 12)
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
   
   return res.data || [];
 }
@@ -283,7 +317,7 @@ export async function getBlogBySlug(slug: string) {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
   if (!res?.data || res.data.length === 0) return null;
   
   return res.data[0]
@@ -304,7 +338,7 @@ export async function getResponsaPage() {
   const path = "/api/responsa-page";
   const url = new URL(path, BASE_URL);
   url.search = responsaPageQuery;
-  return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 3 } });
+  return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 3 } }); 
 }
 
 export async function getAllResponsas(page = 1, pageSize = 10, search = '', sortBy: 'recent' | 'popular' = 'recent') {
@@ -326,7 +360,8 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '', sort
       comments: {
         filters: {
           publishedAt: { $notNull: true }
-        }
+        },
+        populate: { threads: true }
       }
     },
     filters: {
@@ -347,12 +382,29 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '', sort
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 12 } }); // 12h - responsas are high priority
   
   return {
     data: res.data,
     meta: res.meta
   };
+}
+
+/** Fetches all responsas for sitemap (paginates beyond 100 limit) */
+export async function getAllResponsasForSitemap() {
+  const pageSize = 100;
+  let page = 1;
+  let allResponsas: Awaited<ReturnType<typeof getAllResponsas>>['data'] = [];
+  let pageCount = 1;
+
+  while (page <= pageCount) {
+    const { data, meta } = await getAllResponsas(page, pageSize);
+    allResponsas = allResponsas.concat(data || []);
+    pageCount = meta?.pagination?.pageCount ?? 1;
+    page++;
+  }
+
+  return allResponsas;
 }
 
 export async function getResponsaBySlug(slug: string) {
@@ -406,7 +458,7 @@ export async function getResponsaBySlug(slug: string) {
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET" });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 12 } }); // 12h - responsas are high priority
   if (!res?.data || res.data.length === 0) return null;
 
   return res.data[0];
@@ -617,6 +669,23 @@ export async function getWritingsPaginated(
   };
 }
 
+/** Fetches all writings for sitemap (paginates beyond 100 limit) */
+export async function getAllWritingsForSitemap(): Promise<Writing[]> {
+  const pageSize = 100;
+  let page = 1;
+  let allWritings: Writing[] = [];
+  let pageCount = 1;
+
+  while (page <= pageCount) {
+    const { data, meta } = await getWritingsPaginated(page, pageSize);
+    allWritings = allWritings.concat(data || []);
+    pageCount = meta?.pagination?.pageCount ?? 1;
+    page++;
+  }
+
+  return allWritings;
+}
+
 export async function getWritingsByType(type: 'book' | 'article', page: number = 1, pageSize: number = 12): Promise<Writing[]> {
   const query = qs.stringify({
     filters: {
@@ -693,6 +762,23 @@ export async function getAllTerms(page = 1, pageSize = 12, search = '') {
     data: res.data,
     meta: res.meta
   };
+}
+
+/** Fetches all terms for sitemap (paginates until complete) */
+export async function getAllTermsForSitemap(): Promise<Term[]> {
+  const pageSize = 100;
+  let page = 1;
+  let allTerms: Term[] = [];
+  let pageCount = 1;
+
+  while (page <= pageCount) {
+    const { data, meta } = await getAllTerms(page, pageSize);
+    allTerms = allTerms.concat(data || []);
+    pageCount = meta?.pagination?.pageCount ?? 1;
+    page++;
+  }
+
+  return allTerms;
 }
 
 export async function getTermsPaginated(page: number = 1, pageSize: number = 12): Promise<Term[]> {

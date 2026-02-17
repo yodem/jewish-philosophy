@@ -1,13 +1,14 @@
 import React from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { FullCategoryList } from "@/components/LimitedCategoryList";
-import { Responsa } from "@/types";
+import { Responsa, Comment } from "@/types";
 import ReactMarkdown from "react-markdown";
 import { JsonLd } from "@/lib/json-ld";
 import { QAPage, WithContext } from "schema-dts";
 import remarkGfm from "remark-gfm";
 import ViewCountTracker from "@/components/ViewCountTracker";
 import ResponsaCommentWrapper from "./ResponsaCommentWrapper";
+import { extractTextFromMarkdown } from "@/lib/seo-helpers";
 
 interface ResponsaPageProps {
   responsa: Responsa;
@@ -26,8 +27,34 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
     });
   };
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
+  const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/').replace(/\/?$/, '');
   const pageUrl = `${baseUrl}/responsa/${slug}`;
+  const aboutUrl = `${baseUrl}/about`;
+
+  // Build suggestedAnswer from comments and threads for SEO (indexed with main Q&A)
+  const suggestedAnswers: { '@type': 'Answer'; text: string; dateCreated: string; author: { '@type': 'Person'; name: string; url: string } }[] = [];
+  (responsa.comments || []).forEach((comment: Comment) => {
+    const commentText = extractTextFromMarkdown(comment.answer, 5000);
+    if (commentText) {
+      suggestedAnswers.push({
+        '@type': 'Answer',
+        text: commentText,
+        dateCreated: comment.publishedAt || comment.createdAt,
+        author: { '@type': 'Person', name: comment.answerer, url: pageUrl },
+      });
+    }
+    (comment.threads || []).forEach((thread) => {
+      const threadText = extractTextFromMarkdown(thread.answer, 5000);
+      if (threadText) {
+        suggestedAnswers.push({
+          '@type': 'Answer',
+          text: threadText,
+          dateCreated: thread.publishedAt || thread.createdAt,
+          author: { '@type': 'Person', name: thread.answerer, url: pageUrl },
+        });
+      }
+    });
+  });
 
   const structuredData: WithContext<QAPage> = {
     '@context': 'https://schema.org',
@@ -36,12 +63,13 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
       '@type': 'Question',
       name: title,
       text: title,
-      answerCount: 1,
-      upvoteCount: 0, 
+      answerCount: 1 + suggestedAnswers.length,
+      upvoteCount: 0,
       dateCreated: publishedAt,
       author: {
         '@type': 'Person',
         name: questioneer,
+        url: pageUrl,
       },
       acceptedAnswer: {
         '@type': 'Answer',
@@ -51,9 +79,11 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
         dateCreated: publishedAt,
         author: {
           '@type': 'Person',
-          name: 'שלום צדיק', 
+          name: 'שלום צדיק',
+          url: aboutUrl,
         },
       },
+      ...(suggestedAnswers.length > 0 && { suggestedAnswer: suggestedAnswers }),
     },
   };
   
