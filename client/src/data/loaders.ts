@@ -382,7 +382,7 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '', sort
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 12 } }); // 12h - responsas are high priority
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 } }); // 1 min - keep cache but show new comments quickly
   
   return {
     data: res.data,
@@ -458,7 +458,7 @@ export async function getResponsaBySlug(slug: string) {
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 12 } }); // 12h - responsas are high priority
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 } }); // 1 min - keep cache but show new comments quickly
   if (!res?.data || res.data.length === 0) return null;
 
   return res.data[0];
