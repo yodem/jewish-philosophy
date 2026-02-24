@@ -341,7 +341,7 @@ export async function getResponsaPage() {
   return await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 3 } }); 
 }
 
-export async function getAllResponsas(page = 1, pageSize = 10, search = '', sortBy: 'recent' | 'popular' = 'recent') {
+export async function getAllResponsas(page = 1, pageSize = 10, search = '', sortBy: 'recent' | 'popular' = 'recent', revalidateSeconds = 60) {
   // Determine sort order based on sortBy parameter
   let sort: string[];
   switch (sortBy) {
@@ -382,7 +382,7 @@ export async function getAllResponsas(page = 1, pageSize = 10, search = '', sort
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 } }); // 1 min - keep cache but show new comments quickly
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: revalidateSeconds } });
   
   return {
     data: res.data,
@@ -398,7 +398,7 @@ export async function getAllResponsasForSitemap() {
   let pageCount = 1;
 
   while (page <= pageCount) {
-    const { data, meta } = await getAllResponsas(page, pageSize);
+    const { data, meta } = await getAllResponsas(page, pageSize, '', 'recent', 60 * 60 * 12);
     allResponsas = allResponsas.concat(data || []);
     pageCount = meta?.pagination?.pageCount ?? 1;
     page++;
