@@ -1,6 +1,7 @@
 "use server";
 
 import z from "zod";
+import { revalidatePath } from "next/cache";
 import { subscribeService, unsubscribeService } from "./services";
 import { createComment, createThread } from "./loaders";
 import { BASE_URL } from "../../consts";
@@ -168,6 +169,10 @@ export async function addCommentAction(prevState: CommentState, formData: FormDa
       };
     }
 
+    // Bust the cache so the new comment appears immediately on the page
+    if (responsaSlug) revalidatePath(`/responsa/${responsaSlug}`);
+    if (blogSlug) revalidatePath(`/blog/${blogSlug}`);
+
     return {
       ...prevState,
       successMessage: blogSlug ? "תגובתך התקבלה!" : "תשובתך התקבלה!",
@@ -224,6 +229,10 @@ export async function addThreadAction(prevState: CommentState, formData: FormDat
         successMessage: "",
       };
     }
+
+    // Bust the cache so the new thread appears immediately on the page
+    if (responsaSlug) revalidatePath(`/responsa/${responsaSlug}`);
+    if (blogSlug) revalidatePath(`/blog/${blogSlug}`);
 
     return {
       ...prevState,
