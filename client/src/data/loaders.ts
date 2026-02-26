@@ -317,9 +317,9 @@ export async function getBlogBySlug(slug: string) {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - always fetch fresh for real-time view count
   if (!res?.data || res.data.length === 0) return null;
-  
+
   return res.data[0]
 }
 
