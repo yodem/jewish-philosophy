@@ -114,6 +114,7 @@ export type Blog = {
   publishedAt: string;
   author: Autor;
   categories: Category[];
+  views?: number | null;
 }
 
 export type Thread = {

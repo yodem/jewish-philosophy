@@ -15,6 +15,7 @@ import SefariaLinker from "@/components/SefariaLinker";
 import ViewCountTracker from "@/components/ViewCountTracker";
 import { generateMetadata as createMetadata } from "@/lib/metadata";
 import { generateBlogDescription } from "@/lib/seo-helpers";
+import { calculateReadingTime } from "@/lib/utils";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -63,13 +64,15 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
   
-  const { title, content, publishedAt, author, coverImage, description, categories } = blog;
+  const { title, content, publishedAt, author, coverImage, description, categories, views } = blog;
 
   const publishDate = new Date(publishedAt).toLocaleDateString('he-IL', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  const readingTime = calculateReadingTime(content);
 
   // Generate structured data for the blog post
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
@@ -136,12 +139,20 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       
       <div className="flex flex-col items-center mb-6 sm:mb-8 w-full">
         <h2 className="text-2xl sm:text-3xl font-bold mb-2 text-center">{title}</h2>
-        <div className="flex items-center text-gray-500 mb-4 text-sm">
+        <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-1 text-gray-500 mb-4 text-sm">
           <span>{publishDate}</span>
           {author && (
             <>
-              <span className="mx-2">•</span>
-              <span> {author.name}</span>
+              <span>•</span>
+              <span>{author.name}</span>
+            </>
+          )}
+          <span>•</span>
+          <span>{readingTime} דקות קריאה</span>
+          {views != null && views > 0 && (
+            <>
+              <span>•</span>
+              <span>{views.toLocaleString('he-IL')} צפיות</span>
             </>
           )}
         </div>
