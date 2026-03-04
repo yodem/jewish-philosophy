@@ -9,6 +9,7 @@ export const CATEGORY_BACKGROUNDS: Record<string, string> = {
   "soul": "bg-blue-600 text-white",
   "aristotelianism": "bg-amber-700 text-white",
   "general": "bg-gray-400 text-white",
+  "moral": "bg-emerald-700 text-white",
   "evil": "bg-teal-600 text-white",
   "aristotle": "bg-amber-600 text-white",
   "mimonidies": "bg-orange-600 text-white",
