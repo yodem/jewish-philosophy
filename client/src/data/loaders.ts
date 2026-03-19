@@ -458,7 +458,7 @@ export async function getResponsaBySlug(slug: string) {
   const path = "/api/responsas";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 } }); // 1 min - keep cache but show new comments quickly
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - always fetch fresh
   if (!res?.data || res.data.length === 0) return null;
 
   return res.data[0];
@@ -528,7 +528,7 @@ export async function getBlogCommentsBySlug(slug: string) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 2 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } });
   
   return res.data || [];
 }
@@ -549,7 +549,7 @@ export async function getResponsaComments(responsaId: number) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 2 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } });
   
   return res.data || [];
 }
@@ -594,7 +594,7 @@ export async function getResponsaCommentsBySlug(responsaSlug: string) {
   const path = "/api/comments";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 2 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } });
   
   return res.data || [];
 }
