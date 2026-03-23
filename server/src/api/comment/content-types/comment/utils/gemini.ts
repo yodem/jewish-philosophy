@@ -16,14 +16,22 @@ function getGeminiConfig(): GeminiConfig | null {
   };
 }
 
-export async function generateContent(prompt: string): Promise<string | null> {
+export type GenerateResult =
+  | { status: "no_config" }
+  | { status: "empty_response" }
+  | { status: "ok"; text: string };
+
+export async function generateContent(prompt: string): Promise<GenerateResult> {
   const config = getGeminiConfig();
-  if (!config) return null;
+  if (!config) return { status: "no_config" };
 
   const genAI = new GoogleGenerativeAI(config.apiKey);
   const model = genAI.getGenerativeModel({ model: config.model! });
   const result = await model.generateContent(prompt);
-  return result.response.text().trim();
+  const text = result.response.text().trim();
+
+  if (!text) return { status: "empty_response" };
+  return { status: "ok", text };
 }
 
 function cleanResponseText(text: string): string {
@@ -34,9 +42,14 @@ function cleanResponseText(text: string): string {
   return clean.trim();
 }
 
+interface Logger {
+  warn: (msg: string) => void;
+}
+
 export function parseCategories(
   responseText: string,
-  validNames: string[]
+  validNames: string[],
+  logger?: Logger
 ): string[] {
   try {
     const parsed = JSON.parse(cleanResponseText(responseText));
@@ -45,7 +58,10 @@ export function parseCategories(
     return arr.filter(
       (c: unknown) => typeof c === "string" && validNames.includes(c.trim())
     );
-  } catch {
+  } catch (err) {
+    logger?.warn(
+      `${LOG_PREFIX} JSON parse failed, falling back to text matching: ${err}`
+    );
     return validNames.filter((name) => responseText.includes(name));
   }
 }

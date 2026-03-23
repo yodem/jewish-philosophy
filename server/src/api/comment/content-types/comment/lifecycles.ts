@@ -1,4 +1,4 @@
-import { ANSWERER_TRIGGER } from "./utils/constants";
+import { ANSWERER_TRIGGER, LOG_PREFIX } from "./utils/constants";
 import { categorizeResponsa } from "./utils/categorize";
 import { withRetry } from "./utils/retry";
 
@@ -31,8 +31,8 @@ export default {
     withRetry(
       () => categorizeResponsa(strapi, responsaId, commentAnswerText),
       strapi.log
-    ).catch(() => {
-      // Already logged inside withRetry
+    ).catch((err) => {
+      strapi.log?.error?.(`${LOG_PREFIX} Unhandled error: ${err}`);
     });
   },
 };

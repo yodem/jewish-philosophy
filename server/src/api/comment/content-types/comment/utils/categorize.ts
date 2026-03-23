@@ -5,7 +5,7 @@ import {
 } from "./constants";
 import { stripHtml } from "./html";
 import { buildCategoryPrompt } from "./prompt";
-import { generateContent, parseCategories } from "./gemini";
+import { generateContent, parseCategories, type GenerateResult } from "./gemini";
 
 interface StrapiInstance {
   entityService: {
@@ -22,7 +22,6 @@ interface StrapiInstance {
 
 interface Category {
   id: number;
-  documentId: string;
   name: string;
 }
 
@@ -56,7 +55,7 @@ export async function categorizeResponsa(
 
   const allCategories: Category[] = await strapi.entityService.findMany(
     CATEGORY_UID,
-    { fields: ["id", "documentId", "name"], pagination: { limit: -1 } }
+    { fields: ["id", "name"], pagination: { limit: -1 } }
   );
 
   if (!allCategories?.length) {
@@ -64,29 +63,36 @@ export async function categorizeResponsa(
     return;
   }
 
-  const categoryNames = allCategories.map((c) => c.name);
+  const categoryNames = allCategories.map((c) => c.name.trim());
   const plainContent = stripHtml(responsa.content || "");
   const plainComment = commentAnswerText
     ? stripHtml(commentAnswerText)
     : undefined;
 
-  const responseText = await generateContent(
+  const result = await generateContent(
     buildCategoryPrompt({
-      title: responsa.title,
+      title: responsa.title || "",
       description: plainContent,
       categories: categoryNames,
       clarification: plainComment,
     })
   );
 
-  if (!responseText) {
+  if (result.status === "no_config") {
     strapi.log.warn(
       `${LOG_PREFIX} GEMINI_API_KEY not set — skipping categorization`
     );
     return;
   }
 
-  const matchedNames = parseCategories(responseText, categoryNames);
+  if (result.status === "empty_response") {
+    strapi.log.warn(
+      `${LOG_PREFIX} Gemini returned empty response for responsa "${responsa.title}" — skipping`
+    );
+    return;
+  }
+
+  const matchedNames = parseCategories(result.text, categoryNames, strapi.log);
 
   if (matchedNames.length === 0) {
     strapi.log.info(
