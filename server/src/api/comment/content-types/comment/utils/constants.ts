@@ -6,7 +6,7 @@ export const CATEGORY_UID = "api::category.category" as const;
 export const ANSWERER_TRIGGER = "שלום צדיק";
 
 // Gemini AI defaults
-export const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
+export const DEFAULT_GEMINI_MODEL = "gemini-3-flash-preview";
 
 // Logging
 export const LOG_PREFIX = "[auto-categorize]";
