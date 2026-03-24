@@ -14,19 +14,28 @@ function resolveRelationId(
 export default {
   afterCreate(event: { result: Record<string, unknown>; params: Record<string, any> }) {
     const { result, params } = event;
+    const strapi = (globalThis as any).strapi;
 
     const answerer = result.answerer || params?.data?.answerer;
-    if (answerer !== ANSWERER_TRIGGER) return;
+    strapi.log.info(`${LOG_PREFIX} afterCreate fired — answerer="${answerer}"`);
+
+    if (answerer !== ANSWERER_TRIGGER) {
+      strapi.log.info(`${LOG_PREFIX} Skipping — answerer does not match trigger`);
+      return;
+    }
 
     const responsaId =
       resolveRelationId(result.responsa) ??
       resolveRelationId(params?.data?.responsa);
-    if (!responsaId) return;
+    if (!responsaId) {
+      strapi.log.warn(`${LOG_PREFIX} No responsaId found — skipping`);
+      return;
+    }
 
     const commentAnswerText =
       (result.answer as string) || params?.data?.answer || "";
 
-    const strapi = (globalThis as any).strapi;
+    strapi.log.info(`${LOG_PREFIX} Triggering categorization for responsa ${responsaId}`);
 
     withRetry(
       () => categorizeResponsa(strapi, responsaId, commentAnswerText),
