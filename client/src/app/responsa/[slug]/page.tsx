@@ -6,9 +6,6 @@ import { extractQuestionFromResponsa } from "@/lib/seo-helpers";
 import { Category } from "@/types";
 import ResponsaPage from "./ResponsaPage";
 
-// Revalidate every 60s so new comments appear quickly while keeping short-term cache
-export const revalidate = 60;
-
 interface ResponsaPageProps {
   params: Promise<{ slug: string }>;
 }

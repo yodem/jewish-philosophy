@@ -14,7 +14,7 @@ const strapiRemotePattern = {
 };
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  cacheComponents: true,
   images: {
     unoptimized: true,
     remotePatterns: [
