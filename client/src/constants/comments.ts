@@ -7,20 +7,20 @@ export type CommentType = 'responsa' | 'blog';
 export const COMMENT_LABELS = {
   responsa: {
     sectionTitle: "תשובות",
-    noCommentsText: "אין תשובות עדיין. היה הראשון להשיב!",
-    addComment: "הוסף תשובה",
+    noCommentsText: "אין תשובות עדיין. היו הראשונים להשיב!",
+    addComment: "הוסיפו תשובה",
     addCommentFull: "הוסיפו תשובה",
   },
   blog: {
     sectionTitle: "תגובות", 
-    noCommentsText: "אין תגובות עדיין. היה הראשון להגיב!",
-    addComment: "הוסף תגובה",
+    noCommentsText: "אין תגובות עדיין. היו הראשונים להגיב!",
+    addComment: "הוסיפו תגובה",
     addCommentFull: "הוסיפו תגובה",
   }
 } as const;
 
 export const REPLY_BUTTON_LABELS = {
-  reply: "הגב",
+  reply: "הגיבו",
   cancel: "ביטול",
 } as const;
 

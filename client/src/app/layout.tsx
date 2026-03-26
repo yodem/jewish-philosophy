@@ -1,7 +1,7 @@
 import './globals.css';
 import LayoutShell from './LayoutShell';
 import { Suspense } from 'react';
-import { Card } from "@/components/ui/card";
+
 import Providers from './providers';
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google'
 import { Analytics } from "@vercel/analytics/next"
@@ -9,7 +9,7 @@ import { Metadata } from 'next';
 import { JsonLd, Schema } from '@/lib/json-ld';
 import LayoutClient from './LayoutClient';
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { fredoka } from '@/lib/fonts';
+import { rubik } from '@/lib/fonts';
 
 export const metadata: Metadata = {
   title: {
@@ -58,13 +58,12 @@ export const metadata: Metadata = {
     },
   },
   other: {
-    'theme-color': '#3b82f6',
-    'msapplication-TileColor': '#3b82f6',
+    'theme-color': '#1e3a8a',
+    'msapplication-TileColor': '#1e3a8a',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'google-site-verification': 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs'
   },
-  // Enhanced verification for immediate indexing
   verification: {
     google: 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs',
   },
@@ -119,7 +118,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     },
   };
 
-  // Sitelinks: main site sections for search engines (like YouTube's sub-links in results)
   const siteNavSchema: Schema = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
@@ -138,37 +136,25 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="hebrew" dir="rtl" className={`overflow-x-hidden ${fredoka.className}`}>
+    <html lang="he" dir="rtl" className={`overflow-x-hidden ${rubik.className}`}>
       <head>
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
         <JsonLd data={siteNavSchema} />
-        {/* Google Tag Manager */}
 
-        {/* End Google Tag Manager */}
-
-        {/* Critical performance optimizations */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                
-        {/* Force Google to crawl immediately */}
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
-        {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         <link rel="dns-prefetch" href="//www.youtube.com" />
         <link rel="dns-prefetch" href="//i.ytimg.com" />
-        
-        {/* Preconnect to critical third parties */}
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
-        {/* Social media and manifest files */}
-        <link rel="manifest" href="/manifest.json" />
-        
-        {/* Enhanced structured data for organization */}
 
+        <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-white flex flex-col overflow-x-hidden font-sans">
+      <body className="min-h-screen bg-background flex flex-col overflow-x-hidden font-sans">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -178,28 +164,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             style={{ display: 'none', visibility: 'hidden' }}
           />
         </noscript>
-        {/* End Google Tag Manager (noscript) */}
-        
+
         <Providers>
           <Suspense fallback={
-            <nav className="w-full bg-gray-900 text-white py-4 px-8 flex items-center justify-between shadow-md">
-              <div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />
+            <nav className="w-full bg-primary text-primary-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-blue-900/50 sticky top-0 z-50">
+              <div className="animate-pulse h-8 w-32 bg-primary/70 rounded" />
             </nav>
           }>
             <LayoutShell />
           </Suspense>
 
-          <main className="container mx-auto px-1 sm:px-4 py-4 sm:py-8 flex flex-col align-center">
-            <Card className="p-2 sm:p-6 bg-white/95 shadow-lg border-0 flex flex-col items-center overflow-hidden">
-              {children}
-            </Card>
+          <main className="flex-1 flex flex-col">
+            {children}
           </main>
 
-          {/* WhatsApp Floating Button */}
           <LayoutClient />
         </Providers>
 
-        {/* Load analytics asynchronously */}
         <GoogleAnalytics gaId="G-72NSRCMH08" />
         <GoogleTagManager gtmId="GTM-N78GTSCR" />
         <Analytics />

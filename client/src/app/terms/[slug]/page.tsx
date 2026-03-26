@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTermBySlug } from '@/data/loaders';
 import { generateMetadata as createMetadata } from '@/lib/metadata';
-import Breadcrumbs from '@/components/Breadcrumbs';
-import { FullCategoryList } from '@/components/LimitedCategoryList';
+import Breadcrumbs from '@/components/shared/Breadcrumbs';
+import { FullCategoryList } from '@/components/shared/LimitedCategoryList';
 
 interface TermPageProps {
   params: Promise<{ slug: string }>;
@@ -20,7 +20,7 @@ export default async function TermPage({ params }: TermPageProps) {
   const publishedDate = new Date(term.publishedAt).toLocaleDateString('he-IL');
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
       <Breadcrumbs
         items={[
           { label: "בית", href: "/" },
@@ -32,12 +32,12 @@ export default async function TermPage({ params }: TermPageProps) {
       <article className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4 text-right leading-tight">
+          <h1 className="text-4xl font-bold mb-4 text-right leading-tight text-foreground">
             {term.title}
           </h1>
 
           {/* Metadata */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-6">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground mb-6">
             {term.author && (
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -65,8 +65,8 @@ export default async function TermPage({ params }: TermPageProps) {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="bg-gradient-to-br from-white via-white to-cyan-100 dark:from-gray-900 dark:via-gray-900 dark:to-cyan-200/20 rounded-xl p-8 shadow-sm border">
-            <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200 whitespace-pre-wrap text-justify">
+          <div className="bg-gradient-to-br from-card via-card to-accent/10 dark:from-card dark:via-card dark:to-accent/5 rounded-xl p-8 shadow-sm border border-border">
+            <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap text-justify">
               {term.description}
             </p>
           </div>

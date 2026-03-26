@@ -10,12 +10,12 @@ interface BlogCommentSectionProps {
   blogSlug: string;
 }
 
-export default function BlogCommentSection({ 
+export default function BlogCommentSection({
   initialComments,
   blogSlug
 }: BlogCommentSectionProps) {
   return (
-    <CommentSection 
+    <CommentSection
       initialComments={initialComments}
       blogSlug={blogSlug}
       commentType="blog"
