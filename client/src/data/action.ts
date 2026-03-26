@@ -315,7 +315,7 @@ export async function submitContactAction(prevState: ContactState, formData: For
       return {
         ...prevState,
         strapiErrors: responseData.error?.message || "Unknown error",
-        errorMessage: "שגיאה בשליחת ההודעה. אנא נסה שוב.",
+        errorMessage: "שגיאה בשליחת ההודעה. אנא נסו שנית.",
         successMessage: "",
       };
     }
@@ -332,7 +332,7 @@ export async function submitContactAction(prevState: ContactState, formData: For
     return {
       ...prevState,
       strapiErrors: "",
-      errorMessage: "שגיאה בשליחת ההודעה. אנא נסה שוב.",
+      errorMessage: "שגיאה בשליחת ההודעה. אנא נסו שנית.",
       successMessage: "",
     };
   }
@@ -435,7 +435,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       return {
         ...prevState,
         strapiErrors: responseData.error?.message || "Unknown error",
-        errorMessage: "שגיאה בשליחת השאלה. אנא נסה שוב.",
+        errorMessage: "שגיאה בשליחת השאלה. אנא נסו שנית.",
         successMessage: "",
       };
     }
@@ -460,7 +460,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
     return {
       ...prevState,
       strapiErrors: "",
-      errorMessage: "שגיאה בשליחת השאלה. אנא נסה שוב.",
+      errorMessage: "שגיאה בשליחת השאלה. אנא נסו שנית.",
       successMessage: "",
     };
   }

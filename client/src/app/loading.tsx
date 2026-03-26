@@ -1,28 +1,32 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import HomeContentGridSkeleton from "@/components/home/HomeContentGridSkeleton";
 
 export default function Loading() {
-    return (
-        <div className="w-full space-y-6 p-4">
-            {/* Header skeleton */}
-            <div className="space-y-2">
-                <Skeleton className="h-8 w-1/2 bg-blue-200" />
-                <Skeleton className="h-4 w-3/4 bg-blue-200" />
-            </div>
-            
-            {/* Content skeleton */}
-            <div className="space-y-4">
-                <Skeleton className="h-40 w-full bg-blue-200 rounded-lg" />
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
-                    <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />
-                    <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />
-                    <Skeleton className="h-48 w-full bg-blue-200 rounded-lg" />
-                </div>
-            </div>
-            
-            {/* Loading indicator */}
-            <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 md:py-12">
+      {/* Hero skeleton */}
+      <div className="rounded-2xl bg-muted/50 px-6 py-16 text-center md:px-16 md:py-24">
+        <div className="mx-auto max-w-3xl space-y-6">
+          <Skeleton className="mx-auto h-12 w-3/4" />
+          <Skeleton className="mx-auto h-6 w-2/3" />
+          <Skeleton className="mx-auto h-14 w-48 rounded-lg" />
         </div>
-    );
+      </div>
+
+      {/* Content grid skeleton */}
+      <HomeContentGridSkeleton />
+
+      {/* Newsletter skeleton */}
+      <div className="mt-8 animate-pulse border-t border-border bg-muted/50 p-8 md:p-12">
+        <div className="mx-auto max-w-2xl text-center">
+          <Skeleton className="mx-auto mb-2 h-7 w-48" />
+          <Skeleton className="mx-auto mb-8 h-5 w-80" />
+          <div className="flex flex-col gap-4 md:flex-row">
+            <Skeleton className="h-14 flex-1 rounded-lg" />
+            <Skeleton className="h-14 w-32 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }

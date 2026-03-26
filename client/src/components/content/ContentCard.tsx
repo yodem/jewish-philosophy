@@ -1,0 +1,86 @@
+'use client';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { StrapiImage } from '@/components/shared/StrapiImage';
+
+export type ContentCardType = 'playlist' | 'video' | 'blog' | 'book' | 'article';
+
+export interface ContentCardProps {
+  image: string;
+  title: string;
+  description?: string;
+  episodeCount?: number;
+  className?: string;
+  type: ContentCardType;
+  isLarge?: boolean;
+}
+
+export default function ContentCard({
+  image,
+  title,
+  description,
+  episodeCount,
+  className,
+  type,
+  isLarge = false,
+}: ContentCardProps) {
+  const buttonTextMap: Record<ContentCardType, string> = {
+    playlist: 'צפו בסדרה',
+    video: 'צפו בסרטון',
+    blog: 'קראו עוד',
+    book: 'צפו בספר',
+    article: 'קראו את המאמר',
+  };
+
+  return (
+    <Card
+      className={cn(
+        "group flex flex-col w-full h-auto items-center transition-all duration-200 cursor-pointer overflow-hidden",
+        "bg-card rounded-xl shadow-md border border-border/50 hover:shadow-lg",
+        className
+      )}
+    >
+      {/* Image container with hover zoom */}
+      <div
+        className={cn(
+          "w-full overflow-hidden",
+          !isLarge && "relative aspect-[4/3]"
+        )}
+      >
+        {!isLarge ? (
+          <StrapiImage
+            src={image}
+            alt={title}
+            fill
+            quality={75}
+            objectFit={`${type === 'blog' ? 'cover' : 'contain'}`}
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            priority
+          />
+        ) : (
+          <StrapiImage
+            src={image}
+            alt={title}
+            width={800}
+            height={600}
+            quality={100}
+            objectFit="contain"
+            className="w-full h-auto object-contain"
+            priority
+          />
+        )}
+      </div>
+      <div className="flex flex-col items-center p-6 w-full">
+        <h3 className="font-bold mb-1 text-center text-lg line-clamp-2 text-foreground">{title}</h3>
+        {typeof episodeCount === 'number' && (
+          <div className="text-xs text-muted-foreground text-center mb-1">מספר פרקים - {episodeCount}</div>
+        )}
+        {description && (
+          <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">{description}</p>
+        )}
+        <Button className="mt-auto cursor-pointer w-full">{buttonTextMap[type]}</Button>
+      </div>
+    </Card>
+  );
+}

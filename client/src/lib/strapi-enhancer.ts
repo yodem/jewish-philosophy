@@ -140,7 +140,7 @@ export function generateRichDescription(
     video: `חלק מ-${contentStats.totalVideos} שיעורי וידאו`,
     playlist: `אחת מ-${contentStats.totalPlaylists} סדרות השיעורים`,
     writing: `חלק מ-${contentStats.totalWritings} כתבים וספרים`,
-    responsa: 'שאלות ותשובות מקצועיות מרבנים מובילים'
+    responsa: 'שאלות ותשובות בפילוסופיה יהודית'
   };
 
   const topicsText = popularTopics.slice(0, 3).join(', ');

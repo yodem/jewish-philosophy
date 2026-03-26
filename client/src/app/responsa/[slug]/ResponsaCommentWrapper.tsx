@@ -3,8 +3,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { getResponsaBySlug } from "@/data/loaders";
 import { Comment as CommentType } from "@/types";
-import CommentSection from "@/components/CommentSection";
-import SefariaLinker from "@/components/SefariaLinker";
+import CommentSection from "@/components/comments/CommentSection";
+import SefariaLinker from "@/components/shared/SefariaLinker";
 import { trackContentView } from "@/lib/analytics";
 
 interface ResponsaCommentWrapperProps {
@@ -14,15 +14,14 @@ interface ResponsaCommentWrapperProps {
   responsaTitle: string;
 }
 
-export default function ResponsaCommentWrapper({ 
-  initialComments, 
-  responsaSlug, 
-  slug, 
-  responsaTitle 
+export default function ResponsaCommentWrapper({
+  initialComments,
+  responsaSlug,
+  slug,
+  responsaTitle
 }: ResponsaCommentWrapperProps) {
   const [commentsData, setCommentsData] = useState<CommentType[]>(initialComments);
 
-  // Refresh comments by re-fetching the responsa with populated comments
   const refreshComments = useCallback(async () => {
     try {
       const data = await getResponsaBySlug(slug);
@@ -34,25 +33,22 @@ export default function ResponsaCommentWrapper({
     }
   }, [slug]);
 
-  // Track responsa view when component mounts (client-side analytics)
   useEffect(() => {
     trackContentView(responsaTitle, 'responsa', 'שלום צדיק');
   }, [responsaTitle]);
 
-  // Sync with initial comments when they change
   useEffect(() => {
     setCommentsData(initialComments);
   }, [initialComments]);
 
   return (
     <>
-      <CommentSection 
+      <CommentSection
         initialComments={commentsData}
         responsaSlug={responsaSlug}
         commentType="responsa"
         onCommentsRefresh={refreshComments}
       />
-      {/* Sefaria Linker after comments; re-applies when comments are loaded/refreshed */}
       <SefariaLinker reRunDeps={[commentsData]} />
     </>
   );

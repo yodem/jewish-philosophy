@@ -1,5 +1,6 @@
-import Navbar from '../components/Navbar';
-import Banner from '../components/Banner';
+import Navbar from '@/components/layout/Navbar';
+import Banner from '@/components/layout/Banner';
+import Footer from '@/components/layout/Footer';
 import { getGlobalSettings, getBanner } from "@/data/loaders";
 import type { Banner as BannerType } from "@/types";
 
@@ -10,6 +11,7 @@ export default async function LayoutShell() {
   ]);
 
   const header = globalRes?.data?.header;
+  const footer = globalRes?.data?.footer;
   const banner: BannerType | null = bannerRes?.data;
 
   return (
