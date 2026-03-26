@@ -9,9 +9,6 @@ import { Block } from '@/types';
 import { generateMetadata } from '@/lib/metadata';
 import Breadcrumbs from '@/components/Breadcrumbs';
 
-// Force dynamic rendering to prevent build-time data fetching issues
-export const dynamic = 'force-dynamic';
-
 export const metadata: Metadata = generateMetadata({
   title: 'חיפוש | שלום צדיק - פילוסופיה דתית',
   description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
