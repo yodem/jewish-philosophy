@@ -16,9 +16,6 @@ import ViewCountTracker from "@/components/ViewCountTracker";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-// Force dynamic rendering to prevent build-time data fetching issues
-export const dynamic = 'force-dynamic';
-
 interface VideoPageProps {
   params: Promise<{ playlistSlug: string; videoSlug: string }>;
 }
