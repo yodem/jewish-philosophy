@@ -12,9 +12,6 @@ import PlaylistViewTracker from "@/components/PlaylistViewTracker";
 import { JsonLd } from "@/lib/json-ld";
 import { CreativeWorkSeries, ItemList, WithContext } from "schema-dts";
 
-// Force dynamic rendering to prevent build-time data fetching issues
-export const dynamic = 'force-dynamic';
-
 interface PlaylistPageProps {
   params: Promise<{ playlistSlug: string }>;
 }

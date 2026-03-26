@@ -1,8 +1,5 @@
 import './globals.css';
-import Navbar from '../components/Navbar';
-import Banner from '../components/Banner';
-import { getGlobalSettings, getBanner } from "@/data/loaders";
-import type { Banner as BannerType } from "@/types";
+import LayoutShell from './LayoutShell';
 import { Suspense } from 'react';
 import { Card } from "@/components/ui/card";
 import Providers from './providers';
@@ -73,15 +70,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const [globalRes, bannerRes] = await Promise.all([
-    getGlobalSettings(),
-    getBanner(),
-  ]);
-  
-  const header = globalRes?.data?.header;
-  const banner: BannerType | null = bannerRes?.data;
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const logoUrl = `${siteUrl}logo.png`;
 
@@ -197,13 +186,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <div className="animate-pulse h-8 w-32 bg-gray-700 rounded" />
             </nav>
           }>
-            <Navbar header={header} />
+            <LayoutShell />
           </Suspense>
-
-          {/* Banner below navbar - only show if banner exists and is active */}
-          {banner && banner.isActive && (
-            <Banner banner={banner} />
-          )}
 
           <main className="container mx-auto px-1 sm:px-4 py-4 sm:py-8 flex flex-col align-center">
             <Card className="p-2 sm:p-6 bg-white/95 shadow-lg border-0 flex flex-col items-center overflow-hidden">
