@@ -30,18 +30,27 @@ const getStrapiHeaders = () => {
   };
 };
 
+async function fetchAllPages(baseUrl: string) {
+  let items: any[] = [];
+  let pageToken = '';
+  do {
+    const sep = baseUrl.includes('?') ? '&' : '?';
+    const url = pageToken ? `${baseUrl}${sep}pageToken=${pageToken}` : baseUrl;
+    const res = await fetch(url);
+    const data: any = await res.json();
+    items = items.concat(data.items || []);
+    pageToken = data.nextPageToken || '';
+    if (pageToken) await delay(200);
+  } while (pageToken);
+  return items;
+}
+
 async function fetchPlaylists() {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=200`;
-  const res = await fetch(url);
-  const data: any = await res.json();
-  return data.items || [];
+  return fetchAllPages(`https://youtube.googleapis.com/youtube/v3/playlists?key=${YOUTUBE_API_KEY}&part=snippet&channelId=${CHANNEL_ID}&maxResults=50`);
 }
 
 async function fetchPlaylistItems(playlistId: string) {
-  const url = `https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=200`;
-  const res = await fetch(url);
-  const data: any = await res.json();
-  return data.items || [];
+  return fetchAllPages(`https://youtube.googleapis.com/youtube/v3/playlistItems?key=${YOUTUBE_API_KEY}&part=snippet,contentDetails&playlistId=${playlistId}&maxResults=50`);
 }
 
 async function createOrUpdatePlaylist(playlist: any) {
@@ -82,6 +91,14 @@ async function createOrUpdatePlaylist(playlist: any) {
   const data: any = await res.json();
   if (!data.data) {
     console.error('Playlist creation error:', data);
+  } else {
+    // Publish the playlist (Strapi v5 creates as draft by default)
+    const docId = data.data.documentId || data.data.id;
+    console.log(`Publishing playlist: ${playlist.snippet.title} (documentId: ${docId})`);
+    await fetch(`${STRAPI_URL}/playlists/${docId}/actions/publish`, {
+      method: 'POST',
+      headers: getStrapiHeaders(),
+    });
   }
   
   // Add small delay after playlist creation
@@ -174,8 +191,15 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
   const data: any = await res.json();
   if (!data.data) {
     console.error('Video operation error:', data);
+  } else {
+    // Publish the video (Strapi v5 creates as draft by default)
+    const docId = data.data.documentId || data.data.id;
+    await fetch(`${STRAPI_URL}/videos/${docId}/actions/publish`, {
+      method: 'POST',
+      headers: getStrapiHeaders(),
+    });
   }
-  
+
   // Add small delay after video creation
   await delay(100);
   return data.data;
@@ -184,36 +208,49 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
 async function verifyRelations() {
   console.log('\n=== Verifying Relations ===');
 
-  // Get all playlists with their videos
-  const playlistsRes = await fetch(`${STRAPI_URL}/playlists?populate=*&pagination[limit]=999`, {
-    headers: getStrapiHeaders()
-  });
-  const playlistsData: any = await playlistsRes.json();
-  
-  for (const playlist of playlistsData.data || []) {
-    const videoCount = playlist.videos?.length || 0;
+  // Get all playlists with video counts using pagination
+  let page = 1;
+  let playlists: any[] = [];
+  while (true) {
+    const res = await fetch(`${STRAPI_URL}/playlists?populate[videos][count]=true&pagination[page]=${page}&pagination[pageSize]=100`, {
+      headers: getStrapiHeaders()
+    });
+    const data: any = await res.json();
+    playlists = playlists.concat(data.data || []);
+    if (page >= (data.meta?.pagination?.pageCount || 1)) break;
+    page++;
+  }
+
+  for (const playlist of playlists) {
+    const videoCount = playlist.videos?.count ?? playlist.videos?.length ?? 0;
     console.log(`Playlist "${playlist.title}" has ${videoCount} videos`);
-    
     if (videoCount === 0) {
       console.warn(`⚠️  WARNING: Playlist "${playlist.title}" has no videos!`);
     }
   }
-  
-  // Get all videos with their playlists
-  const videosRes = await fetch(`${STRAPI_URL}/videos?populate=*&pagination[limit]=999`, {
-    headers: getStrapiHeaders()
-  });
-  const videosData: any = await videosRes.json();
-  
+
+  // Get total video count and orphaned videos using pagination
+  let totalVideos = 0;
   let orphanedVideos = 0;
-  for (const video of videosData.data || []) {
-    if (!video.playlist) {
-      orphanedVideos++;
-      console.warn(`⚠️  WARNING: Video "${video.title}" has no playlist!`);
+  page = 1;
+  while (true) {
+    const res = await fetch(`${STRAPI_URL}/videos?populate=playlist&pagination[page]=${page}&pagination[pageSize]=100`, {
+      headers: getStrapiHeaders()
+    });
+    const data: any = await res.json();
+    for (const video of data.data || []) {
+      totalVideos++;
+      if (!video.playlist) {
+        orphanedVideos++;
+        console.warn(`⚠️  WARNING: Video "${video.title}" has no playlist!`);
+      }
     }
+    if (page >= (data.meta?.pagination?.pageCount || 1)) break;
+    page++;
   }
-  
-  console.log(`\nTotal videos: ${videosData.data?.length || 0}`);
+
+  console.log(`\nTotal playlists: ${playlists.length}`);
+  console.log(`Total videos: ${totalVideos}`);
   console.log(`Orphaned videos (no playlist): ${orphanedVideos}`);
   console.log('=== End Verification ===\n');
 }
