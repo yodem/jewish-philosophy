@@ -12,7 +12,7 @@ export const metadata: Metadata = generateMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="flex-1 bg-gradient-to-br from-navbar to-navbar/80 py-12 px-4 md:py-20">
+    <div className="flex-1 bg-navbar py-12 px-4 md:py-20">
       <div className="max-w-4xl mx-auto">
         {/* Contact Card */}
         <div className="bg-card rounded-xl shadow-lg overflow-hidden mb-12">

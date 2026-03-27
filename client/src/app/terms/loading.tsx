@@ -4,7 +4,7 @@ export default function TermsLoading() {
   return (
     <div className="w-full flex flex-col items-center overflow-hidden">
       {/* Hero skeleton */}
-      <section className="w-full bg-gradient-to-br from-navbar to-navbar/80 py-16 md:py-24 px-4 text-center">
+      <section className="w-full bg-gradient-to-br from-navbar to-navbar py-16 md:py-24 px-4 text-center">
         <div className="max-w-6xl mx-auto">
           <Skeleton className="h-4 w-32 mx-auto mb-6 bg-primary-foreground/20" />
           <Skeleton className="h-12 w-80 mx-auto mb-4 bg-primary-foreground/20" />
