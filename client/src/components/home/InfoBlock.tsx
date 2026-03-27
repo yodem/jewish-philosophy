@@ -8,7 +8,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
 
   return (
     <section
-      className={`flex flex-col items-center gap-6 rounded-2xl border border-border bg-card p-6 md:gap-10 md:p-8 ${
+      className={`flex flex-col items-center gap-6 rounded-lg border border-border bg-card p-6 md:gap-10 md:p-8 ${
         reversed ? "md:flex-row-reverse" : "md:flex-row"
       }`}
     >
@@ -26,10 +26,10 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
       )}
 
       <div className="flex flex-1 flex-col justify-center gap-3">
-        <h2 className="text-xl font-bold text-foreground md:text-2xl">
+        <h2 className="text-2xl font-bold text-foreground md:text-3xl">
           {heading}
         </h2>
-        <div className="prose prose-sm max-w-none text-muted-foreground md:prose-base">
+        <div className="prose prose-base max-w-none text-muted-foreground md:prose-lg">
           <ReactMarkdown
             components={{
               a: ({ children, href }) => (

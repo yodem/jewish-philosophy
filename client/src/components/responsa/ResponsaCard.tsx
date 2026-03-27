@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LimitedCategoryList } from "@/components/shared/LimitedCategoryList";
 import { Responsa } from "@/types";
 import { MessageCircle, Eye } from "lucide-react";
+import { formatDate } from "@/lib/date-utils";
 
 interface ResponsaCardProps {
   responsa: Responsa;
@@ -12,7 +13,7 @@ export default function ResponsaCard({ responsa, className }: ResponsaCardProps)
   return (
     <Link
       href={`/responsa/${responsa.slug}`}
-      className={`block bg-card rounded-lg border border-border p-4 md:p-6 hover:shadow-lg transition-shadow duration-200 ${className || ""}`}
+      className={`block bg-card rounded-lg border border-border p-4 md:p-6 hover:shadow-md transition-shadow duration-150 ${className || ""}`}
     >
       <h3 className="text-lg font-semibold text-foreground line-clamp-2">
         {responsa.title}
@@ -36,7 +37,7 @@ export default function ResponsaCard({ responsa, className }: ResponsaCardProps)
           </span>
         )}
         {responsa.publishedAt && (
-          <span>{new Date(responsa.publishedAt).toLocaleDateString('he-IL')}</span>
+          <span>{formatDate(responsa.publishedAt)}</span>
         )}
       </div>
     </Link>

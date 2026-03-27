@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 md:py-12">
       {/* Hero skeleton */}
-      <div className="rounded-2xl bg-muted/50 px-6 py-16 text-center md:px-16 md:py-24">
+      <div className="rounded-lg bg-muted/50 px-6 py-16 text-center md:px-16 md:py-24">
         <div className="mx-auto max-w-3xl space-y-6">
           <Skeleton className="mx-auto h-12 w-3/4" />
           <Skeleton className="mx-auto h-6 w-2/3" />

@@ -58,7 +58,7 @@ const Banner: React.FC<BannerProps> = ({ banner }) => {
   );
 
   return (
-    <div className="w-full bg-gradient-to-r from-primary to-accent border-b border-accent/40 shadow-sm">
+    <div className="w-full bg-gradient-to-r from-navbar to-accent border-b border-accent/40 shadow-sm">
       {banner.link ? (
         <Link
           href={banner.link}

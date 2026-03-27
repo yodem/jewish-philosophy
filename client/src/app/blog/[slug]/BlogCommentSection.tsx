@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Comment as CommentType } from "@/types";
-import CommentSection from "@/components/CommentSection";
+import CommentSection from "@/components/comments/CommentSection";
 import { getBlogCommentsBySlug } from "@/data/loaders";
 
 interface BlogCommentSectionProps {

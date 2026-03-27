@@ -18,7 +18,7 @@ export default function DonateButton({
   className = ""
 }: DonateButtonProps) {
   return (
-    <Card className={`w-full max-w-xl mx-auto px-2 py-8 bg-card rounded-2xl shadow-lg flex flex-col items-center gap-6 p-6 mt-8 bg-card border border-destructive/20 ${className}`}>
+    <Card className={`w-full max-w-xl mx-auto px-2 py-8 bg-card rounded-lg shadow-md flex flex-col items-center gap-6 p-6 mt-8 border border-destructive/20 ${className}`}>
       <CardContent className="w-full flex flex-col items-center gap-4 px-0">
         <div className="flex items-center justify-center gap-2">
           <Heart className="w-6 h-6 text-destructive fill-destructive" />

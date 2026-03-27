@@ -136,8 +136,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="he" dir="rtl" className={`overflow-x-hidden ${rubik.className}`}>
+    <html lang="he" dir="rtl" className={`overflow-x-hidden ${rubik.className}`} suppressHydrationWarning>
       <head>
+        {/* Anti-flash: apply dark class before first paint to prevent theme flicker */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s!=='light'&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
+
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
         <JsonLd data={siteNavSchema} />
@@ -146,6 +149,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="googlebot" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="preconnect" href={`${process.env.NEXT_PUBLIC_STRAPI_BASE_URL?.replace('strapiapp.com', 'media.strapiapp.com') || ''}`} />
         <link rel="dns-prefetch" href="//www.youtube.com" />
         <link rel="dns-prefetch" href="//i.ytimg.com" />
 

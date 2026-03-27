@@ -12,10 +12,13 @@ export default function TermCard({ term, className }: TermCardProps) {
   return (
     <Link href={`/terms/${term.slug}`}>
       <Card
-        className={`h-full flex flex-col bg-card hover:shadow-lg transition-shadow duration-200 cursor-pointer ${className || ""}`}
+        className={`h-full flex flex-col bg-card border-border hover:shadow-md hover:border-ct-term/40 transition-shadow duration-150 cursor-pointer overflow-hidden ${className || ""}`}
       >
+        {/* Pink accent bar at top */}
+        <div className="h-1 w-full bg-ct-term" />
+
         <CardHeader className="flex-shrink-0 pb-3">
-          <CardTitle className="text-lg font-semibold text-right leading-tight line-clamp-2">
+          <CardTitle className="text-xl font-bold text-right leading-tight line-clamp-2 text-foreground">
             {term.title}
           </CardTitle>
         </CardHeader>

@@ -23,7 +23,7 @@ export default function YoutubePlayer({
     <div className="flex flex-col gap-4 w-full">
       <div
         className={cn(
-          "w-full rounded-xl sm:rounded-2xl shadow-lg overflow-hidden relative",
+          "w-full rounded-lg shadow-lg overflow-hidden relative",
           className
         )}
       >
