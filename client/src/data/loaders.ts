@@ -160,8 +160,9 @@ export async function getPlaylistBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
+  console.log('[getPlaylistBySlug]', JSON.stringify({ slug, url: url.href, hasData: !!res?.data, dataLength: res?.data?.length, status: res?.status, statusText: res?.statusText }));
   if (!res?.data || res.data.length === 0) return null;
-  
+
   const item = res.data?.[0]
   return item
 }
