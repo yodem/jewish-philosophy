@@ -20,7 +20,7 @@ export default async function PlaylistsPage() {
   return (
     <div className="w-full flex flex-col items-center justify-center overflow-hidden">
       {/* Hero section */}
-      <section className="w-full bg-gradient-to-br from-navbar to-navbar/80 py-16 md:py-24 px-4 text-center">
+      <section className="w-full bg-gradient-to-br from-navbar to-navbar py-16 md:py-24 px-4 text-center">
         <div className="container mx-auto">
           <Breadcrumbs
             items={[

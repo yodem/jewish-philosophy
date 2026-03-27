@@ -9,7 +9,7 @@ export default function HeroSection({ data }: { data?: HeroSectionProps }) {
 
   return (
     <section
-      className="relative overflow-hidden rounded-lg bg-gradient-to-bl from-navbar via-navbar to-navbar/90 px-6 py-16 text-center md:px-16 md:py-24"
+      className="relative overflow-hidden rounded-lg bg-gradient-to-bl from-navbar via-navbar to-navbar px-6 py-16 text-center md:px-16 md:py-24"
       aria-label="באנר ראשי"
     >
       {/* Background image from CMS (decorative, faded) */}
