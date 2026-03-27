@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { StrapiImage } from '@/components/StrapiImage';
+import { StrapiImage } from '@/components/shared/StrapiImage';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -22,8 +22,8 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
     <Link href={`/playlists/${playlist.slug}`} className="no-underline h-full w-full flex items-center justify-center">
       <Card
         className={cn(
-          'group flex flex-col w-full h-auto items-center transition-all duration-200 cursor-pointer overflow-hidden',
-          'bg-card rounded-xl shadow-md border border-border/50 hover:shadow-lg',
+          'group flex flex-col w-full h-auto items-center transition-shadow cursor-pointer overflow-hidden',
+          'bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md',
           className
         )}
       >
@@ -46,7 +46,7 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
           {/* Play icon overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
             <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-              <svg className="w-6 h-6 text-purple-600 ms-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-6 h-6 text-ct-series ms-0.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
             </div>

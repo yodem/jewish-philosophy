@@ -7,7 +7,7 @@ export default function HomeContentGridSkeleton() {
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="rounded-xl border border-border bg-muted/30 p-6"
+            className="rounded-lg border border-border bg-muted/30 p-6"
           >
             {/* Icon + Title */}
             <div className="mb-6 flex items-center gap-4">

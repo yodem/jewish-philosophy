@@ -36,8 +36,8 @@ export default function ContentCard({
   return (
     <Card
       className={cn(
-        "group flex flex-col w-full h-auto items-center transition-all duration-200 cursor-pointer overflow-hidden",
-        "bg-card rounded-xl shadow-md border border-border/50 hover:shadow-lg",
+        "group flex flex-col w-full h-auto items-center transition-shadow cursor-pointer overflow-hidden",
+        "bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md",
         className
       )}
     >

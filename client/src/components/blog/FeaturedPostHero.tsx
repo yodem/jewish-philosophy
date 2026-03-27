@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { StrapiImage } from '@/components/StrapiImage';
+import { StrapiImage } from '@/components/shared/StrapiImage';
 import { formatDate } from '@/lib/date-utils';
 import type { Blog } from '@/types';
 
@@ -17,7 +17,7 @@ export default function FeaturedPostHero({ blog }: FeaturedPostHeroProps) {
 
   return (
     <section className="mb-16">
-      <div className="bg-card rounded-xl overflow-hidden shadow-lg border border-border grid md:grid-cols-2">
+      <div className="bg-card rounded-lg overflow-hidden shadow-md border border-border grid md:grid-cols-2">
         {/* Image column */}
         <div className="relative h-64 md:h-full min-h-[400px] overflow-hidden">
           {imageUrl ? (
@@ -47,7 +47,7 @@ export default function FeaturedPostHero({ blog }: FeaturedPostHeroProps) {
               {blog.categories.map((category) => (
                 <span
                   key={category.id}
-                  className="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300 text-xs font-bold rounded-full"
+                  className="px-2.5 py-0.5 bg-ct-blog/15 text-ct-blog text-xs font-semibold rounded"
                 >
                   {category.name}
                 </span>
@@ -77,7 +77,7 @@ export default function FeaturedPostHero({ blog }: FeaturedPostHeroProps) {
           {/* CTA Button */}
           <Link
             href={`/blog/${blog.slug}`}
-            className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all w-fit"
+            className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground font-bold rounded hover:bg-primary/90 transition-colors duration-150 w-fit"
           >
             קראו עוד
             <svg

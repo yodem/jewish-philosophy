@@ -17,7 +17,7 @@ function BlogGridSkeleton({ count = 6 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="bg-card rounded-xl overflow-hidden shadow-md border border-border"
+          className="bg-card rounded-lg overflow-hidden shadow-sm border border-border"
         >
           <div className="h-48 bg-muted animate-pulse" />
           <div className="p-6 space-y-3">

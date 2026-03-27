@@ -31,8 +31,9 @@ export default async function TermPage({ params }: TermPageProps) {
 
       <article className="max-w-4xl mx-auto">
         {/* Header */}
-        <header className="mb-8 text-center">
-          <h1 className="text-4xl font-bold mb-4 text-right leading-tight text-foreground">
+        <header className="mb-8 text-right border-r-4 border-ct-term pr-4">
+          <div className="inline-flex items-center gap-2 bg-ct-term/15 text-ct-term px-2.5 py-0.5 rounded text-xs font-semibold mb-3">מושג</div>
+          <h1 className="text-4xl font-bold mb-4 leading-tight text-foreground">
             {term.title}
           </h1>
 
@@ -65,7 +66,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="bg-gradient-to-br from-card via-card to-accent/10 dark:from-card dark:via-card dark:to-accent/5 rounded-xl p-8 shadow-sm border border-border">
+          <div className="rounded-lg p-8 shadow-sm border border-ct-term/30 bg-ct-term/5 border-r-4 border-r-ct-term">
             <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap text-justify">
               {term.description}
             </p>

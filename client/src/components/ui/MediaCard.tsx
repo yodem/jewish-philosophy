@@ -3,7 +3,7 @@
 import { Card } from './card';
 import { Button } from './button';
 import { cn } from '@/lib/utils';
-import { StrapiImage } from '../StrapiImage';
+import { StrapiImage } from '../shared/StrapiImage';
 
 export type MediaCardType = 'playlist' | 'video' | 'blog' | 'book' | 'article';
 

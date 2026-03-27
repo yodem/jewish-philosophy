@@ -13,13 +13,13 @@ export default function WritingCard({ writing, className }: WritingCardProps) {
   return (
     <Link
       href={`/writings/${writing.slug}`}
-      className={`block bg-card rounded-xl border border-border p-6 hover:shadow-lg transition-shadow duration-200 ${className || ""}`}
+      className={`block bg-card rounded-lg border border-border p-6 hover:shadow-md transition-shadow duration-150 ${className || ""}`}
     >
       <div className="flex items-start gap-3 mb-3">
         <div className={`w-10 h-10 rounded flex items-center justify-center shrink-0 ${
           isBook
-            ? 'bg-blue-500/15 text-blue-600 dark:bg-blue-400/20 dark:text-blue-300'
-            : 'bg-teal-500/15 text-teal-600 dark:bg-teal-400/20 dark:text-teal-300'
+            ? 'bg-ct-video/15 text-ct-video'
+            : 'bg-ct-writing/15 text-ct-writing'
         }`}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             {isBook ? (
@@ -35,8 +35,8 @@ export default function WritingCard({ writing, className }: WritingCardProps) {
           </h3>
           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
             isBook
-              ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-              : 'bg-teal-500/15 text-teal-600 dark:bg-teal-400/20 dark:text-teal-300'
+              ? 'bg-ct-video/15 text-ct-video'
+              : 'bg-ct-writing/15 text-ct-writing'
           }`}>
             {isBook ? 'ספר' : 'מאמר'}
           </span>

@@ -62,7 +62,7 @@ export function StrapiImage({
 
     // Enhanced CSS classes for better responsive behavior
     const getResponsiveClasses = () => {
-        const baseClasses = "transition-all duration-300";
+        const baseClasses = "";
         
         switch (aspectRatio) {
             case "square":
@@ -153,9 +153,9 @@ export function generateResponsiveImageSizes(
 export function generatePlaceholder(width: number, height: number): string {
     return `data:image/svg+xml;base64,${Buffer.from(
         `<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100%" height="100%" fill="#f3f4f6"/>
-            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14" 
-                  text-anchor="middle" dy=".3em" fill="#9ca3af">טוען תמונה...</text>
+            <rect width="100%" height="100%" fill="oklch(0.92 0.005 265)"/>
+            <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14"
+                  text-anchor="middle" dy=".3em" fill="oklch(0.55 0.02 265)">טוען תמונה...</text>
         </svg>`
     ).toString('base64')}`;
 }

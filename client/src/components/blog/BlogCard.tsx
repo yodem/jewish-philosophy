@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { StrapiImage } from '@/components/StrapiImage';
+import { StrapiImage } from '@/components/shared/StrapiImage';
 import { cn } from '@/lib/utils';
 import type { Blog } from '@/types';
 import { formatDate } from '@/lib/date-utils';
@@ -23,8 +23,8 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
   return (
     <article
       className={cn(
-        'bg-card rounded-xl overflow-hidden shadow-md border border-border',
-        'hover:shadow-lg transition-all group',
+        'bg-card rounded-lg overflow-hidden shadow-sm border border-border flex flex-col',
+        'hover:shadow-md transition-shadow group',
         className
       )}
     >
@@ -50,7 +50,7 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
       </Link>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-1">
         {/* Category pills */}
         {blog.categories && blog.categories.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
@@ -82,7 +82,7 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
         {/* Read more link */}
         <Link
           href={`/blog/${blog.slug}`}
-          className="text-accent font-bold text-sm hover:underline inline-flex items-center"
+          className="text-accent font-bold text-sm inline-flex items-center mt-auto pt-4 gap-1 transition-all duration-200 hover:gap-2 hover:opacity-80"
         >
           המשיכו לקרוא
           <svg

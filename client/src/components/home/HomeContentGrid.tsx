@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Video, FileText, HelpCircle, BookOpen, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import {
   getPlaylistsPaginated,
   getBlogsPaginated,
@@ -12,12 +12,11 @@ import type { Playlist, Blog, Responsa, Writing } from "@/types";
 interface ContentSection {
   title: string;
   href: string;
-  icon: React.ReactNode;
   color: {
     border: string;
     dot: string;
     link: string;
-    iconBg: string;
+    headingBorder: string;
   };
 }
 
@@ -25,45 +24,41 @@ const SECTIONS: ContentSection[] = [
   {
     title: "סדרות שיעורים",
     href: "/playlists",
-    icon: <Video className="size-6" />,
     color: {
-      border: "hover:border-blue-200 dark:hover:border-blue-800",
-      dot: "bg-blue-400",
-      link: "text-blue-700 dark:text-blue-400",
-      iconBg: "bg-blue-600",
+      border: "hover:border-ct-video/40",
+      dot: "bg-ct-video",
+      link: "text-ct-video",
+      headingBorder: "border-ct-video",
     },
   },
   {
     title: "מהבלוג",
     href: "/blog",
-    icon: <FileText className="size-6" />,
     color: {
-      border: "hover:border-emerald-200 dark:hover:border-emerald-800",
-      dot: "bg-emerald-400",
-      link: "text-emerald-700 dark:text-emerald-400",
-      iconBg: "bg-emerald-600",
+      border: "hover:border-ct-blog/40",
+      dot: "bg-ct-blog",
+      link: "text-ct-blog",
+      headingBorder: "border-ct-blog",
     },
   },
   {
     title: "שאלות ותשובות",
     href: "/responsa",
-    icon: <HelpCircle className="size-6" />,
     color: {
-      border: "hover:border-orange-200 dark:hover:border-orange-800",
-      dot: "bg-orange-400",
-      link: "text-orange-700 dark:text-orange-400",
-      iconBg: "bg-orange-500",
+      border: "hover:border-ct-responsa/40",
+      dot: "bg-ct-responsa",
+      link: "text-ct-responsa",
+      headingBorder: "border-ct-responsa",
     },
   },
   {
     title: "כתבים",
     href: "/writings",
-    icon: <BookOpen className="size-6" />,
     color: {
-      border: "hover:border-teal-200 dark:hover:border-teal-800",
-      dot: "bg-teal-400",
-      link: "text-teal-700 dark:text-teal-400",
-      iconBg: "bg-teal-600",
+      border: "hover:border-ct-writing/40",
+      dot: "bg-ct-writing",
+      link: "text-ct-writing",
+      headingBorder: "border-ct-writing",
     },
   },
 ];
@@ -89,9 +84,9 @@ export default async function HomeContentGrid() {
               <li key={playlist.id}>
                 <Link
                   href={`/playlists/${playlist.slug}`}
-                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-blue-600 dark:hover:text-blue-400"
+                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-video"
                 >
-                  <span className="size-1.5 shrink-0 rounded-full bg-blue-400" />
+                  <span className="size-1.5 shrink-0 rounded-full bg-ct-video" />
                   <span className="font-medium">{playlist.title}</span>
                 </Link>
               </li>
@@ -106,16 +101,10 @@ export default async function HomeContentGrid() {
               <li key={blog.id}>
                 <Link
                   href={`/blog/${blog.slug}`}
-                  className="group/item flex flex-col gap-1"
+                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-blog"
                 >
-                  {blog.publishedAt && (
-                    <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                      {formatDate(blog.publishedAt)}
-                    </span>
-                  )}
-                  <span className="font-bold text-foreground transition-colors group-hover/item:text-emerald-700 dark:group-hover/item:text-emerald-400">
-                    {blog.title}
-                  </span>
+                  <span className="size-1.5 shrink-0 rounded-full bg-ct-blog" />
+                  <span className="font-medium">{blog.title}</span>
                 </Link>
               </li>
             ))}
@@ -126,15 +115,13 @@ export default async function HomeContentGrid() {
         <ContentCard section={SECTIONS[2]}>
           <ul className="mb-8 space-y-4">
             {responsas.map((responsa) => (
-              <li
-                key={responsa.id}
-                className="rounded border-r-4 border-orange-400 bg-card p-3 font-medium text-foreground/80 shadow-sm"
-              >
+              <li key={responsa.id}>
                 <Link
                   href={`/responsa/${responsa.slug}`}
-                  className="transition-colors hover:text-orange-600 dark:hover:text-orange-400"
+                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-responsa"
                 >
-                  {responsa.title}
+                  <span className="size-1.5 shrink-0 rounded-full bg-ct-responsa" />
+                  <span className="font-medium">{responsa.title}</span>
                 </Link>
               </li>
             ))}
@@ -148,15 +135,10 @@ export default async function HomeContentGrid() {
               <li key={writing.id}>
                 <Link
                   href={`/writings/${writing.slug}`}
-                  className="group/file flex items-center justify-between"
+                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-writing"
                 >
-                  <span className="font-bold text-foreground transition-colors group-hover/file:text-teal-700 dark:group-hover/file:text-teal-400">
-                    {writing.title}
-                  </span>
-                  <FileText
-                    className="size-5 text-teal-600/50"
-                    aria-hidden="true"
-                  />
+                  <span className="size-1.5 shrink-0 rounded-full bg-ct-writing" />
+                  <span className="font-medium">{writing.title}</span>
                 </Link>
               </li>
             ))}
@@ -176,23 +158,17 @@ function ContentCard({
 }) {
   return (
     <div
-      className={`group rounded-xl border border-border bg-muted/30 p-6 transition-all hover:shadow-md ${section.color.border}`}
+      className={`group rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-md ${section.color.border}`}
     >
-      <div className="mb-6 flex items-center gap-4">
-        <div
-          className={`flex size-12 items-center justify-center rounded-lg text-white shadow-inner ${section.color.iconBg}`}
-          aria-hidden="true"
-        >
-          {section.icon}
-        </div>
-        <h2 className="text-2xl font-bold text-foreground">{section.title}</h2>
+      <div className={`mb-6 border-r-4 pr-3 ${section.color.headingBorder}`}>
+        <h2 className="text-2xl font-bold text-foreground leading-snug">{section.title}</h2>
       </div>
 
       {children}
 
       <Link
         href={section.href}
-        className={`inline-flex items-center font-bold transition-all hover:gap-2 ${section.color.link}`}
+        className={`inline-flex items-center gap-1 font-bold transition-colors duration-150 hover:opacity-80 ${section.color.link}`}
       >
         צפו בהכל
         <ChevronLeft className="ms-1 size-4" aria-hidden="true" />

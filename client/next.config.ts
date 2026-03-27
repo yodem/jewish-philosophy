@@ -16,7 +16,7 @@ const strapiRemotePattern = {
 const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       strapiRemotePattern,
       // Add specific pattern for Strapi Cloud media URLs
@@ -96,6 +96,15 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600',
+          },
+        ],
+      },
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
           },
         ],
       },

@@ -29,12 +29,12 @@ function getCategoryColorClass(category: Category): string {
 
 export const CONTENT_TYPE_COLORS: Record<string, string> = {
   all: "bg-muted text-muted-foreground",
-  video: "bg-blue-500/15 text-blue-600 dark:bg-blue-400/20 dark:text-blue-300",
-  playlist: "bg-purple-500/15 text-purple-600 dark:bg-purple-400/20 dark:text-purple-300",
-  blog: "bg-green-500/15 text-green-600 dark:bg-green-400/20 dark:text-green-300",
-  responsa: "bg-orange-500/15 text-orange-600 dark:bg-orange-400/20 dark:text-orange-300",
-  writing: "bg-teal-500/15 text-teal-600 dark:bg-teal-400/20 dark:text-teal-300",
-  term: "bg-pink-500/15 text-pink-600 dark:bg-pink-400/20 dark:text-pink-300",
+  video: "bg-ct-video/15 text-ct-video",
+  playlist: "bg-ct-series/15 text-ct-series",
+  blog: "bg-ct-blog/15 text-ct-blog",
+  responsa: "bg-ct-responsa/15 text-ct-responsa",
+  writing: "bg-ct-writing/15 text-ct-writing",
+  term: "bg-ct-term/15 text-ct-term",
   person: "bg-amber-500/15 text-amber-600 dark:bg-amber-400/20 dark:text-amber-300",
   genre: "bg-yellow-500/15 text-yellow-600 dark:bg-yellow-400/20 dark:text-yellow-300",
   general: "bg-muted text-muted-foreground",

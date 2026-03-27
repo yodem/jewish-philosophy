@@ -19,7 +19,7 @@ function VideoGridSkeleton({ count = 6 }: { count?: number }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="bg-card rounded-xl overflow-hidden shadow-sm border border-border">
+        <div key={i} className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
           <div className="aspect-[4/3] bg-muted animate-pulse" />
           <div className="p-6 space-y-3">
             <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />

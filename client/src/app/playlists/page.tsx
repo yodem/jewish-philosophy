@@ -1,9 +1,9 @@
 import { getPlaylistsPaginated } from "@/data/loaders";
 import type { Playlist } from "@/types";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import PlaylistsPageClient from "./PlaylistsPageClient";
 
 export const metadata: Metadata = generateMetadata({
@@ -20,19 +20,19 @@ export default async function PlaylistsPage() {
   return (
     <div className="w-full flex flex-col items-center justify-center overflow-hidden">
       {/* Hero section */}
-      <section className="w-full bg-gradient-to-br from-primary to-primary/80 py-16 md:py-24 px-4 text-center">
+      <section className="w-full bg-gradient-to-br from-navbar to-navbar/80 py-16 md:py-24 px-4 text-center">
         <div className="container mx-auto">
           <Breadcrumbs
             items={[
               { label: "בית", href: "/" },
               { label: "סדרות" }
             ]}
-            className="justify-center mb-6 text-primary-foreground/70"
+            className="justify-center mb-6 text-white/70"
           />
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             סדרות שיעורים
           </h1>
-          <p className="text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
             סדרות הרצאות מובנות בפילוסופיה יהודית — מיסודות המחשבה ועד לסוגיות מתקדמות.
           </p>
         </div>

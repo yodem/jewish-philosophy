@@ -222,11 +222,11 @@ export default function ResponsaPageClient() {
           </div>
 
           {/* Dark CTA Section */}
-          <div className="mt-12 bg-primary rounded-3xl p-8 relative overflow-hidden shadow-lg">
+          <div className="mt-12 bg-navbar rounded-3xl p-8 relative overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-right">
-                <h2 className="text-2xl font-bold text-primary-foreground mb-2">לא מצאת תשובה לשאלתך?</h2>
-                <p className="text-primary-foreground/70">צוות המחקר שלנו ישמח לסייע בכל סוגיה פילוסופית או הגותית.</p>
+                <h2 className="text-2xl font-bold text-white mb-2">לא מצאת תשובה לשאלתך?</h2>
+                <p className="text-white/70">צוות המחקר שלנו ישמח לסייע בכל סוגיה פילוסופית או הגותית.</p>
               </div>
               <QuestionFormWrapper />
             </div>

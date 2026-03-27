@@ -1,6 +1,6 @@
 import { getBlogsPaginated, getPageBySlug } from "@/data/loaders";
-import Breadcrumbs from "@/components/Breadcrumbs";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import FeaturedPostHero from "@/components/blog/FeaturedPostHero";
 import { Suspense } from "react";
 import { Metadata } from "next";

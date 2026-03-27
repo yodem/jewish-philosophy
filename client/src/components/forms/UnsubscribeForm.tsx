@@ -79,7 +79,7 @@ function UnsubscribeFormInner() {
         )}
 
         {successMessage && (
-          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+          <div className="mt-4 p-4 bg-ct-blog/10 border border-ct-blog/30 rounded-lg">
             <p className="text-green-800 text-sm text-center">
               {successMessage}
             </p>

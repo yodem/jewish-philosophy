@@ -67,20 +67,25 @@ export default function TermsPageClient() {
   return (
     <div className="w-full flex flex-col items-center overflow-hidden">
       {/* Dark gradient hero section */}
-      <section className="w-full bg-gradient-to-br from-primary to-primary/80 py-16 md:py-24 px-4 text-center">
+      <section className="w-full bg-navbar py-16 md:py-24 px-4 text-center relative overflow-hidden">
+        {/* Pink accent line at bottom of hero */}
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-ct-term" />
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs
             items={[
               { label: "בית", href: "/" },
               { label: "מושגים" }
             ]}
-            className="justify-center mb-6 text-primary-foreground/70"
+            className="justify-center mb-6 text-white/60"
           />
-          <h1 className="text-4xl md:text-5xl font-bold text-primary-foreground mb-4 tracking-tight">
+          <div className="inline-flex items-center gap-2 bg-ct-term/20 border border-ct-term/40 text-ct-term px-3 py-1 rounded text-sm font-semibold mb-4">
+            מושג
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
             מושגים בפילוסופיה דתית
           </h1>
-          <p className="text-lg text-primary-foreground/70 max-w-2xl mx-auto leading-relaxed">
-            מילון מושגים מקיף בפילוסופיה דתית -- מהרמב״ם ועד ההוגים המודרניים
+          <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            מילון מושגים מקיף בפילוסופיה דתית — מהרמב״ם ועד ההוגים המודרניים
           </p>
         </div>
       </section>
