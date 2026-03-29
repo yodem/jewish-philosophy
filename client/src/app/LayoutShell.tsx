@@ -1,6 +1,5 @@
 import Navbar from '@/components/layout/Navbar';
 import Banner from '@/components/layout/Banner';
-import Footer from '@/components/layout/Footer';
 import { getGlobalSettings, getBanner } from "@/data/loaders";
 import type { Banner as BannerType } from "@/types";
 
@@ -11,7 +10,6 @@ export default async function LayoutShell({ children }: { children: React.ReactN
   ]);
 
   const header = globalRes?.data?.header;
-  const footer = globalRes?.data?.footer;
   const banner: BannerType | null = bannerRes?.data;
 
   return (
@@ -20,10 +18,9 @@ export default async function LayoutShell({ children }: { children: React.ReactN
       {banner && banner.isActive && (
         <Banner banner={banner} />
       )}
-      <main className="flex-1 flex flex-col w-full">
+      <main className="flex-1 flex flex-col w-full pb-12">
         {children}
       </main>
-      <Footer copyright={footer?.copyright} links={footer?.links} />
     </>
   );
 }
