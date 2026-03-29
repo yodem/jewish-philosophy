@@ -171,16 +171,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Providers>
           <Suspense fallback={
-            <nav className="w-full bg-navbar text-navbar-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
-              <div className="animate-pulse h-8 w-32 bg-white/20 rounded" />
-            </nav>
+            <>
+              <nav className="w-full bg-navbar text-navbar-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
+                <div className="animate-pulse h-8 w-32 bg-white/20 rounded" />
+              </nav>
+              <main className="flex-1 flex flex-col w-full">
+                {children}
+              </main>
+            </>
           }>
-            <LayoutShell />
+            <LayoutShell>
+              {children}
+            </LayoutShell>
           </Suspense>
-
-          <main className="flex-1 flex flex-col">
-            {children}
-          </main>
 
           <LayoutClient />
         </Providers>

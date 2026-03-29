@@ -4,7 +4,7 @@ import Footer from '@/components/layout/Footer';
 import { getGlobalSettings, getBanner } from "@/data/loaders";
 import type { Banner as BannerType } from "@/types";
 
-export default async function LayoutShell() {
+export default async function LayoutShell({ children }: { children: React.ReactNode }) {
   const [globalRes, bannerRes] = await Promise.all([
     getGlobalSettings(),
     getBanner(),
@@ -20,6 +20,9 @@ export default async function LayoutShell() {
       {banner && banner.isActive && (
         <Banner banner={banner} />
       )}
+      <main className="flex-1 flex flex-col w-full">
+        {children}
+      </main>
       <Footer copyright={footer?.copyright} links={footer?.links} />
     </>
   );
