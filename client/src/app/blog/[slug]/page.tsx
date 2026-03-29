@@ -17,6 +17,7 @@ import { generateMetadata as createMetadata } from "@/lib/metadata";
 import { generateBlogDescription } from "@/lib/seo-helpers";
 import { calculateReadingTime } from "@/lib/utils";
 import { formatDate } from "@/lib/date-utils";
+import { getStrapiMediaEntryUrl, resolveStrapiAssetUrl } from "@/lib/strapi-media";
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -35,7 +36,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
-  const imageUrl = blog.coverImage?.url;
+  const coverPath = getStrapiMediaEntryUrl(blog.coverImage);
+  const imageUrl = resolveStrapiAssetUrl(coverPath);
   const blogDescription = generateBlogDescription(blog);
 
   return createMetadata({
@@ -69,7 +71,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   // Structured data
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
   const pageUrl = `${baseUrl}/blog/${slug}`;
-  const imageUrl = coverImage?.url ? `${process.env.STRAPI_BASE_URL || ''}${coverImage.url}` : undefined;
+  const coverPath = getStrapiMediaEntryUrl(coverImage);
+  const imageUrl = resolveStrapiAssetUrl(coverPath);
 
   const structuredData: WithContext<ArticleSchema> = {
     "@context": "https://schema.org",
@@ -157,12 +160,12 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </p>
         </div>
 
-        {coverImage && (
+        {coverPath && (
           <div className="mb-8 sm:mb-12 flex flex-col items-center w-full">
             <div className="block w-full max-w-md sm:max-w-3xl">
               <div className="relative aspect-video w-full">
                 <StrapiImage
-                  src={coverImage.url}
+                  src={coverPath}
                   alt={title}
                   width={900}
                   height={600}
