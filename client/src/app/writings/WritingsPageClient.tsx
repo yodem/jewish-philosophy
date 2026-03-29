@@ -146,7 +146,9 @@ export default function WritingsPageClient() {
               <div className="flex items-center p-1 bg-muted rounded-lg w-full lg:w-auto">
                   <button
                     className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-bold transition-all ${
-                      typeFilter === 'all' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                      typeFilter === 'all' 
+                        ? 'bg-white shadow-sm text-primary ring-1 ring-border dark:bg-white/10 dark:text-white dark:ring-white/20' 
+                        : 'text-muted-foreground hover:text-primary dark:hover:text-white'
                     }`}
                     onClick={() => handleTypeFilter('all')}
                   >
@@ -154,7 +156,9 @@ export default function WritingsPageClient() {
                   </button>
                   <button
                     className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                      typeFilter === 'book' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                      typeFilter === 'book' 
+                        ? 'bg-white shadow-sm text-primary ring-1 ring-border dark:bg-white/10 dark:text-white dark:ring-white/20' 
+                        : 'text-muted-foreground hover:text-primary dark:hover:text-white'
                     }`}
                     onClick={() => handleTypeFilter('book')}
                   >
@@ -162,7 +166,9 @@ export default function WritingsPageClient() {
                   </button>
                   <button
                     className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                      typeFilter === 'article' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                      typeFilter === 'article' 
+                        ? 'bg-white shadow-sm text-primary ring-1 ring-border dark:bg-white/10 dark:text-white dark:ring-white/20' 
+                        : 'text-muted-foreground hover:text-primary dark:hover:text-white'
                     }`}
                     onClick={() => handleTypeFilter('article')}
                   >
@@ -185,7 +191,7 @@ export default function WritingsPageClient() {
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-muted-foreground whitespace-nowrap">מיין לפי:</label>
                   <select
-                    className="border-input border rounded-lg py-2 pl-10 pr-4 text-sm text-foreground bg-background focus:ring-ring/20"
+                    className="border-input border rounded-lg py-2 pl-12 pr-4 text-sm text-foreground bg-background focus:ring-ring/20 appearance-none dark:bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat [background-position:left_0.75rem_center] [background-size:0.65rem_auto]"
                     value={sortFilter}
                     onChange={(e) => handleSortFilter(e.target.value as 'priority' | 'popular')}
                   >
