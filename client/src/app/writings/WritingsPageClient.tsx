@@ -189,10 +189,10 @@ export default function WritingsPageClient() {
                   />
                 </form>
                 <div className="flex items-center gap-2">
-                  <label className="text-xs font-bold text-muted-foreground whitespace-nowrap">מיין לפי:</label>
+                  <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">מיין לפי:</label>
                   <div className="relative">
                     <select
-                      className="border-input border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground bg-background focus:ring-2 focus:ring-ring/20 focus:border-primary appearance-none w-full outline-none transition-all"
+                      className="border-input border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground bg-background focus:ring-2 focus:ring-ring/20 focus:border-primary appearance-none w-full outline-none transition-all cursor-pointer"
                       value={sortFilter}
                       onChange={(e) => handleSortFilter(e.target.value as 'priority' | 'popular')}
                     >
