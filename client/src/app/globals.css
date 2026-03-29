@@ -126,7 +126,7 @@
   --ct-blog: oklch(0.50 0.15 162);       /* green — blog */
   --ct-responsa: oklch(0.60 0.18 52);    /* orange — responsa */
   --ct-writing: oklch(0.50 0.14 193);    /* teal — writings */
-  --ct-term: oklch(0.55 0.20 320);       /* pink — concepts */
+  --ct-term: oklch(0.65 0.24 340);       /* pink — concepts */
   --ct-series: oklch(0.50 0.18 295);     /* purple — series */
 
   /* Navbar — always dark navy */
@@ -177,7 +177,7 @@
   --ct-blog: oklch(0.68 0.13 162);
   --ct-responsa: oklch(0.75 0.16 52);
   --ct-writing: oklch(0.68 0.12 193);
-  --ct-term: oklch(0.72 0.17 320);
+  --ct-term: oklch(0.75 0.18 340);
   --ct-series: oklch(0.70 0.15 295);
 
   /* Navbar — stays dark even in dark mode */
