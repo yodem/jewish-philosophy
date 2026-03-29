@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     <>
       <JsonLd data={structuredData} />
       <ViewCountTracker contentType="blogs" contentId={blog.id.toString()} />
-      <div className="mx-auto max-w-3xl w-full overflow-hidden px-2 sm:px-4 sm:max-w-5xl">
+      <div className="mx-auto max-w-3xl w-full overflow-hidden px-4 sm:px-6 pt-6 sm:pt-8 sm:max-w-5xl">
         <WritingViewTracker
           writingTitle={title}
           writingType="blog"
