@@ -15,6 +15,7 @@ import {
 import { LimitedCategoryList } from "@/components/shared/LimitedCategoryList";
 import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
+import { Combobox } from "@/components/ui/combobox";
 import BlockRenderer from "@/components/home/BlockRenderer";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
@@ -190,18 +191,19 @@ export default function WritingsPageClient() {
                 </form>
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium text-muted-foreground whitespace-nowrap">מיין לפי:</label>
-                  <div className="relative">
-                    <select
-                      className="border-input border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground bg-background focus:ring-2 focus:ring-ring/20 focus:border-primary appearance-none w-full outline-none transition-all cursor-pointer"
+                  <div className="w-[180px]">
+                    <Combobox
+                      options={[
+                        { value: 'priority', label: 'עדיפות' },
+                        { value: 'popular', label: 'הכי פופולרי' }
+                      ]}
                       value={sortFilter}
-                      onChange={(e) => handleSortFilter(e.target.value as 'priority' | 'popular')}
-                    >
-                      <option value="priority">עדיפות</option>
-                      <option value="popular">הכי פופולרי</option>
-                    </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                    </div>
+                      onValueChange={(val) => {
+                        if (val) handleSortFilter(val as 'priority' | 'popular');
+                      }}
+                      placeholder="מיין לפי..."
+                      className="w-full px-4 py-2 h-10 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background"
+                    />
                   </div>
                 </div>
               </div>
