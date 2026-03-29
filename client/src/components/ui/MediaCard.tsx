@@ -81,7 +81,7 @@ export default function MediaCard({
       <div className="flex flex-col items-center p-6 w-full">
         <h3 className="font-bold mb-1 text-center text-lg line-clamp-2 text-foreground">{title}</h3>
         {description && (
-          <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">{description}</p>
+          <p className="text-muted-foreground text-sm mb-4 text-right line-clamp-2 leading-relaxed w-full">{description}</p>
         )}
         <div className={cn(buttonVariants({ variant: "default" }), "mt-auto cursor-pointer w-full")}>{buttonTextMap[type]}</div>
       </div>

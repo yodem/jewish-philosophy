@@ -67,7 +67,7 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
             {playlist.title}
           </h3>
           {playlist.description && (
-            <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">
+            <p className="text-muted-foreground text-sm mb-4 text-right line-clamp-2 leading-relaxed w-full">
               {playlist.description}
             </p>
           )}
