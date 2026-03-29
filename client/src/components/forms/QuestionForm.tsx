@@ -141,7 +141,7 @@ function QuestionFormInner() {
                 value={formValues.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="הכניסו כותרת קצרה ומתומצתת"
-                className={state.zodErrors?.title ? "border-destructive" : ""}
+                className={`w-full ${state.zodErrors?.title ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
               />
               {state.zodErrors?.title && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.title[0]}</p>
@@ -157,7 +157,7 @@ function QuestionFormInner() {
                 value={formValues.questioneer}
                 onChange={(e) => handleInputChange('questioneer', e.target.value)}
                 placeholder="הכניסו את שמכם"
-                className={state.zodErrors?.questioneer ? "border-destructive" : ""}
+                className={`w-full ${state.zodErrors?.questioneer ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
               />
               {state.zodErrors?.questioneer && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.questioneer[0]}</p>
@@ -174,7 +174,7 @@ function QuestionFormInner() {
                 value={formValues.questioneerEmail}
                 onChange={(e) => handleInputChange('questioneerEmail', e.target.value)}
                 placeholder="הכניסו את כתובת האימייל שלכם (אופציונלי)"
-                className={state.zodErrors?.questioneerEmail ? "border-destructive" : ""}
+                className={`w-full ${state.zodErrors?.questioneerEmail ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
               />
               {state.zodErrors?.questioneerEmail && formValues.questioneerEmail.trim().length > 0 && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.questioneerEmail[0]}</p>
