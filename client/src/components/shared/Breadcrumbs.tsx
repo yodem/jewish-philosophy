@@ -49,22 +49,26 @@ export default function Breadcrumbs({
     <>
       <JsonLd data={breadcrumbData} />
       <nav
-        className={cn('mb-4 w-full', className)}
+        className={cn('mb-6 w-full', className)}
         aria-label="ניווט נתיב הדף"
       >
-        <ol className="flex flex-wrap items-center gap-1 text-sm">
+        <ol className="flex items-center gap-1.5 text-sm">
           {items.map((item, idx) => {
             const isLast = idx === items.length - 1;
 
             return (
-              <li key={idx} className="flex items-center gap-1">
+              <li
+                key={idx}
+                className={cn(
+                  'flex items-center gap-1.5',
+                  isLast && 'min-w-0'
+                )}
+              >
                 {idx > 0 && (
                   <ChevronLeft
                     className={cn(
                       'size-3.5 shrink-0',
-                      onDark
-                        ? 'text-white/30'
-                        : 'text-muted-foreground/50'
+                      onDark ? 'text-white/30' : 'text-muted-foreground/40'
                     )}
                     aria-hidden="true"
                   />
@@ -74,7 +78,7 @@ export default function Breadcrumbs({
                   <Link
                     href={item.href}
                     className={cn(
-                      'transition-colors',
+                      'shrink-0 transition-colors',
                       onDark
                         ? 'text-white/60 hover:text-white'
                         : 'text-muted-foreground hover:text-foreground'
@@ -88,9 +92,10 @@ export default function Breadcrumbs({
                 ) : (
                   <span
                     className={cn(
-                      'font-medium',
-                      onDark ? 'text-white/90' : 'text-foreground',
-                      isLast && 'max-w-[40ch] truncate'
+                      'truncate',
+                      onDark
+                        ? 'text-white/80'
+                        : 'text-muted-foreground'
                     )}
                     aria-current="page"
                     title={item.label}

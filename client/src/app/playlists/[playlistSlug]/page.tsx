@@ -85,7 +85,7 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
   return (
     <>
       <JsonLd data={playlistStructuredData} />
-      <div className="w-full max-w-full overflow-hidden">
+      <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 overflow-hidden">
         <Breadcrumbs
           items={[
             { label: "בית", href: "/" },
