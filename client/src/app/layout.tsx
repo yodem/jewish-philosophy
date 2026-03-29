@@ -136,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="he" dir="rtl" className={`overflow-x-clip ${rubik.className}`} suppressHydrationWarning>
+    <html lang="he" dir="rtl" className={rubik.className} suppressHydrationWarning>
       <head>
         {/* Anti-flash: apply dark class before first paint to prevent theme flicker */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s!=='light'&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
@@ -158,7 +158,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-background flex flex-col overflow-x-clip font-sans">
+      <body className="min-h-screen bg-background flex flex-col font-sans">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -171,8 +171,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Providers>
           <Suspense fallback={
-            <nav className="w-full bg-primary text-primary-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-blue-900/50 sticky top-0 z-50">
-              <div className="animate-pulse h-8 w-32 bg-primary/70 rounded" />
+            <nav className="w-full bg-navbar text-navbar-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
+              <div className="animate-pulse h-8 w-32 bg-white/20 rounded" />
             </nav>
           }>
             <LayoutShell />
