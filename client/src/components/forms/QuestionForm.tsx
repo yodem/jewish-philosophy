@@ -141,7 +141,7 @@ function QuestionFormInner() {
                 value={formValues.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 placeholder="הכניסו כותרת קצרה ומתומצתת"
-                className={`w-full ${state.zodErrors?.title ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background ${state.zodErrors?.title ? "border-destructive" : ""}`}
               />
               {state.zodErrors?.title && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.title[0]}</p>
@@ -157,7 +157,7 @@ function QuestionFormInner() {
                 value={formValues.questioneer}
                 onChange={(e) => handleInputChange('questioneer', e.target.value)}
                 placeholder="הכניסו את שמכם"
-                className={`w-full ${state.zodErrors?.questioneer ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background ${state.zodErrors?.questioneer ? "border-destructive" : ""}`}
               />
               {state.zodErrors?.questioneer && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.questioneer[0]}</p>
@@ -174,7 +174,7 @@ function QuestionFormInner() {
                 value={formValues.questioneerEmail}
                 onChange={(e) => handleInputChange('questioneerEmail', e.target.value)}
                 placeholder="הכניסו את כתובת האימייל שלכם (אופציונלי)"
-                className={`w-full ${state.zodErrors?.questioneerEmail ? "border-destructive" : ""} bg-background text-foreground focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background ${state.zodErrors?.questioneerEmail ? "border-destructive" : ""}`}
               />
               {state.zodErrors?.questioneerEmail && formValues.questioneerEmail.trim().length > 0 && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.questioneerEmail[0]}</p>
@@ -192,9 +192,9 @@ function QuestionFormInner() {
                 onChange={(e) => handleInputChange('content', e.target.value)}
                 rows={6}
                 placeholder="הסבירו את השאלה שלכם בפירוט"
-                className={`w-full rounded-md border ${
-                  state.zodErrors?.content ? "border-destructive" : "border-input"
-                } p-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
+                className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background resize-none ${
+                  state.zodErrors?.content ? "border-destructive" : ""
+                }`}
               />
               {state.zodErrors?.content && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.content[0]}</p>
