@@ -226,7 +226,7 @@ export default function ResponsaPageClient() {
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-right">
                 <h2 className="text-2xl font-bold text-white mb-2">לא מצאת תשובה לשאלתך?</h2>
-                <p className="text-white/70">צוות המחקר שלנו ישמח לסייע בכל סוגיה פילוסופית או הגותית.</p>
+                <p className="text-white/70">שאל כאן ופרופ' שלום צדיק יענה בהקדם!</p>
               </div>
               <QuestionFormWrapper />
             </div>

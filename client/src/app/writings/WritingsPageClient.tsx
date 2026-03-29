@@ -122,7 +122,7 @@ export default function WritingsPageClient() {
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-4">
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-primary mb-2">ספריית כתבים</h1>
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">ספריית כתבים</h1>
                 <p className="text-muted-foreground text-lg max-w-2xl">
                   מאגר טקסטים הגותיים, ספרים ומאמרים של פרופ׳ שלום צדיק בפילוסופיה יהודית, מוסר ואתיקה.
                 </p>
@@ -144,30 +144,30 @@ export default function WritingsPageClient() {
             <div className="p-6 border-b border-border bg-muted/50 flex flex-col lg:flex-row gap-6 items-center justify-between">
               {/* Tabs */}
               <div className="flex items-center p-1 bg-muted rounded-lg w-full lg:w-auto">
-                <button
-                  className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-bold transition-all ${
-                    typeFilter === 'all' ? 'bg-card shadow text-primary' : 'text-muted-foreground hover:text-primary'
-                  }`}
-                  onClick={() => handleTypeFilter('all')}
-                >
-                  הכל
-                </button>
-                <button
-                  className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                    typeFilter === 'book' ? 'bg-card shadow text-primary' : 'text-muted-foreground hover:text-primary'
-                  }`}
-                  onClick={() => handleTypeFilter('book')}
-                >
-                  ספרים
-                </button>
-                <button
-                  className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                    typeFilter === 'article' ? 'bg-card shadow text-primary' : 'text-muted-foreground hover:text-primary'
-                  }`}
-                  onClick={() => handleTypeFilter('article')}
-                >
-                  מאמרים
-                </button>
+                  <button
+                    className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-bold transition-all ${
+                      typeFilter === 'all' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                    }`}
+                    onClick={() => handleTypeFilter('all')}
+                  >
+                    הכל
+                  </button>
+                  <button
+                    className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                      typeFilter === 'book' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                    }`}
+                    onClick={() => handleTypeFilter('book')}
+                  >
+                    ספרים
+                  </button>
+                  <button
+                    className={`flex-1 lg:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all ${
+                      typeFilter === 'article' ? 'bg-background shadow-sm text-primary' : 'text-muted-foreground hover:text-primary'
+                    }`}
+                    onClick={() => handleTypeFilter('article')}
+                  >
+                    מאמרים
+                  </button>
               </div>
 
               {/* Search and Sort */}
@@ -185,7 +185,7 @@ export default function WritingsPageClient() {
                 <div className="flex items-center gap-2">
                   <label className="text-xs font-bold text-muted-foreground whitespace-nowrap">מיין לפי:</label>
                   <select
-                    className="border-input border rounded-lg py-2 pl-8 pr-4 text-sm text-foreground bg-background focus:ring-ring/20"
+                    className="border-input border rounded-lg py-2 pl-10 pr-4 text-sm text-foreground bg-background focus:ring-ring/20"
                     value={sortFilter}
                     onChange={(e) => handleSortFilter(e.target.value as 'priority' | 'popular')}
                   >
