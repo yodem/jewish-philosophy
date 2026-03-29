@@ -2,69 +2,105 @@
 
 import Link from 'next/link';
 import React from 'react';
+import { ChevronLeft } from 'lucide-react';
 import { trackBreadcrumbClick } from '@/lib/analytics';
 import { JsonLd } from '@/lib/json-ld';
-import { WithContext, BreadcrumbList } from 'schema-dts';
+import { cn } from '@/lib/utils';
+import type { WithContext, BreadcrumbList } from 'schema-dts';
 
 export interface BreadcrumbItem {
   label: string;
   href?: string;
 }
 
-export default function Breadcrumbs({ items, className }: { items: BreadcrumbItem[]; className?: string }) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
+interface BreadcrumbsProps {
+  items: BreadcrumbItem[];
+  className?: string;
+  /** Use "onDark" when rendered over a dark hero / navbar-coloured section */
+  variant?: 'default' | 'onDark';
+}
+
+export default function Breadcrumbs({
+  items,
+  className,
+  variant = 'default',
+}: BreadcrumbsProps) {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
 
   const breadcrumbData: WithContext<BreadcrumbList> = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: items.map((item, idx) => ({
-      '@type': 'ListItem',
+      '@type': 'ListItem' as const,
       position: idx + 1,
       name: item.label,
-      ...(item.href && { item: item.href.startsWith('http') ? item.href : `${baseUrl}${item.href}` }),
+      ...(item.href && {
+        item: item.href.startsWith('http')
+          ? item.href
+          : `${baseUrl}${item.href}`,
+      }),
     })),
   };
+
+  const onDark = variant === 'onDark';
 
   return (
     <>
       <JsonLd data={breadcrumbData} />
       <nav
-        className={`text-xs sm:text-sm mb-4 sm:mb-6 w-full overflow-x-auto pb-2 ${className || ''}`}
-        aria-label="ניווט Breadcrumb - נתיב הדף הנוכחי"
-        role="navigation"
+        className={cn('mb-4 w-full', className)}
+        aria-label="ניווט נתיב הדף"
       >
-        <ol className="list-none p-0 inline-flex whitespace-nowrap">
-          {items.map((item, idx) => (
-            <li key={item.label} className="flex items-center">
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className="text-accent hover:underline hover:text-accent/80 transition-colors duration-200"
-                  title={`עברו ל${item.label}`}
-                  onClick={() => trackBreadcrumbClick(item.label, item.href!)}
-                >
-                  <span>{item.label}</span>
-                </Link>
-              ) : (
-                <span
-                  className="text-muted-foreground font-medium"
-                  aria-current="page"
-                >
-                  {item.label}
-                </span>
-              )}
+        <ol className="flex flex-wrap items-center gap-1 text-sm">
+          {items.map((item, idx) => {
+            const isLast = idx === items.length - 1;
 
-              {idx < items.length - 1 && (
-                <span
-                  className="mx-1 sm:mx-2 text-muted-foreground"
-                  aria-hidden="true"
-                  role="separator"
-                >
-                  /
-                </span>
-              )}
-            </li>
-          ))}
+            return (
+              <li key={idx} className="flex items-center gap-1">
+                {idx > 0 && (
+                  <ChevronLeft
+                    className={cn(
+                      'size-3.5 shrink-0',
+                      onDark
+                        ? 'text-white/30'
+                        : 'text-muted-foreground/50'
+                    )}
+                    aria-hidden="true"
+                  />
+                )}
+
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'transition-colors',
+                      onDark
+                        ? 'text-white/60 hover:text-white'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    onClick={() =>
+                      trackBreadcrumbClick(item.label, item.href!)
+                    }
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span
+                    className={cn(
+                      'font-medium',
+                      onDark ? 'text-white/90' : 'text-foreground',
+                      isLast && 'max-w-[40ch] truncate'
+                    )}
+                    aria-current="page"
+                    title={item.label}
+                  >
+                    {item.label}
+                  </span>
+                )}
+              </li>
+            );
+          })}
         </ol>
       </nav>
     </>
