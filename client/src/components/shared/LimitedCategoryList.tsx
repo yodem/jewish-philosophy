@@ -7,13 +7,15 @@ interface LimitedCategoryListProps {
   maxDisplay?: number;
   className?: string;
   isSelectable?: boolean;
+  forceColorClass?: string;
 }
 
 export function LimitedCategoryList({
   categories = [],
   maxDisplay = 2,
   className,
-  isSelectable = false
+  isSelectable = false,
+  forceColorClass,
 }: LimitedCategoryListProps) {
   if (!categories || categories.length === 0) {
     return null;
@@ -29,6 +31,7 @@ export function LimitedCategoryList({
           key={category.id}
           category={category}
           isSelectable={isSelectable}
+          forceColorClass={forceColorClass}
         />
       ))}
 
@@ -45,12 +48,14 @@ interface FullCategoryListProps {
   categories?: Category[];
   className?: string;
   isSelectable?: boolean;
+  forceColorClass?: string;
 }
 
 export function FullCategoryList({
   categories = [],
   className,
-  isSelectable = false
+  isSelectable = false,
+  forceColorClass,
 }: FullCategoryListProps) {
   if (!categories || categories.length === 0) {
     return null;
@@ -63,6 +68,7 @@ export function FullCategoryList({
           key={category.id}
           category={category}
           isSelectable={isSelectable}
+          forceColorClass={forceColorClass}
         />
       ))}
     </div>

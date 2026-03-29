@@ -51,6 +51,7 @@ interface CategoryBadgeProps {
   isDisabled?: boolean;
   isSelectable?: boolean;
   showRemoveIcon?: boolean;
+  forceColorClass?: string;
 }
 
 export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
@@ -63,19 +64,20 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
   isSelected = false,
   isDisabled = false,
   isSelectable = true,
-  showRemoveIcon = false
+  showRemoveIcon = false,
+  forceColorClass,
 }) => {
   let colorClass = "";
   let displayLabel = "";
 
   if (category) {
-    colorClass = getCategoryColorClass(category);
+    colorClass = forceColorClass || getCategoryColorClass(category);
     displayLabel = category.name;
   } else if (contentType) {
-    colorClass = CONTENT_TYPE_COLORS[contentType] || "bg-muted text-foreground dark:bg-secondary dark:text-foreground";
+    colorClass = forceColorClass || CONTENT_TYPE_COLORS[contentType] || "bg-muted text-foreground dark:bg-secondary dark:text-foreground";
     displayLabel = label || contentType;
   } else if (label) {
-    colorClass = "bg-muted text-foreground dark:bg-secondary dark:text-foreground";
+    colorClass = forceColorClass || "bg-muted text-foreground dark:bg-secondary dark:text-foreground";
     displayLabel = label;
   }
 
