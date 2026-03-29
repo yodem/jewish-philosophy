@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
 import { Suspense } from "react";
 import WritingsPageClient from "./WritingsPageClient";
+import WritingsLoading from "./loading";
 
 export const metadata: Metadata = generateMetadata({
   title: "כתבים | שלום צדיק - פילוסופיה דתית",
@@ -13,7 +14,7 @@ export const metadata: Metadata = generateMetadata({
 
 export default function WritingsPage() {
   return (
-    <Suspense fallback={<div>טוען...</div>}>
+    <Suspense fallback={<WritingsLoading />}>
       <WritingsPageClient />
     </Suspense>
   );

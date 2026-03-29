@@ -16,7 +16,9 @@ const strapiRemotePattern = {
 const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
-    unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
+    // StrapiImage defaults to 85; callers also use 75 and 100
+    qualities: [75, 85, 100],
     remotePatterns: [
       strapiRemotePattern,
       // Add specific pattern for Strapi Cloud media URLs
@@ -25,10 +27,16 @@ const nextConfig: NextConfig = {
         hostname: "*.media.strapiapp.com",
         pathname: "/**",
       },
-      // Generic HTTPS pattern as fallback
+      // YouTube thumbnails (used in playlist/video pages)
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "i.ytimg.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+        pathname: "/**",
       },
     ],
   },
@@ -96,6 +104,15 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=3600',
+          },
+        ],
+      },
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
           },
         ],
       },

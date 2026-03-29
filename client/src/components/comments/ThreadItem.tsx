@@ -3,7 +3,7 @@ import { CommentType } from "@/constants/comments";
 import CommentHeader from "./CommentHeader";
 import CommentContent from "./CommentContent";
 import CommentForm from "./CommentForm";
-import ContentChip from "../ContentChip";
+import ContentChip from "@/components/shared/ContentChip";
 
 interface ThreadItemProps {
   thread: Thread;
@@ -34,7 +34,7 @@ export default function ThreadItem({
 
   return (
     <div
-      className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg shadow-sm"
+      className="bg-muted dark:bg-secondary p-4 rounded-lg shadow-sm"
       style={{ marginLeft: `${level * 20}px` }}
     >
       <CommentHeader
@@ -56,8 +56,8 @@ export default function ThreadItem({
       {((thread.writings && thread.writings.length > 0) || 
         (thread.videos && thread.videos.length > 0) || 
         (thread.responsas && thread.responsas.length > 0)) && (
-        <div className="mb-3 p-2 bg-gray-100 dark:bg-gray-600 rounded-md">
-          <h5 className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+        <div className="mb-3 p-2 bg-muted/50 dark:bg-secondary/50 rounded-md">
+          <h5 className="text-xs font-medium text-muted-foreground mb-1">
             תוכן קשור:
           </h5>
           <div className="flex flex-wrap gap-1">
@@ -91,7 +91,7 @@ export default function ThreadItem({
 
       {/* Reply form for thread */}
       {isReplyActive && (
-        <div className="mt-3 ml-4 border-r-2 border-blue-200 pr-3 animate-in slide-in-from-top-2 duration-200">
+        <div className="mt-3 ml-4 border-r-2 border-accent/30 pr-3 animate-in slide-in-from-top-2 duration-200">
           <CommentForm
             responsaSlug={responsaSlug}
             blogSlug={blogSlug}

@@ -61,7 +61,7 @@ export default function CommentsList({
           ))}
         </div>
       ) : (
-        <p className="text-gray-500 mb-8">{currentLabels.noCommentsText}</p>
+        <p className="text-muted-foreground mb-8">{currentLabels.noCommentsText}</p>
       )}
     </div>
   );

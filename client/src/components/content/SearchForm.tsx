@@ -1,0 +1,226 @@
+import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { CategoryCombobox } from '@/components/ui/category-combobox';
+import { CategoryBadge } from './CategoryBadge';
+import { Search, Filter } from 'lucide-react';
+import { CONTENT_TYPES } from '../../../consts';
+import { getAllCategories } from '@/data/services';
+import { Category } from '@/types';
+import { trackContentTypeFilter, trackCategoryFilter } from '@/lib/analytics';
+
+const SEARCH_CONTENT_TYPES = [
+  { value: 'all', label: 'כל התכנים' },
+  ...CONTENT_TYPES
+];
+
+interface SearchFormProps {
+  searchQuery: string;
+  selectedContentType: string;
+  selectedCategories: string[];
+  onSearchQueryChange: (query: string) => void;
+  onContentTypeChange: (type: string) => void;
+  onCategoryChange: (category: string) => void;
+  onSubmit: () => void;
+  onKeyPress?: (e: React.KeyboardEvent) => void;
+  disabled?: boolean;
+  showSubmitButton?: boolean;
+}
+
+const SearchForm: React.FC<SearchFormProps> = ({
+  searchQuery,
+  selectedContentType,
+  selectedCategories,
+  onSearchQueryChange,
+  onContentTypeChange,
+  onCategoryChange,
+  onSubmit,
+  onKeyPress,
+  disabled = false,
+  showSubmitButton = true,
+}) => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const categoriesData = await getAllCategories();
+        setCategories(categoriesData);
+      } catch {
+        // Categories loading failed silently
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="grid gap-4">
+      {/* Search Input */}
+      <div className="grid gap-2">
+        <label htmlFor="search" className="text-sm font-medium text-right">
+          מה תרצו לחפש?
+        </label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            id="search"
+            placeholder="הקלידו כאן..."
+            value={searchQuery}
+            onChange={(e) => onSearchQueryChange(e.target.value)}
+            onKeyPress={onKeyPress}
+            className="pl-10 text-right"
+            dir="rtl"
+            autoComplete="off"
+          />
+        </div>
+      </div>
+
+      {/* Content Type Filter */}
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-right flex items-center gap-2">
+          <Filter className="h-4 w-4" />
+          סוג תוכן *
+        </label>
+        <p className="text-xs text-muted-foreground text-right">
+          בחרו סוג תוכן או השאר ריק לחיפוש בכל סוגי התוכן
+        </p>
+        <div className="flex flex-col gap-2">
+          {selectedContentType !== 'all' && (
+            <div className="flex items-center gap-2">
+              {SEARCH_CONTENT_TYPES
+                .filter(type => type.value === selectedContentType)
+                .map(type => (
+                  <CategoryBadge
+                    key={type.value}
+                    contentType={type.value}
+                    label={type.label}
+                    variant={type.value === 'all' ? 'outline' : 'default'}
+                    className={
+                      type.value === 'all'
+                        ? "border-border text-muted-foreground dark:border-border dark:text-muted-foreground"
+                        : ""
+                    }
+                    showRemoveIcon={true}
+                    onClick={() => {
+                      trackContentTypeFilter('all', selectedContentType);
+                      onContentTypeChange('all');
+                    }}
+                  />
+                ))}
+            </div>
+          )}
+
+          {selectedContentType === 'all' && (
+            <div className="flex items-center gap-2">
+              <CategoryBadge
+                contentType="all"
+                label="כל התכנים"
+                variant="outline"
+                className="border-border text-muted-foreground dark:border-border dark:text-muted-foreground"
+              />
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2 justify-start">
+            {SEARCH_CONTENT_TYPES
+              .filter(type => type.value !== selectedContentType)
+              .map((type) => (
+                <CategoryBadge
+                  key={type.value}
+                  contentType={type.value}
+                  label={type.label}
+                  variant={type.value === 'all' ? 'outline' : 'default'}
+                  className={
+                    type.value === 'all'
+                      ? "border-border text-muted-foreground dark:border-border dark:text-muted-foreground"
+                      : "cursor-pointer"
+                  }
+                  onClick={() => {
+                    trackContentTypeFilter(type.value, selectedContentType);
+                    onContentTypeChange(type.value);
+                  }}
+                />
+              ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Category Filter */}
+      <div className="grid gap-2">
+        <label className="text-sm font-medium text-right">
+          קטגוריות
+        </label>
+        <p className="text-xs text-muted-foreground text-right">
+          בחרו קטגוריות או השארו &quot;כל הקטגוריות&quot; לחיפוש בכלל
+        </p>
+        <div className="flex flex-col gap-2">
+          {selectedCategories.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedCategories.includes('all') ? (
+                <CategoryBadge
+                  contentType="category"
+                  label="כל הקטגוריות"
+                  variant="outline"
+                  className="border-border text-muted-foreground dark:border-border dark:text-muted-foreground"
+                />
+              ) : (
+                selectedCategories.map(categorySlug => {
+                  const category = categories.find(cat => cat.slug === categorySlug);
+                  return category ? (
+                    <CategoryBadge
+                      key={category.slug}
+                      category={category}
+                      isSelected={true}
+                      showRemoveIcon={true}
+                      onClick={() => {
+                        trackCategoryFilter('', selectedContentType);
+                        onCategoryChange(category.slug);
+                      }}
+                    />
+                  ) : null;
+                })
+              )}
+            </div>
+          )}
+
+          <CategoryCombobox
+            categories={categories}
+            value=""
+            onValueChange={(value) => {
+              trackCategoryFilter(value, selectedContentType);
+              onCategoryChange(value);
+            }}
+            placeholder="הוסיפו קטגוריה..."
+            emptyMessage="לא נמצאו קטגוריות."
+            disabled={loadingCategories}
+            loading={loadingCategories}
+            className="text-right"
+            excludeValues={selectedCategories}
+          />
+        </div>
+      </div>
+
+      {/* Search Button */}
+      {showSubmitButton && (
+        <>
+          <p className="text-xs text-muted-foreground text-center">
+            הזינו טקסט לחיפוש או בחרו קטגוריה ספציפית
+          </p>
+          <Button
+            type="submit"
+            className="w-full mt-2"
+            disabled={disabled || (!searchQuery.trim() && selectedCategories.includes('all'))}
+          >
+            חפשו
+          </Button>
+        </>
+      )}
+    </form>
+  );
+};
+
+export default SearchForm;

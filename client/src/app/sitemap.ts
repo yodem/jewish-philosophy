@@ -7,6 +7,7 @@ import {
   getAllTermsForSitemap,
 } from '@/data/loaders';
 import { Blog, Playlist, Writing, Video, Responsa, Term } from '@/types';
+import { getStrapiMediaEntryUrl } from '@/lib/strapi-media';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Validate environment variables
@@ -117,15 +118,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
     // Blog pages
-    const blogPages: MetadataRoute.Sitemap = blogs.map((blog: Blog) => ({
-      url: formatUrl(`/blog/${blog.slug}`),
-      lastModified: new Date(blog.publishedAt),
-      changeFrequency: 'weekly',
-      priority: 0.7,
-      ...(blog.coverImage && {
-        images: [getImageUrl(blog.coverImage.url)].filter(Boolean) as string[],
-      }),
-    }));
+    const blogPages: MetadataRoute.Sitemap = blogs.map((blog: Blog) => {
+      const coverPath = getStrapiMediaEntryUrl(blog.coverImage);
+      return {
+        url: formatUrl(`/blog/${blog.slug}`),
+        lastModified: new Date(blog.publishedAt),
+        changeFrequency: 'weekly' as const,
+        priority: 0.7,
+        ...(coverPath && {
+          images: [getImageUrl(coverPath)].filter(Boolean) as string[],
+        }),
+      };
+    });
 
     // Playlist pages - filter out playlists with -- prefix
     const playlistPages: MetadataRoute.Sitemap = playlists

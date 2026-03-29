@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import UnsubscribeForm from '@/components/UnsubscribeForm';
+import UnsubscribeForm from '@/components/forms/UnsubscribeForm';
 
 export const metadata: Metadata = {
   title: 'ביטול מנוי | פילוסופיה דתית',
@@ -13,25 +13,25 @@ export const metadata: Metadata = {
 
 export default function UnsubscribePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-foreground mb-4">
             ביטול מנוי מהניוזלטר
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             צר לנו לראות אותך עוזב. הזינו את כתובת האימייל שלכם לביטול המנוי.
           </p>
         </div>
-        
+
         <UnsubscribeForm />
-        
+
         <div className="mt-8 text-center">
-          <Link 
-            href="/" 
-            className="text-blue-600 hover:text-blue-800 text-sm"
+          <Link
+            href="/"
+            className="text-accent hover:text-accent/80 text-sm"
           >
-            ← חזרה לעמוד הבית
+            &#x2190; חזרה לעמוד הבית
           </Link>
         </div>
       </div>

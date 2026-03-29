@@ -3,21 +3,16 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getAllTerms } from "@/data/loaders";
-import { Term, Block } from "@/types";
+import { Term } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import { Pagination } from "@/components/ui/pagination";
 import { TermsGridSkeleton } from "@/components/ui/skeleton";
-import BlockRenderer from "@/components/blocks/BlockRenderer";
-import TermCard from "@/components/TermCard";
+import TermCard from "@/components/terms/TermCard";
 import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 
-interface TermsPageClientProps {
-  blocks?: Block[];
-}
-
-export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
+export default function TermsPageClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [terms, setTerms] = useState<Term[]>([]);
@@ -28,11 +23,9 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
 
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = 12;
-  
-  // Use the debounced search hook
+
   const { search, debouncedSearchTerm, setSearch } = useDebouncedSearch();
 
-  // Fetch data when debounced search or page changes
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
@@ -57,7 +50,6 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
 
   const handleSearchInputChange = (value: string) => {
     setSearch(value);
-    // If search is cleared, update URL immediately
     if (value === '') {
       router.replace('/terms');
     }
@@ -73,58 +65,79 @@ export default function TermsPageClient({ blocks = [] }: TermsPageClientProps) {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <Breadcrumbs items={[
-        { label: "בית", href: "/" },
-        { label: "מושגים" }
-      ]} />
-      <BlockRenderer blocks={blocks} />
-      <div className="space-y-8">
-        <div className="mb-8">
-          <form onSubmit={handleSearch} className="flex gap-2 mb-6">
-          <Input
-            placeholder="חפשו מושג..."
-            value={search}
-            onChange={(e) => handleSearchInputChange(e.target.value)}
-            className="flex-1 text-right"
-            dir="rtl"
+    <div className="w-full flex flex-col items-center overflow-hidden">
+      {/* Dark gradient hero section */}
+      <section className="w-full bg-navbar py-16 md:py-24 px-4 text-center relative overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <Breadcrumbs
+            items={[
+              { label: "בית", href: "/" },
+              { label: "מושגים" }
+            ]}
+            variant="onDark"
+            className="mb-6 [&_ol]:justify-center"
           />
-          <Button type="submit">חפשו</Button>
-        </form>
-      </div>
-
-      {isLoading ? (
-        <TermsGridSkeleton count={12} />
-      ) : terms?.length === 0 ? (
-        <div className="text-center py-20">
-          <h2 className="text-xl text-gray-500 mb-4">לא נמצאו מושגים</h2>
-          {search && (
-            <p className="text-gray-400">
-              נסו חיפוש עם מילות מפתח אחרות
-            </p>
-          )}
+          <div className="inline-flex items-center gap-2 bg-ct-term/20 border border-ct-term/40 text-ct-term px-3 py-1 rounded text-sm font-semibold mb-4">
+            מושג
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+            מושגים בפילוסופיה דתית
+          </h1>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            מילון מושגים מקיף בפילוסופיה דתית — מהרמב״ם ועד ההוגים המודרניים
+          </p>
         </div>
-      ) : (
-        <>
-          {/* Terms Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 mb-8">
-            {terms?.map((term) => (
-              <TermCard key={term.id} term={term} />
-            ))}
+      </section>
+
+      {/* Search + Grid content */}
+      <div className="w-full max-w-7xl mx-auto px-6 py-12">
+        <div className="space-y-8">
+          <div className="mb-8">
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+              <Input
+                placeholder="חפשו מושג..."
+                value={search}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
+                className="flex-1 text-right"
+                dir="rtl"
+              />
+              <Button type="submit">חפשו</Button>
+            </form>
           </div>
 
-          {/* Pagination */}
-          {meta?.pagination?.pageCount > 1 && (
-            <div className="flex justify-center mt-8">
-              <Pagination
-                currentPage={meta.pagination.page}
-                totalPages={meta.pagination.pageCount}
-                onPageChange={handlePageChange}
-              />
+          {isLoading ? (
+            <TermsGridSkeleton count={12} />
+          ) : terms?.length === 0 ? (
+            <div className="text-center py-20">
+              <h2 className="text-xl text-muted-foreground mb-4">לא נמצאו מושגים</h2>
+              {search && (
+                <p className="text-muted-foreground">
+                  נסו חיפוש עם מילות מפתח אחרות
+                </p>
+              )}
             </div>
+          ) : (
+            <>
+              {/* Terms Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 mb-8">
+                {terms?.map((term) => (
+                  <TermCard key={term.id} term={term} />
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {meta?.pagination?.pageCount > 1 && (
+                <div className="flex justify-center mt-8">
+                  <Pagination
+                    currentPage={meta.pagination.page}
+                    totalPages={meta.pagination.pageCount}
+                    onPageChange={handlePageChange}
+                  />
+                </div>
+              )}
+            </>
           )}
-        </>
-      )}
+        </div>
       </div>
     </div>
   );
