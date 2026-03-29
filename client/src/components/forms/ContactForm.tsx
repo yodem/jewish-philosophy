@@ -141,7 +141,7 @@ function ContactFormInner() {
           placeholder={loadingEmailCategories ? "טוענים קטגוריות..." : "בחרו קטגוריה"}
           emptyMessage="לא נמצאו קטגוריות"
           disabled={loadingEmailCategories}
-          className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all ${
+          className={`w-full px-4 py-3 rounded-lg border border-input focus:border-primary focus:ring-2 focus:ring-ring/20 outline-none transition-all text-foreground bg-background ${
             state.zodErrors?.category ? "border-destructive" : ""
           }`}
         />
