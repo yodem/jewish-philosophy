@@ -193,8 +193,8 @@ function QuestionFormInner() {
                 rows={6}
                 placeholder="הסבירו את השאלה שלכם בפירוט"
                 className={`w-full rounded-md border ${
-                  state.zodErrors?.content ? "border-destructive" : "border-border"
-                } p-2 bg-card dark:bg-secondary focus:outline-none focus:ring-2 focus:ring-primary`}
+                  state.zodErrors?.content ? "border-destructive" : "border-input"
+                } p-2 bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-primary transition-all`}
               />
               {state.zodErrors?.content && (
                 <p className="text-destructive text-sm mt-1">{state.zodErrors.content[0]}</p>
