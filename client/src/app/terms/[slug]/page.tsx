@@ -34,7 +34,7 @@ export default async function TermPage({ params }: TermPageProps) {
         {/* Header */}
         <header className="mb-10 flex flex-col items-center">
           <div className="w-full text-right pr-5 mb-8">
-            <div className="bg-muted text-muted-foreground border border-border/50 px-2.5 py-1 rounded text-sm font-bold inline-flex items-center gap-1.5 mb-3 uppercase tracking-wider">
+            <div className="bg-ct-term/10 text-ct-term/90 border border-ct-term/20 px-2.5 py-1 rounded text-sm font-bold inline-flex items-center gap-1.5 mb-3 uppercase tracking-wider">
               <BookMarked className="size-4" />
               מושג
             </div>
