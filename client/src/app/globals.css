@@ -204,4 +204,23 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+
+  .prose h1 {
+    font-size: 2rem !important;
+    line-height: 2.5rem !important;
+  }
+
+  @media (min-width: 768px) {
+    .prose h1 {
+      font-size: 2.5rem !important;
+      line-height: 3rem !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .prose h1 {
+      font-size: 3rem !important;
+      line-height: 1 !important;
+    }
+  }
 }

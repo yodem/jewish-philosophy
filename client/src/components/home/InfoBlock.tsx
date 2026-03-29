@@ -29,7 +29,7 @@ export default function InfoBlock({ data }: { data: InfoBlockProps }) {
         <h2 className="text-2xl font-bold text-foreground md:text-3xl">
           {heading}
         </h2>
-        <div className="prose prose-base max-w-none text-muted-foreground md:prose-lg">
+        <div className="prose prose-base max-w-none text-muted-foreground md:prose-lg text-justify">
           <ReactMarkdown
             components={{
               a: ({ children, href }) => (

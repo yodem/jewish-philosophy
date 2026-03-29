@@ -66,9 +66,9 @@ const SECTIONS: ContentSection[] = [
 export default async function HomeContentGrid() {
   const [playlists, blogs, responsaResult, writingsResult] = await Promise.all([
     getPlaylistsPaginated(1, 3),
-    getBlogsPaginated(1, 2),
-    getAllResponsas(1, 2),
-    getWritingsPaginated(1, 2),
+    getBlogsPaginated(1, 3),
+    getAllResponsas(1, 3),
+    getWritingsPaginated(1, 3),
   ]);
 
   const responsas: Responsa[] = responsaResult?.data ?? [];
@@ -84,10 +84,17 @@ export default async function HomeContentGrid() {
               <li key={playlist.id}>
                 <Link
                   href={`/playlists/${playlist.slug}`}
-                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-video"
+                  className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-video"
                 >
-                  <span className="size-1.5 shrink-0 rounded-full bg-ct-video" />
-                  <span className="font-medium">{playlist.title}</span>
+                  <div className="flex items-start gap-3">
+                    <span className="size-1.5 shrink-0 rounded-full bg-ct-video mt-2" />
+                    <span className="font-medium leading-tight">{playlist.title}</span>
+                  </div>
+                  {playlist.publishedAt && (
+                    <div className="text-xs text-muted-foreground mr-4 pr-0.5">
+                      {formatDate(playlist.publishedAt)}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}
@@ -101,10 +108,17 @@ export default async function HomeContentGrid() {
               <li key={blog.id}>
                 <Link
                   href={`/blog/${blog.slug}`}
-                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-blog"
+                  className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-blog"
                 >
-                  <span className="size-1.5 shrink-0 rounded-full bg-ct-blog" />
-                  <span className="font-medium">{blog.title}</span>
+                  <div className="flex items-start gap-3">
+                    <span className="size-1.5 shrink-0 rounded-full bg-ct-blog mt-2" />
+                    <span className="font-medium leading-tight">{blog.title}</span>
+                  </div>
+                  {blog.publishedAt && (
+                    <div className="text-xs text-muted-foreground mr-4 pr-0.5">
+                      {formatDate(blog.publishedAt)}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}
@@ -118,10 +132,17 @@ export default async function HomeContentGrid() {
               <li key={responsa.id}>
                 <Link
                   href={`/responsa/${responsa.slug}`}
-                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-responsa"
+                  className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-responsa"
                 >
-                  <span className="size-1.5 shrink-0 rounded-full bg-ct-responsa" />
-                  <span className="font-medium">{responsa.title}</span>
+                  <div className="flex items-start gap-3">
+                    <span className="size-1.5 shrink-0 rounded-full bg-ct-responsa mt-2" />
+                    <span className="font-medium leading-tight">{responsa.title}</span>
+                  </div>
+                  {responsa.publishedAt && (
+                    <div className="text-xs text-muted-foreground mr-4 pr-0.5">
+                      {formatDate(responsa.publishedAt)}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}
@@ -135,10 +156,17 @@ export default async function HomeContentGrid() {
               <li key={writing.id}>
                 <Link
                   href={`/writings/${writing.slug}`}
-                  className="flex items-center gap-3 text-foreground/80 transition-colors hover:text-ct-writing"
+                  className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-writing"
                 >
-                  <span className="size-1.5 shrink-0 rounded-full bg-ct-writing" />
-                  <span className="font-medium">{writing.title}</span>
+                  <div className="flex items-start gap-3">
+                    <span className="size-1.5 shrink-0 rounded-full bg-ct-writing mt-2" />
+                    <span className="font-medium leading-tight">{writing.title}</span>
+                  </div>
+                  {writing.publishedAt && (
+                    <div className="text-xs text-muted-foreground mr-4 pr-0.5">
+                      {formatDate(writing.publishedAt)}
+                    </div>
+                  )}
                 </Link>
               </li>
             ))}

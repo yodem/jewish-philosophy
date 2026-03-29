@@ -104,7 +104,7 @@ function QuestionFormInner() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto rounded-lg p-6 mt-8 shadow-sm bg-gradient-to-br from-secondary via-card to-background dark:from-secondary dark:via-card dark:to-background border border-border">
+    <div className="w-full max-w-2xl mx-auto rounded-lg p-6 mt-8 shadow-sm bg-card border border-border">
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
