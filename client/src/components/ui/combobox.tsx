@@ -55,7 +55,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between text-right", className)}
+          className={cn("w-full justify-between text-right bg-background text-foreground", className)}
           disabled={disabled}
           dir="rtl"
         >
@@ -63,7 +63,7 @@ export function Combobox({
             <div className="flex flex-col items-start text-right ">
               <span>{selectedOption.label}</span>
               {selectedOption.description && (
-                <span className="text-xs text-gray-500">{selectedOption.description}</span>
+                <span className="text-xs text-muted-foreground">{selectedOption.description}</span>
               )}
             </div>
           ) : (
@@ -74,7 +74,7 @@ export function Combobox({
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 z-[2147483647]" align="start" side="bottom">
         <Command>
-          <CommandInput placeholder="חפש..." className="h-9" />
+          <CommandInput placeholder="חפשו..." className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
@@ -92,7 +92,7 @@ export function Combobox({
                   <div className="flex flex-col items-start text-right pr-4 ">
                     <span>{option.label}</span>
                     {option.description && (
-                      <span className="text-xs text-gray-500 align-right">{option.description}</span>
+                      <span className="text-xs text-muted-foreground align-right">{option.description}</span>
                     )}
                   </div>
                   <Check

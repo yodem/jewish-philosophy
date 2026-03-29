@@ -1,12 +1,12 @@
 import { Metadata } from "next";
 import { getPageBySlug } from "@/data/loaders";
-import BlockRenderer from "@/components/blocks/BlockRenderer";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import BlockRenderer from "@/components/home/BlockRenderer";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateMetadata } from "@/lib/metadata";
-import Breadcrumbs from "@/components/Breadcrumbs";
-import DonateButton from "@/components/DonateButton";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
+import DonateButton from "@/components/shared/DonateButton";
 
 export const metadata: Metadata = generateMetadata({
   title: "אודות | שלום צדיק - פילוסופיה דתית",
@@ -19,7 +19,7 @@ export const metadata: Metadata = generateMetadata({
 function LoadingFallback() {
   return (
     <div className="flex h-[60vh] items-center justify-center">
-      <Skeleton className="w-32 h-32 rounded-full bg-blue-200" />
+      <Skeleton className="w-32 h-32 rounded-full" />
     </div>
   );
 }
@@ -29,18 +29,17 @@ export default async function AboutPage() {
   const data = pageRes?.data;
   const blocks = data?.[0]?.blocks || [];
 
-  // If no data is available yet, show a placeholder
   if (!data) {
     return (
-      <div className="container mx-auto py-12 px-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         <Breadcrumbs
           items={[
             { label: "בית", href: "/" },
             { label: "אודות" }
           ]}
         />
-        <h1 className="text-3xl font-bold mb-8 text-center">אודות</h1>
-        <p className="text-center text-gray-500">
+        <h1 className="text-3xl font-bold mb-8 text-center text-foreground">אודות</h1>
+        <p className="text-center text-muted-foreground">
           התוכן לא זמין כרגע. אנא נסו שנית מאוחר יותר.
         </p>
       </div>
@@ -48,7 +47,7 @@ export default async function AboutPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 w-full">
       <Breadcrumbs
         items={[
           { label: "בית", href: "/" },
@@ -63,4 +62,4 @@ export default async function AboutPage() {
       <DonateButton />
     </div>
   );
-} 
+}

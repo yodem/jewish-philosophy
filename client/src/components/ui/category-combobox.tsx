@@ -28,6 +28,7 @@ interface CategoryComboboxProps {
   disabled?: boolean;
   className?: string;
   loading?: boolean;
+  excludeValues?: string[];
 }
 
 const getCategoryTypeLabel = (type: 'term' | 'person' | 'genre' | null): string => {
@@ -84,12 +85,12 @@ export function CategoryCombobox({
           dir="rtl"
         >
           {loading ? (
-            <span className="text-gray-500 text-right">טוען קטגוריות...</span>
+            <span className="text-muted-foreground text-right">טוען קטגוריות...</span>
           ) : selectedOption ? (
             <div className="flex flex-col items-end text-right flex-1">
               <span>{selectedOption.label}</span>
               {selectedOption.description && (
-                <span className="text-xs text-gray-500">{selectedOption.description}</span>
+                <span className="text-xs text-muted-foreground">{selectedOption.description}</span>
               )}
             </div>
           ) : (
@@ -100,7 +101,7 @@ export function CategoryCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="end" side="bottom">
         <Command>
-          <CommandInput placeholder="חפש קטגוריה..." className="h-9" />
+          <CommandInput placeholder="חפשו קטגוריה..." className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
@@ -118,7 +119,7 @@ export function CategoryCombobox({
                   <div className="flex flex-col items-end text-right flex-1">
                     <span>{option.label}</span>
                     {option.description && (
-                      <span className="text-xs text-gray-500">{option.description}</span>
+                      <span className="text-xs text-muted-foreground">{option.description}</span>
                     )}
                   </div>
                   <Check

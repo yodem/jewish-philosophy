@@ -2,52 +2,44 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function WritingsLoading() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Breadcrumbs skeleton */}
-      <div className="mb-4">
-        <Skeleton className="h-4 w-32 bg-gray-200" />
-      </div>
-      
-      {/* Page header skeleton */}
-      <div className="mb-8 space-y-4">
-        <Skeleton className="h-8 w-48 bg-gray-200" />
-        <Skeleton className="h-4 w-96 bg-gray-200" />
-      </div>
-      
-      {/* Writings grid */}
-      <div className="w-full">
-        <div className="flex flex-col items-center mt-4 sm:mt-8">
-          <Skeleton className="h-6 w-32 bg-gray-200 mb-4" />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 w-full">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="space-y-4">
-                {/* Chip */}
-                <Skeleton className="h-6 w-20 bg-gray-200" />
-                
-                {/* Large log text */}
-                <Skeleton className="h-8 w-full bg-gray-200" />
-                
-                {/* Two texts separated by dot */}
-                <div className="flex items-center space-x-2">
-                  <Skeleton className="h-4 w-24 bg-gray-200" />
-                  <Skeleton className="h-2 w-2 bg-gray-200 rounded-full" />
-                  <Skeleton className="h-4 w-20 bg-gray-200" />
+    <div className="flex flex-col">
+      {/* Hero skeleton */}
+      <section className="bg-muted/50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-8">
+          <Skeleton className="h-4 w-32 mb-4" />
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mt-4">
+            <div>
+              <Skeleton className="h-12 w-48 mb-2" />
+              <Skeleton className="h-5 w-96" />
+            </div>
+            <Skeleton className="h-8 w-32" />
+          </div>
+        </div>
+      </section>
+
+      {/* Table skeleton */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20 w-full">
+        <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden">
+          <div className="p-6 border-b border-border bg-muted/50 flex flex-col lg:flex-row gap-6 items-center justify-between">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-80" />
+          </div>
+          <div className="divide-y divide-border">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 px-6 py-5">
+                <Skeleton className="h-10 w-10 rounded" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-3 w-16" />
                 </div>
-                
-                {/* Big image */}
-                <Skeleton className="h-48 w-full bg-gray-200 rounded-lg" />
-                
-                {/* Description */}
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full bg-gray-200" />
-                  <Skeleton className="h-4 w-3/4 bg-gray-200" />
-                  <Skeleton className="h-4 w-1/2 bg-gray-200" />
-                </div>
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-4 w-12" />
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
-} 
+}

@@ -23,9 +23,7 @@ export default async function Image({
     return generateOGImageResponse(createFallback('כתבים | שלום צדיק', '#c2410c'));
   }
 
-  // Only generate custom OG image for books, not articles
   if (writing.type !== 'book') {
-    // Return 404 to skip this opengraph-image and fall back to page metadata (favicon)
     return new Response(null, { status: 404 });
   }
 
@@ -51,7 +49,7 @@ export default async function Image({
       }}
     >
       <div style={{ fontSize: 14, color: '#9a3412', marginBottom: 8 }}>
-        כתבים · שלום צדיק
+        כתבים &middot; שלום צדיק
       </div>
       <div
         style={{

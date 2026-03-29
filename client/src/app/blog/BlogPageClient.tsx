@@ -7,34 +7,35 @@ interface BlogPageClientProps {
   initialBlogs: Blog[];
 }
 
-// Dynamic import for BlogGrid component
-const BlogGrid = dynamic(() => import("@/components/BlogGrid"), {
-  loading: () => (
-    <div className="w-full flex flex-col items-center mt-4 sm:mt-8">
-      <div className="animate-pulse">
-        <div className="h-8 w-48 bg-gray-200 rounded mb-4"></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
-          ))}
-        </div>
+const BlogPaginatedGrid = dynamic(
+  () => import("@/components/blog/BlogPaginatedGrid"),
+  {
+    loading: () => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[...Array(6)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-card rounded-xl overflow-hidden shadow-md border border-border"
+          >
+            <div className="h-48 bg-muted animate-pulse" />
+            <div className="p-6 space-y-3">
+              <div className="flex gap-2">
+                <div className="h-4 w-12 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+              </div>
+              <div className="h-6 w-3/4 bg-muted rounded animate-pulse" />
+              <div className="h-3 w-1/3 bg-muted rounded animate-pulse" />
+              <div className="h-4 w-full bg-muted rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
       </div>
-    </div>
-  )
-});
+    ),
+  }
+);
 
 export default function BlogPageClient({ initialBlogs }: BlogPageClientProps) {
   if (initialBlogs.length === 0) return null;
 
-  return (
-    <div className="w-full">
-      <div className="flex flex-col items-center mt-4 sm:mt-8">
-        <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-4 text-center">מאמרים נוספים</h3>
-        <BlogGrid
-          initialBlogs={initialBlogs}
-          baseUrl="/blog"
-        />
-      </div>
-    </div>
-  );
+  return <BlogPaginatedGrid initialBlogs={initialBlogs} />;
 }

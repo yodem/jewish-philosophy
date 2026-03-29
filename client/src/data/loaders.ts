@@ -255,9 +255,15 @@ export async function getVideosPaginated(page: number = 1, pageSize: number = 12
   return res.data || [];
 }
 
-// Blog queries
+// Blog queries — explicit media + relations (populate: '*' can omit media in some Strapi setups)
+const blogPopulate = {
+  coverImage: true,
+  author: true,
+  categories: true,
+};
+
 const allBlogsQuery = qs.stringify({
-  populate: '*',
+  populate: blogPopulate,
   sort: ['publishedAt:desc'],
   pagination: {
     pageSize: 100
@@ -292,7 +298,7 @@ export async function getAllBlogsForSitemap(): Promise<Blog[]> {
 
 export async function getBlogsPaginated(page: number = 1, pageSize: number = 12): Promise<Blog[]> {
   const query = qs.stringify({
-    populate: '*',
+    populate: blogPopulate,
     sort: ['publishedAt:desc'],
     pagination: {
       page,
@@ -312,7 +318,7 @@ export async function getBlogBySlug(slug: string) {
     filters: {
       slug: { $eq: slug },
     },
-    populate: '*',
+    populate: blogPopulate,
   });
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);

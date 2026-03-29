@@ -20,7 +20,7 @@ export default function CommentHeader({
 }: CommentHeaderProps) {
   return (
     <div className={`flex items-center justify-between mb-3 ${className}`}>
-      <div className="flex items-center text-gray-500 text-sm">
+      <div className="flex items-center text-muted-foreground text-sm">
         <span className="font-medium">{answerer}</span>
         <span className="mx-2">•</span>
         <span>{formatDate(createdAt)}</span>

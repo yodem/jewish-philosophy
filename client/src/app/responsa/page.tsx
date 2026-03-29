@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
 import { Suspense } from "react";
 import ResponsaPageClient from "./ResponsaPageClient";
+import ResponsaListLoading from "./loading";
 
 export const metadata: Metadata = generateMetadata({
   title: "שאלות ותשובות | שלום צדיק - פילוסופיה דתית",
@@ -13,7 +14,7 @@ export const metadata: Metadata = generateMetadata({
 
 export default function ResponsaPage() {
   return (
-    <Suspense fallback={<div>טוען...</div>}>
+    <Suspense fallback={<ResponsaListLoading />}>
       <ResponsaPageClient />
     </Suspense>
   );

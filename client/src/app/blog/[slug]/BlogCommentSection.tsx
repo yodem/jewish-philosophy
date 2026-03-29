@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Comment as CommentType } from "@/types";
-import CommentSection from "@/components/CommentSection";
+import CommentSection from "@/components/comments/CommentSection";
 import { getBlogCommentsBySlug } from "@/data/loaders";
 
 interface BlogCommentSectionProps {
@@ -10,12 +10,12 @@ interface BlogCommentSectionProps {
   blogSlug: string;
 }
 
-export default function BlogCommentSection({ 
+export default function BlogCommentSection({
   initialComments,
   blogSlug
 }: BlogCommentSectionProps) {
   return (
-    <CommentSection 
+    <CommentSection
       initialComments={initialComments}
       blogSlug={blogSlug}
       commentType="blog"

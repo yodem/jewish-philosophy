@@ -23,7 +23,7 @@ export const CONTENT_TYPE_CONFIG = {
 // Donate button constants
 export const DONATE_BUTTON = {
   HEADLINE: 'תמכו בנו',
-  CONTENT: 'פלטפורמה זו פועלת על מנת להנגיש תוכן איכותי בפילוסופיה דתית לקהל הרחב. עזרו לנו להמשיך להפיץ את התכנים שלנו!',
+  CONTENT: 'פלטפורמה זו פועלת להנגשת מחקר ותוכן אקדמי בפילוסופיה יהודית. תמיכתכם מאפשרת לנו להמשיך ולהרחיב את המאגר.',
   BUTTON_TEXT: 'לתרומה מאובטחת',
   PAYPAL_BUTTON_ID: 'HE7NFPH5BHPSC',
   PAYPAL_ACTION_URL: 'https://www.paypal.com/donate',

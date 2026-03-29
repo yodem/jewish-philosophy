@@ -101,7 +101,7 @@ export default function CommentForm({
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg relative">
+    <div className="bg-muted dark:bg-card p-6 rounded-lg relative">
       {showHeader && (
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold">
@@ -113,7 +113,7 @@ export default function CommentForm({
               onClick={onCancel}
               variant="ghost"
               size="sm"
-              className="text-gray-500 hover:text-gray-700"
+              className="text-muted-foreground hover:text-foreground"
             >
               ביטול
             </Button>
@@ -135,10 +135,10 @@ export default function CommentForm({
             id="answerer"
             name="answerer"
             placeholder={currentLabels.namePlaceholder}
-            className={state.zodErrors?.answerer ? "border-red-500" : ""}
+            className={state.zodErrors?.answerer ? "border-destructive" : ""}
           />
           {state.zodErrors?.answerer && (
-            <p className="text-red-500 text-sm mt-1">{state.zodErrors.answerer[0]}</p>
+            <p className="text-destructive text-sm mt-1">{state.zodErrors.answerer[0]}</p>
           )}
         </div>
         
@@ -152,11 +152,11 @@ export default function CommentForm({
             rows={6}
             placeholder={currentLabels.contentPlaceholder}
             className={`w-full rounded-md border ${
-              state.zodErrors?.answer ? "border-red-500" : "border-gray-300"
-            } p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary`}
+              state.zodErrors?.answer ? "border-destructive" : "border-border"
+            } p-2 bg-card dark:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring`}
           />
           {state.zodErrors?.answer && (
-            <p className="text-red-500 text-sm mt-1">{state.zodErrors.answer[0]}</p>
+            <p className="text-destructive text-sm mt-1">{state.zodErrors.answer[0]}</p>
           )}
         </div>
         

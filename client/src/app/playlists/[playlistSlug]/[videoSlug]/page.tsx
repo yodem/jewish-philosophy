@@ -1,18 +1,18 @@
-import YoutubePlayer from "@/components/YoutubePlayer";
+import YoutubePlayer from "@/components/playlists/YoutubePlayer";
 import { getPlaylistBySlug, getVideoBySlug } from "@/data/loaders";
 import type { Playlist, Video } from "@/types";
 import { notFound } from "next/navigation";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import { Card } from "@/components/ui/card";
-import PlaylistVideoGridWrapper from "@/components/PlaylistVideoGridWrapper";
-import QuestionFormWrapper from "@/components/QuestionFormWrapper";
-import SocialShare from "@/components/SocialShare";
-import { FullCategoryList } from "@/components/LimitedCategoryList";
+import PlaylistVideoGrid from "@/components/playlists/PlaylistVideoGrid";
+import QuestionFormWrapper from "@/components/forms/QuestionFormWrapper";
+import SocialShare from "@/components/content/SocialShare";
+import { FullCategoryList } from "@/components/content/LimitedCategoryList";
 import { Metadata } from "next";
 import { generateMetadata as createMetadata, getImageUrl } from "@/lib/metadata";
 import { JsonLd } from "@/lib/json-ld";
 import { VideoObject, WithContext } from "schema-dts";
-import ViewCountTracker from "@/components/ViewCountTracker";
+import ViewCountTracker from "@/components/shared/ViewCountTracker";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: VideoPageProps): Promise<Meta
   const { playlistSlug, videoSlug } = await params;
   const video = await getVideoBySlug(videoSlug) as Video | null;
   const playlist = await getPlaylistBySlug(playlistSlug) as Playlist | null;
-  
+
   if (!video || !playlist) {
     return {
       title: "שיעור וידאו לא נמצא | שלום צדיק - פילוסופיה דתית",
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: VideoPageProps): Promise<Meta
     url: `/playlists/${playlistSlug}/${videoSlug}`,
     type: "article",
     image: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
-    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה דתית, פילוסופיה דתית, הרמב"ם, מבוא לפילוסופיה דתית, שלום צדיק, מוסר יהודי, יהדות רציונלית, ביקורת החילון, דרך האמצע, טעמי המצוות, השגחה, בחירה חופשית, ידיעת האל, לימוד מקוון, שיעורים יהודיים`,
+    keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה דתית, הרמב"ם, שלום צדיק`,
     publishedTime: new Date().toISOString(),
     authors: ["שלום צדיק"],
     tags: ["פילוסופיה דתית", "שיעורי וידאו", "הרמב״ם"]
@@ -54,9 +54,8 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     return notFound();
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
-  
-  // Enhanced structured data for the video with more comprehensive SEO
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/';
+
   const videoStructuredData: WithContext<VideoObject> = {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
@@ -65,7 +64,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     url: `${baseUrl}/playlists/${playlistSlug}/${videoSlug}`,
     thumbnailUrl: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
     uploadDate: new Date().toISOString(),
-    duration: "PT10M", // Placeholder, consider adding actual duration from data
+    duration: "PT10M",
     contentUrl: `https://www.youtube.com/watch?v=${video.videoId}`,
     embedUrl: `https://www.youtube.com/embed/${video.videoId}`,
     publisher: {
@@ -83,7 +82,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     interactionStatistic: {
       '@type': "InteractionCounter",
       interactionType: { "@type": "WatchAction" },
-      userInteractionCount: 0 // Placeholder
+      userInteractionCount: 0
     },
   };
 
@@ -91,11 +90,10 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     <>
       <JsonLd data={videoStructuredData} />
       <ViewCountTracker contentType="videos" contentId={video.id.toString()} />
-      
+
       <div className="container mx-auto px-2 my-4 sm:my-8 flex flex-col items-center justify-center w-full">
-        <Card className="flex-1 bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">
-          
-          {/* Enhanced breadcrumbs for better navigation and SEO */}
+        <Card className="flex-1 bg-card rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border-0 w-full overflow-hidden">
+
           <Breadcrumbs
             items={[
               { label: "בית", href: "/" },
@@ -105,61 +103,61 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
             ]}
           />
 
-          {/* Main heading - H1 for primary SEO */}
+          {/* Heading */}
           <header className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-2 leading-tight">
               {video.title}
             </h1>
-            <h2 className="text-lg sm:text-xl text-gray-600 font-medium">
+            <h2 className="text-lg sm:text-xl text-muted-foreground font-medium">
               שיעור מסדרת: {playlist.title}
             </h2>
           </header>
-           {/* Category badges */}
-           {video.categories && video.categories.length > 0 && (
-                <div className="mt-4">
-                  <FullCategoryList categories={video.categories} />
-                </div>
-              )}
+
+          {/* Category badges */}
+          {video.categories && video.categories.length > 0 && (
+            <div className="mt-4">
+              <FullCategoryList categories={video.categories} />
+            </div>
+          )}
 
           {/* Video player */}
           <YoutubePlayer videoId={video.videoId} title={video.title} playlistTitle={playlist.title} />
-          
-          {/* Video description section with proper heading hierarchy */}
-          <article className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md mt-6 sm:mt-8">
-            <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-gray-800">
+
+          {/* Description */}
+          <article className="bg-card rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-md mt-6 sm:mt-8">
+            <h3 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-4 text-foreground">
               תיאור השיעור
             </h3>
-            <div className="prose prose-lg max-w-none text-justify">
+            <div className="prose prose-lg max-w-none text-justify dark:prose-invert">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {video.description}
               </ReactMarkdown>
             </div>
           </article>
 
-          {/* Social sharing section */}
+          {/* Social sharing */}
           <section className="mt-6">
-            <SocialShare 
+            <SocialShare
               url={`${baseUrl}/playlists/${playlistSlug}/${videoSlug}`}
               title={video.title}
               description={video.description}
             />
           </section>
 
-          {/* Question form section */}
+          {/* Question form */}
+          <QuestionFormWrapper />
 
-            <QuestionFormWrapper />
-
-          {/* Related videos section */}
+          {/* Related videos */}
           {playlist.videos && playlist.videos.length > 0 && (
             <section className="mt-8 w-full">
-              <h3 className="text-xl font-semibold mb-4 text-center text-gray-800">
+              <h3 className="text-xl font-semibold mb-4 text-center text-foreground">
                 שיעורים נוספים בסדרה: {playlist.title}
               </h3>
-              <p className="text-gray-600 text-center mb-6">
+              <p className="text-muted-foreground text-center mb-6">
                 המשיכו ללמוד עם שיעורים נוספים מאותה סדרה
               </p>
-              <PlaylistVideoGridWrapper 
-                initialVideos={playlist.videos} 
+              <PlaylistVideoGrid
+                initialVideos={playlist.videos}
                 playlistId={playlist.id}
                 baseUrl={`/playlists/${playlistSlug}`}
                 playlistTitle={playlist.title}
@@ -170,4 +168,4 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
       </div>
     </>
   );
-} 
+}

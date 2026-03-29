@@ -4,7 +4,7 @@ import CommentHeader from "./CommentHeader";
 import CommentContent from "./CommentContent";
 import ThreadItem from "./ThreadItem";
 import CommentForm from "./CommentForm";
-import ContentChip from "../ContentChip";
+import ContentChip from "@/components/shared/ContentChip";
 
 interface CommentItemProps {
   comment: CommentType;
@@ -32,7 +32,7 @@ export default function CommentItem({
   
   return (
     <div className="space-y-4">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
+      <div className="bg-card dark:bg-card p-6 rounded-lg shadow-sm">
         <CommentHeader
           answerer={comment.answerer}
           createdAt={comment.createdAt}
@@ -52,8 +52,8 @@ export default function CommentItem({
         {((comment.writings && comment.writings.length > 0) || 
           (comment.videos && comment.videos.length > 0) || 
           (comment.responsas && comment.responsas.length > 0)) && (
-          <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="mb-4 p-3 bg-muted dark:bg-secondary rounded-md">
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">
               תוכן קשור:
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -84,7 +84,7 @@ export default function CommentItem({
         
         {/* Reply form */}
         {isReplyActive && (
-          <div className="mt-4 mr-8 border-r-2 border-blue-200 pr-4 animate-in slide-in-from-top-2 duration-200">
+          <div className="mt-4 mr-8 border-r-2 border-accent/30 pr-4 animate-in slide-in-from-top-2 duration-200">
             <CommentForm
               responsaSlug={responsaSlug}
               blogSlug={blogSlug}

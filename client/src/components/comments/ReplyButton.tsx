@@ -18,8 +18,8 @@ export default function ReplyButton({
 }: ReplyButtonProps) {
   const baseClassName = `text-xs ${
     isActive
-      ? "text-blue-800 bg-blue-50"
-      : "text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+      ? "text-accent/80 bg-accent/10"
+      : "text-accent hover:text-accent/80 hover:bg-accent/10"
   }`;
 
   return (

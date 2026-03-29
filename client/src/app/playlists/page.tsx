@@ -1,12 +1,9 @@
-import BlockRenderer from "@/components/blocks/BlockRenderer";
-import { getPlaylistsPaginated, getPageBySlug } from "@/data/loaders";
+import { getPlaylistsPaginated } from "@/data/loaders";
 import type { Playlist } from "@/types";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import { Metadata } from "next";
 import { generateMetadata } from "@/lib/metadata";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
 import PlaylistsPageClient from "./PlaylistsPageClient";
 
 export const metadata: Metadata = generateMetadata({
@@ -17,36 +14,35 @@ export const metadata: Metadata = generateMetadata({
   keywords: "סדרות שיעורים, שיעורי וידאו, פילוסופיה דתית, פילוסופיה דתית, הרמב\"ם, מורה נבוכים, כוזרי, קורסים יהודיים, שלום צדיק, מבוא לפילוסופיה דתית, לימוד ברצף, יהדות רציונלית",
 });
 
-function LoadingFallback() {
-  return (
-    <div className="flex h-[60vh] items-center justify-center">
-      <Skeleton className="w-32 h-32 rounded-full bg-blue-200" />
-    </div>
-  );
-}
-
 export default async function PlaylistsPage() {
-  const pageRes = await getPageBySlug("playlists");
   const playlists: Playlist[] = await getPlaylistsPaginated(1, 10);
-  const data = pageRes?.data;
-  const blocks = data?.[0]?.blocks || [];
 
   return (
-      <div className="w-full flex flex-col items-center justify-center gap-4 overflow-hidden">
-        <div className="container mx-auto px-4">
+    <div className="w-full flex flex-col items-center justify-center overflow-hidden">
+      {/* Hero section */}
+      <section className="w-full bg-gradient-to-br from-navbar to-navbar py-16 md:py-24 px-4 text-center">
+        <div className="container mx-auto">
           <Breadcrumbs
             items={[
               { label: "בית", href: "/" },
               { label: "סדרות" }
             ]}
+            variant="onDark"
+            className="mb-6 [&_ol]:justify-center"
           />
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
+            סדרות שיעורים
+          </h1>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            סדרות הרצאות מובנות בפילוסופיה יהודית — מיסודות המחשבה ועד לסוגיות מתקדמות.
+          </p>
         </div>
-        <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <BlockRenderer blocks={blocks} />
-          </Suspense>
-        </ErrorBoundary>
+      </section>
+
+      {/* Playlist grid */}
+      <ErrorBoundary>
         <PlaylistsPageClient playlists={playlists} />
-      </div>
+      </ErrorBoundary>
+    </div>
   );
-} 
+}
