@@ -27,10 +27,16 @@ const nextConfig: NextConfig = {
         hostname: "*.media.strapiapp.com",
         pathname: "/**",
       },
-      // Generic HTTPS pattern as fallback
+      // YouTube thumbnails (used in playlist/video pages)
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "i.ytimg.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "img.youtube.com",
+        pathname: "/**",
       },
     ],
   },
