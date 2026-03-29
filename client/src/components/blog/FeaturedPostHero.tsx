@@ -100,7 +100,7 @@ export default function FeaturedPostHero({ blog }: FeaturedPostHeroProps) {
           >
             קראו עוד
             <svg
-              className="size-4 shrink-0 rtl:rotate-180"
+              className="size-4 shrink-0"
               fill="none"
               stroke="currentColor"
               strokeWidth={2}

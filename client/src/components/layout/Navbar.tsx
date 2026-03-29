@@ -48,7 +48,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         )}
         {/* Desktop Navigation */}
         {navLinks && (
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.id}
@@ -74,7 +74,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         <button
           type="button"
           onClick={() => setIsSearchOpen(true)}
-          className="hidden md:flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg px-3 py-1.5 text-white/50 text-sm transition-colors cursor-pointer min-w-[200px]"
+          className="hidden lg:flex items-center gap-2 bg-white/10 hover:bg-white/15 border border-white/20 rounded-lg px-3 py-1.5 text-white/50 text-sm transition-colors cursor-pointer min-w-[200px]"
         >
           <Search className="size-4 shrink-0" />
           <span>חיפוש...</span>
@@ -85,7 +85,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden text-white hover:text-white hover:bg-accent/20"
+          className="lg:hidden text-white hover:text-white hover:bg-accent/20"
           onClick={() => setIsSearchOpen(true)}
         >
           <Search className="size-6" />
@@ -93,7 +93,7 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
         </Button>
 
         {/* Mobile Menu */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="text-white hover:text-white hover:bg-accent/20">
