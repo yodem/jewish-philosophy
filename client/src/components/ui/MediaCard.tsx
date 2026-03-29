@@ -45,8 +45,8 @@ export default function MediaCard({
       {/* Image container with hover zoom like Stitch */}
       <div
         className={cn(
-          "w-full overflow-hidden relative",
-          !isLarge && "aspect-[4/3]"
+          "w-full overflow-hidden relative bg-muted",
+          !isLarge && "aspect-video"
         )}
       >
         {!isLarge ? (
@@ -55,8 +55,8 @@ export default function MediaCard({
             alt={title}
             fill
             quality={75}
-            objectFit={`${type === 'blog' ? 'cover' : 'contain'}`}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+            objectFit="cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             priority
           />
         ) : (
