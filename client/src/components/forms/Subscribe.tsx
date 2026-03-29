@@ -3,6 +3,7 @@
 import { subscribeAction } from "@/data/action";
 import type { SubscribeProps } from "@/types";
 import { useActionState, useRef, useState, useEffect } from "react";
+import { useFormStatus } from "react-dom";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import { trackNewsletterSignup } from "@/lib/analytics";
 
@@ -19,6 +20,21 @@ const INITIAL_STATE: SubscribeState = {
   errorMessage: "",
   successMessage: "",
 };
+
+function SubmitButton({ buttonText }: { buttonText: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={`rounded-lg bg-primary px-10 py-4 font-bold text-primary-foreground shadow-md transition-all ${
+        pending ? "opacity-50 cursor-not-allowed" : "hover:bg-primary/90 active:scale-95"
+      }`}
+    >
+      {pending ? "שולח..." : buttonText}
+    </button>
+  );
+}
 
 function SubscribeInner({
   headline,
@@ -89,12 +105,7 @@ function SubscribeInner({
               zodErrors?.email?.[0] ? "border-destructive" : "border-border"
             }`}
           />
-          <button
-            type="submit"
-            className="rounded-lg bg-primary px-10 py-4 font-bold text-primary-foreground shadow-md transition-all hover:bg-primary/90 active:scale-95"
-          >
-            {buttonText}
-          </button>
+          <SubmitButton buttonText={buttonText} />
         </form>
         {errorMessage && (
           <p className="mt-4 text-center text-sm text-destructive" role="alert">

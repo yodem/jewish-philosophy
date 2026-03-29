@@ -9,6 +9,7 @@ import remarkGfm from "remark-gfm";
 import ViewCountTracker from "@/components/shared/ViewCountTracker";
 import ResponsaCommentWrapper from "./ResponsaCommentWrapper";
 import { extractTextFromMarkdown } from "@/lib/seo-helpers";
+import { formatDate } from "@/lib/date-utils";
 
 interface ResponsaPageProps {
   responsa: Responsa;
@@ -17,14 +18,6 @@ interface ResponsaPageProps {
 
 export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
   const { title, content, questioneer, publishedAt, categories } = responsa;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('he-IL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
 
   const baseUrl = (process.env.NEXT_PUBLIC_SITE_URL || 'https://religousphilosophy.com/').replace(/\/?$/, '');
   const pageUrl = `${baseUrl}/responsa/${slug}`;

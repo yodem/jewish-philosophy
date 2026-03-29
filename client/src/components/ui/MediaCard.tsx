@@ -1,7 +1,7 @@
 // MediaCard.tsx
 'use client';
 import { Card } from './card';
-import { Button } from './button';
+import { buttonVariants } from './button';
 import { cn } from '@/lib/utils';
 import { StrapiImage } from '../shared/StrapiImage';
 
@@ -38,7 +38,7 @@ export default function MediaCard({
     <Card
       className={cn(
         "group flex flex-col w-full h-auto items-center transition-all duration-200 cursor-pointer overflow-hidden",
-        "bg-card rounded-xl shadow-md border border-border/50 hover:shadow-lg",
+        "bg-card rounded-xl shadow-md border border-border/50 hover:shadow-lg p-0 gap-0",
         className
       )}
     >
@@ -83,7 +83,7 @@ export default function MediaCard({
         {description && (
           <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">{description}</p>
         )}
-        <Button className="mt-auto cursor-pointer w-full">{buttonTextMap[type]}</Button>
+        <div className={cn(buttonVariants({ variant: "default" }), "mt-auto cursor-pointer w-full")}>{buttonTextMap[type]}</div>
       </div>
     </Card>
   );

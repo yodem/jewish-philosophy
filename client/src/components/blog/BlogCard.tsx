@@ -30,7 +30,7 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
       )}
     >
       {/* Image with hover zoom */}
-      <Link href={`/blog/${blog.slug}`} className="block">
+      <Link href={`/blog/${blog.slug}`} className="block" tabIndex={-1} aria-hidden="true">
         <div className="relative h-48 w-full bg-muted">
           {imageUrl ? (
             <StrapiImage
@@ -62,7 +62,7 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
         )}
 
         {/* Title */}
-        <Link href={`/blog/${blog.slug}`}>
+        <Link href={`/blog/${blog.slug}`} tabIndex={-1} aria-hidden="true">
           <h3 className="text-xl font-bold text-foreground mb-2 leading-snug line-clamp-2 hover:text-accent transition-colors">
             {blog.title}
           </h3>

@@ -20,6 +20,7 @@ export default async function LayoutShell() {
       {banner && banner.isActive && (
         <Banner banner={banner} />
       )}
+      <Footer copyright={footer?.copyright} links={footer?.links} />
     </>
   );
 }

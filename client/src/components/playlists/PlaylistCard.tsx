@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { StrapiImage } from '@/components/shared/StrapiImage';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import type { Playlist } from '@/types';
 
@@ -23,21 +23,22 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
       <Card
         className={cn(
           'group flex flex-col w-full h-auto items-center transition-shadow cursor-pointer overflow-hidden',
-          'bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md',
+          'bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md p-0 gap-0',
           className
         )}
       >
         {/* Image with play icon overlay */}
         <div className="w-full overflow-hidden relative aspect-video bg-muted">
           {imageUrl ? (
-            <StrapiImage
-              src={imageUrl}
-              alt={playlist.title}
-              fill
-              quality={75}
-              objectFit="cover"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
+          <StrapiImage
+            src={imageUrl}
+            alt={playlist.title}
+            fill
+            quality={75}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            objectFit="cover"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
               <span className="text-muted-foreground text-sm">אין תמונה</span>
@@ -70,7 +71,7 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
               {playlist.description}
             </p>
           )}
-          <Button className="mt-auto cursor-pointer w-full">צפו בסדרה</Button>
+          <div className={cn(buttonVariants({ variant: "default" }), "mt-auto cursor-pointer w-full")}>צפו בסדרה</div>
         </div>
       </Card>
     </Link>
