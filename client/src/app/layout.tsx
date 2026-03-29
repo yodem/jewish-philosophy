@@ -136,7 +136,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <html lang="he" dir="rtl" className={`overflow-x-hidden ${rubik.className}`} suppressHydrationWarning>
+    <html lang="he" dir="rtl" className={`overflow-x-clip ${rubik.className}`} suppressHydrationWarning>
       <head>
         {/* Anti-flash: apply dark class before first paint to prevent theme flicker */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s!=='light'&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
@@ -158,7 +158,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-background flex flex-col overflow-x-hidden font-sans">
+      <body className="min-h-screen bg-background flex flex-col overflow-x-clip font-sans">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
