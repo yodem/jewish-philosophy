@@ -75,7 +75,7 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
 
         {/* Description */}
         {blog.description && (
-          <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+          <p className="text-sm text-muted-foreground line-clamp-3 mb-4 leading-relaxed text-right w-full">
             {blog.description}
           </p>
         )}
