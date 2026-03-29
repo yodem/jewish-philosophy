@@ -45,8 +45,8 @@ export default function MediaCard({
       {/* Image container with hover zoom like Stitch */}
       <div
         className={cn(
-          "w-full overflow-hidden",
-          !isLarge && "relative aspect-[4/3]"
+          "w-full overflow-hidden relative",
+          !isLarge && "aspect-[4/3]"
         )}
       >
         {!isLarge ? (
@@ -71,12 +71,15 @@ export default function MediaCard({
             priority
           />
         )}
+        
+        {typeof episodeCount === 'number' && (
+          <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
+            {episodeCount} שיעורים
+          </span>
+        )}
       </div>
       <div className="flex flex-col items-center p-6 w-full">
         <h3 className="font-bold mb-1 text-center text-lg line-clamp-2 text-foreground">{title}</h3>
-        {typeof episodeCount === 'number' && (
-          <div className="text-xs text-muted-foreground text-center mb-1">מספר פרקים - {episodeCount}</div>
-        )}
         {description && (
           <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">{description}</p>
         )}

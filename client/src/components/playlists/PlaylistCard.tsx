@@ -43,6 +43,13 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
               <span className="text-muted-foreground text-sm">אין תמונה</span>
             </div>
           )}
+          
+          {videoCount > 0 && (
+            <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg z-10">
+              {videoCount} שיעורים
+            </span>
+          )}
+
           {/* Play icon overlay */}
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20">
             <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
@@ -58,11 +65,6 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
           <h3 className="font-bold mb-1 text-center text-lg line-clamp-2 text-foreground">
             {playlist.title}
           </h3>
-          {videoCount > 0 && (
-            <div className="text-xs text-muted-foreground text-center mb-1">
-              מספר פרקים - {videoCount}
-            </div>
-          )}
           {playlist.description && (
             <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">
               {playlist.description}
