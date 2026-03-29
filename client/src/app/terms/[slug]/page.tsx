@@ -4,6 +4,7 @@ import { getTermBySlug } from '@/data/loaders';
 import { generateMetadata as createMetadata } from '@/lib/metadata';
 import Breadcrumbs from '@/components/shared/Breadcrumbs';
 import { FullCategoryList } from '@/components/shared/LimitedCategoryList';
+import { BookMarked } from 'lucide-react';
 
 interface TermPageProps {
   params: Promise<{ slug: string }>;
@@ -31,11 +32,16 @@ export default async function TermPage({ params }: TermPageProps) {
 
       <article className="max-w-4xl mx-auto">
         {/* Header */}
-        <header className="mb-8 text-right border-r-4 border-ct-term pr-4">
-          <div className="inline-flex items-center gap-2 bg-ct-term/15 text-ct-term px-2.5 py-0.5 rounded text-xs font-semibold mb-3">מושג</div>
-          <h1 className="text-4xl font-bold mb-4 leading-tight text-foreground">
-            {term.title}
-          </h1>
+        <header className="mb-10 flex flex-col items-center">
+          <div className="w-full text-right border-r-4 border-ct-term pr-5 mb-8">
+            <div className="bg-ct-term/10 text-ct-term/90 border border-ct-term/20 px-2.5 py-1 rounded text-sm font-bold inline-flex items-center gap-1.5 mb-3 uppercase tracking-wider">
+              <BookMarked className="size-4" />
+              מושג
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold leading-tight text-foreground">
+              {term.title}
+            </h1>
+          </div>
 
           {/* Metadata */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-muted-foreground mb-6">
@@ -58,7 +64,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
           {/* Categories */}
           {term.categories && term.categories.length > 0 && (
-            <div className="mb-8 flex justify-center">
+            <div className="flex justify-center w-full">
               <FullCategoryList categories={term.categories} isSelectable={false} />
             </div>
           )}
@@ -66,7 +72,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="rounded-lg p-8 shadow-sm border border-ct-term/30 bg-ct-term/5 border-r-4 border-r-ct-term">
+          <div className="rounded-xl p-6 md:p-8 shadow-sm border border-ct-term/20 bg-ct-term/5 border-r-4 border-r-ct-term">
             <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap text-justify">
               {term.description}
             </p>
