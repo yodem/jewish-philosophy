@@ -192,14 +192,14 @@ export default function WritingsPageClient() {
                   <label className="text-xs font-bold text-muted-foreground whitespace-nowrap">מיין לפי:</label>
                   <div className="relative">
                     <select
-                      className="border-input border rounded-lg py-2 pl-10 pr-4 text-sm text-foreground bg-background focus:ring-ring/20 appearance-none w-full outline-none"
+                      className="border-input border rounded-lg py-2 pl-4 pr-10 text-sm text-foreground bg-background focus:ring-2 focus:ring-ring/20 focus:border-primary appearance-none w-full outline-none transition-all"
                       value={sortFilter}
                       onChange={(e) => handleSortFilter(e.target.value as 'priority' | 'popular')}
                     >
                       <option value="priority">עדיפות</option>
                       <option value="popular">הכי פופולרי</option>
                     </select>
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
                       <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </div>
                   </div>
