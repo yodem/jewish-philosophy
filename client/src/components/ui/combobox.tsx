@@ -55,7 +55,7 @@ export function Combobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={cn("w-full justify-between text-right", className)}
+          className={cn("w-full justify-between text-right bg-background text-foreground", className)}
           disabled={disabled}
           dir="rtl"
         >
