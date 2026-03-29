@@ -208,7 +208,7 @@ export default function ResponsaPageClient() {
 
             {/* Pagination */}
             {meta.pagination.pageCount > 1 && (
-              <div className="bg-muted px-8 py-6 flex items-center justify-between border-t border-border">
+              <div className="bg-muted px-8 py-6 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 border-t border-border">
                 <Pagination
                   currentPage={meta.pagination.page}
                   totalPages={meta.pagination.pageCount}
