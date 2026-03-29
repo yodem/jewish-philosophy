@@ -393,7 +393,7 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
     const timestamp = Date.now();
     let slug = title
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
+      .replace(/[^\w\s\-\u0590-\u05FF]/g, '')
       .replace(/\s+/g, '-');
 
     // If slug is empty or very short (likely because of Hebrew chars), use a timestamp prefix
@@ -539,4 +539,13 @@ export async function unsubscribeAction(prevState: UnsubscribeState, formData: F
     };
   }
 }
-  
+
+export async function trackViewAction(contentType: string, contentId: string) {
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
+    const apiUrl = `${baseUrl}/api/${contentType}/${contentId}/view`;
+    await fetchAPI(apiUrl, { method: "POST" });
+  } catch (error) {
+    console.error("Error updating view count:", error);
+  }
+}

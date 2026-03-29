@@ -2,6 +2,7 @@
 
 import { unsubscribeAction } from "@/data/action";
 import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
@@ -21,6 +22,19 @@ const INITIAL_STATE: UnsubscribeState = {
   errorMessage: "",
   successMessage: "",
 };
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button
+      type="submit"
+      disabled={pending}
+      className={`w-full bg-red-600 hover:bg-red-700 text-white ${pending ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
+      {pending ? "מבטל..." : "ביטול מנוי"}
+    </Button>
+  );
+}
 
 function UnsubscribeFormInner() {
   const [formState, formAction] = useActionState(
@@ -64,12 +78,7 @@ function UnsubscribeFormInner() {
             />
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-red-600 hover:bg-red-700 text-white"
-          >
-            ביטול מנוי
-          </Button>
+          <SubmitButton />
         </form>
 
         {errorMessage && (

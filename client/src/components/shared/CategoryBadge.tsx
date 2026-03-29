@@ -105,6 +105,9 @@ export const CategoryBadge: React.FC<CategoryBadgeProps> = ({
       `.trim()}
       variant={variant}
       onClick={isDisabled ? undefined : onClick}
+      role={onClick && !isDisabled ? "button" : undefined}
+      tabIndex={onClick && !isDisabled ? 0 : undefined}
+      onKeyDown={onClick && !isDisabled ? (e) => e.key === 'Enter' && onClick() : undefined}
     >
       <span>{displayLabel}</span>
       {isSelected && showRemoveIcon && (

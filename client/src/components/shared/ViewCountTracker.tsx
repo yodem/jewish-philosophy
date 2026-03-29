@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { fetchAPI } from '@/utils/fetchApi';
+import { trackViewAction } from '@/data/action';
 
 interface ViewCountTrackerProps {
   contentType: 'blogs' | 'videos' | 'responsas' | 'writings' | 'terms';
@@ -13,21 +13,7 @@ export default function ViewCountTracker({
   contentId
 }: ViewCountTrackerProps) {
   useEffect(() => {
-    const updateViewCount = async (itemId: string) => {
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
-        const apiUrl = `${baseUrl}/api/${contentType}/${itemId}/view`;
-
-        await fetchAPI(apiUrl, {
-          method: "POST",
-        });
-
-    } catch (error) {
-      console.error("Error updating view count:", error);
-    }
-  };
-
-    updateViewCount(contentId);
+    trackViewAction(contentType, contentId);
   }, [contentType, contentId]);
 
   return null;

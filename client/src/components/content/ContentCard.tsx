@@ -1,6 +1,6 @@
 'use client';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { StrapiImage } from '@/components/shared/StrapiImage';
 
@@ -37,7 +37,7 @@ export default function ContentCard({
     <Card
       className={cn(
         "group flex flex-col w-full h-auto items-center transition-shadow cursor-pointer overflow-hidden",
-        "bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md",
+        "bg-card rounded-lg shadow-sm border border-border/50 hover:shadow-md p-0 gap-0",
         className
       )}
     >
@@ -49,15 +49,16 @@ export default function ContentCard({
         )}
       >
         {!isLarge ? (
-          <StrapiImage
-            src={image}
-            alt={title}
-            fill
-            quality={75}
-            objectFit="cover"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            priority
-          />
+      <StrapiImage
+        src={image}
+        alt={title}
+        fill
+        quality={75}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        objectFit="cover"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        priority
+      />
         ) : (
           <StrapiImage
             src={image}
@@ -82,7 +83,7 @@ export default function ContentCard({
         {description && (
           <p className="text-muted-foreground text-sm mb-4 text-justify line-clamp-2">{description}</p>
         )}
-        <Button className="mt-auto cursor-pointer w-full">{buttonTextMap[type]}</Button>
+        <div className={cn(buttonVariants({ variant: "default" }), "mt-auto cursor-pointer w-full")}>{buttonTextMap[type]}</div>
       </div>
     </Card>
   );

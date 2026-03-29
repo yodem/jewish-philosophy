@@ -57,14 +57,8 @@ const SearchForm: React.FC<SearchFormProps> = ({
     loadCategories();
   }, []);
 
-  const handleFormKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && e.target !== e.currentTarget) {
-      e.preventDefault();
-    }
-  };
-
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="grid gap-4" onKeyDown={handleFormKeyDown}>
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="grid gap-4">
       {/* Search Input */}
       <div className="grid gap-2">
         <label htmlFor="search" className="text-sm font-medium text-right">
@@ -78,12 +72,6 @@ const SearchForm: React.FC<SearchFormProps> = ({
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
             onKeyPress={onKeyPress}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !disabled) {
-                e.preventDefault();
-                onSubmit();
-              }
-            }}
             className="pl-10 text-right"
             dir="rtl"
             autoComplete="off"
