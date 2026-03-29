@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12",
+  "name": "שלום צדיק — Jewish Philosophy Platform",
+  "version": "1.0.0",
+  "description": "Hebrew RTL educational platform for Jewish religious philosophy",
+  "locale": "he-IL",
+  "direction": "rtl",
+  "framework": "next@16",
+  "design": {
+    "font": "Rubik",
+    "colorMode": ["light", "dark"],
+    "colorSystem": "oklch",
+    "borderRadius": "8px",
+    "contrastTarget": "WCAG-AA-4.5:1",
+    "typeScale": [12, 14, 16, 18, 20, 24, 30, 36, 48, 60, 72]
+  },
+  "contentTypes": [
+    {
+      "id": "video",
+      "label": "וידאו",
+      "labelEn": "Video",
+      "color": "blue",
+      "token": "--ct-video",
+      "routes": ["/playlists", "/playlists/:slug", "/video/:slug"]
+    },
+    {
+      "id": "series",
+      "label": "סדרה",
+      "labelEn": "Series / Playlist",
+      "color": "purple",
+      "token": "--ct-series",
+      "routes": ["/playlists", "/playlists/:slug"]
+    },
+    {
+      "id": "blog",
+      "label": "בלוג",
+      "labelEn": "Blog",
+      "color": "green",
+      "token": "--ct-blog",
+      "routes": ["/blog", "/blog/:slug"]
+    },
+    {
+      "id": "responsa",
+      "label": "שו\"ת",
+      "labelEn": "Responsa / Q&A",
+      "color": "orange",
+      "token": "--ct-responsa",
+      "routes": ["/responsa", "/responsa/:slug"]
+    },
+    {
+      "id": "writing",
+      "label": "כתב",
+      "labelEn": "Writing / Essay",
+      "color": "teal",
+      "token": "--ct-writing",
+      "routes": ["/writings", "/writings/:slug"]
+    },
+    {
+      "id": "term",
+      "label": "מושג",
+      "labelEn": "Concept / Term",
+      "color": "pink",
+      "token": "--ct-term",
+      "routes": ["/terms", "/terms/:slug"]
+    }
+  ],
+  "pages": [
+    {
+      "route": "/",
+      "name": "Home",
+      "features": ["hero", "content-grid", "newsletter", "donate"]
+    },
+    {
+      "route": "/playlists",
+      "name": "Playlists",
+      "features": ["paginated-grid", "category-filter", "search"]
+    },
+    {
+      "route": "/playlists/:slug",
+      "name": "Playlist Detail",
+      "features": ["video-player", "video-list", "view-tracking", "social-share"]
+    },
+    {
+      "route": "/blog",
+      "name": "Blog",
+      "features": ["paginated-grid", "featured-post", "category-filter"]
+    },
+    {
+      "route": "/blog/:slug",
+      "name": "Blog Post",
+      "features": ["markdown-content", "sefaria-links", "social-share", "comments", "breadcrumbs"]
+    },
+    {
+      "route": "/responsa",
+      "name": "Responsa",
+      "features": ["paginated-grid", "question-form", "category-filter", "search"]
+    },
+    {
+      "route": "/responsa/:slug",
+      "name": "Responsa Detail",
+      "features": ["q&a-display", "comments", "social-share", "view-tracking", "breadcrumbs"]
+    },
+    {
+      "route": "/writings",
+      "name": "Writings",
+      "features": ["paginated-grid", "category-filter"]
+    },
+    {
+      "route": "/writings/:slug",
+      "name": "Writing Detail",
+      "features": ["long-form-content", "sefaria-links", "social-share", "breadcrumbs", "view-tracking"]
+    },
+    {
+      "route": "/terms",
+      "name": "Terms / Concepts",
+      "features": ["paginated-grid", "search", "category-filter"]
+    },
+    {
+      "route": "/terms/:slug",
+      "name": "Term Detail",
+      "features": ["definition-display", "related-terms", "breadcrumbs"]
+    },
+    {
+      "route": "/about",
+      "name": "About",
+      "features": ["content-blocks", "cms-driven"]
+    },
+    {
+      "route": "/contact",
+      "name": "Contact",
+      "features": ["contact-form", "validation"]
+    },
+    {
+      "route": "/search",
+      "name": "Search",
+      "features": ["full-text-search", "debounced-input", "results-grid"]
+    },
+    {
+      "route": "/unsubscribe",
+      "name": "Unsubscribe",
+      "features": ["email-form"]
+    }
+  ],
+  "globalFeatures": {
+    "navigation": {
+      "maxItems": 7,
+      "rtl": true,
+      "sticky": true,
+      "mobile": "sheet-drawer"
+    },
+    "darkMode": {
+      "strategy": "class",
+      "persistence": "localStorage",
+      "systemPreference": true,
+      "antiFlash": true
+    },
+    "analytics": ["vercel-analytics", "google-analytics-4", "google-tag-manager", "vercel-speed-insights"],
+    "seo": {
+      "jsonLd": ["Organization", "WebSite", "BlogPosting", "FAQPage", "ItemList"],
+      "sitemap": true,
+      "robots": true,
+      "openGraph": true,
+      "twitter": true
+    },
+    "accessibility": {
+      "ariaLabels": true,
+      "srOnly": true,
+      "wcag": "AA",
+      "keyboardNavigation": true
+    },
+    "cms": "strapi-v5",
+    "comments": {
+      "threaded": true,
+      "maxDepth": 3
+    },
+    "newsletter": {
+      "validation": "zod",
+      "provider": "strapi"
+    },
+    "social": ["facebook", "whatsapp", "telegram", "copy-link"],
+    "externalLinks": {
+      "sefaria": true
+    },
+    "viewTracking": true,
+    "errorBoundaries": true,
+    "suspenseFallbacks": true
+  },
+  "components": {
+    "ui": "shadcn-ui",
+    "icons": "lucide-react",
+    "notifications": "notistack",
+    "markdown": "react-markdown"
+  },
+  "infrastructure": {
+    "hosting": "vercel",
+    "backend": "strapi-v5",
+    "imageOptimization": "next/image",
+    "fonts": "next/font"
+  }
+}

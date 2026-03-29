@@ -95,12 +95,14 @@ export function StrapiImage({
     };
 
     if (fill) {
+        // Parent must be sized (e.g. h-48, aspect-video). Wrapper fills it; Image fill covers the wrapper.
         return (
-            <div className={cn("relative overflow-hidden", getResponsiveClasses())}>
-                <Image 
-                    {...imageProps} 
-                    fill 
+            <div className="relative h-full w-full min-h-0">
+                <Image
+                    {...imageProps}
+                    fill
                     alt={enhancedAlt}
+                    className={getResponsiveClasses()}
                     style={{
                         objectFit,
                         objectPosition: "center",
@@ -119,7 +121,6 @@ export function StrapiImage({
                 alt={enhancedAlt}
                 style={{
                     maxWidth: "100%",
-                    height: "auto",
                     objectFit,
                     objectPosition: "center",
                 }}

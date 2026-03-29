@@ -1,6 +1,5 @@
-import { getBlogsPaginated, getPageBySlug } from "@/data/loaders";
+import { getBlogsPaginated } from "@/data/loaders";
 import Breadcrumbs from "@/components/shared/Breadcrumbs";
-import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import FeaturedPostHero from "@/components/blog/FeaturedPostHero";
 import { Suspense } from "react";
 import { Metadata } from "next";
@@ -19,8 +18,8 @@ export const metadata: Metadata = generateMetadata({
 function HeroSkeleton() {
   return (
     <section className="mb-16">
-      <div className="bg-card rounded-xl overflow-hidden shadow-lg border border-border grid md:grid-cols-2">
-        <div className="h-64 md:h-full min-h-[400px] bg-muted animate-pulse" />
+      <div className="grid grid-cols-1 md:grid-cols-2 md:items-stretch overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
+        <div className="min-h-[min(52vw,320px)] bg-muted animate-pulse sm:min-h-[300px] md:min-h-[400px]" />
         <div className="p-8 md:p-12 flex flex-col justify-center space-y-4">
           <div className="flex gap-2">
             <div className="h-6 w-20 bg-muted rounded-full animate-pulse" />

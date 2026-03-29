@@ -17,6 +17,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
     formats: ['image/avif', 'image/webp'],
+    // StrapiImage defaults to 85; callers also use 75 and 100
+    qualities: [75, 85, 100],
     remotePatterns: [
       strapiRemotePattern,
       // Add specific pattern for Strapi Cloud media URLs

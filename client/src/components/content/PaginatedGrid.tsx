@@ -7,6 +7,7 @@ import type { Blog, Playlist, Video } from "@/types";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 import { GridSkeleton } from "@/components/ui/skeleton";
+import { getStrapiMediaEntryUrl } from "@/lib/strapi-media";
 
 interface PaginatedGridProps {
   initialItems: (Playlist | Video | Blog)[];
@@ -92,7 +93,7 @@ export default function PaginatedGrid({
       case 'video':
         return (item as Video).imageUrl300x400 || (item as Video).imageUrlStandard || '';
       case 'blog':
-        return (item as Blog).coverImage?.url || '';
+        return getStrapiMediaEntryUrl((item as Blog).coverImage);
       default:
         return '';
     }

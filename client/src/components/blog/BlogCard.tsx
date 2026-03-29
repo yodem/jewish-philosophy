@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import type { Blog } from '@/types';
 import { formatDate } from '@/lib/date-utils';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
+import { getStrapiMediaEntryUrl } from '@/lib/strapi-media';
 
 interface BlogCardProps {
   blog: Blog;
@@ -17,7 +18,7 @@ interface BlogCardProps {
  * Green badge accent per DESIGN.md (blog = green).
  */
 export default function BlogCard({ blog, className }: BlogCardProps) {
-  const imageUrl = blog.coverImage?.url || '';
+  const imageUrl = getStrapiMediaEntryUrl(blog.coverImage);
   const authorName = blog.author?.name || 'המערכת';
 
   return (
@@ -30,16 +31,16 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
     >
       {/* Image with hover zoom */}
       <Link href={`/blog/${blog.slug}`} className="block">
-        <div className="h-48 overflow-hidden">
+        <div className="relative h-48 w-full bg-muted">
           {imageUrl ? (
             <StrapiImage
               src={imageUrl}
               alt={blog.title}
-              width={400}
-              height={192}
+              fill
               quality={75}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
               objectFit="cover"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
