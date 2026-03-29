@@ -68,8 +68,6 @@ export default function TermsPageClient() {
     <div className="w-full flex flex-col items-center overflow-hidden">
       {/* Dark gradient hero section */}
       <section className="w-full bg-navbar py-16 md:py-24 px-4 text-center relative overflow-hidden">
-        {/* Pink accent line at bottom of hero */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-ct-term" />
         <div className="max-w-6xl mx-auto">
           <Breadcrumbs
             items={[
@@ -79,7 +77,7 @@ export default function TermsPageClient() {
             variant="onDark"
             className="mb-6 [&_ol]:justify-center"
           />
-          <div className="inline-flex items-center gap-2 bg-ct-term/20 border border-ct-term/40 text-ct-term px-3 py-1 rounded text-sm font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 text-white px-3 py-1 rounded text-sm font-semibold mb-4">
             מושג
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">

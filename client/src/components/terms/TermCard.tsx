@@ -15,12 +15,10 @@ export default function TermCard({ term, className }: TermCardProps) {
     <Link href={`/terms/${term.slug}`} className="h-full block group outline-none">
       <Card
         className={cn(
-          "h-full flex flex-col bg-card border-border/60 hover:shadow-md hover:border-ct-term/40 transition-all duration-200 overflow-hidden relative",
+          "h-full flex flex-col bg-card border-border/60 hover:shadow-md hover:border-border transition-all duration-200 overflow-hidden relative",
           className
         )}
       >
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-ct-term/70 group-hover:bg-ct-term transition-colors duration-300" />
-        
         <CardContent className="flex-grow flex flex-col p-6 pt-7">
           <div className="flex justify-between items-start mb-4 gap-4">
             {term.categories && term.categories.length > 0 ? (
@@ -37,7 +35,7 @@ export default function TermCard({ term, className }: TermCardProps) {
             </div>
           </div>
 
-          <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-ct-term transition-colors">
+          <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-primary transition-colors">
             {term.title}
           </h3>
           
