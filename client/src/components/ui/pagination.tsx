@@ -79,7 +79,7 @@ export function Pagination({
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+    <div className="flex items-center justify-center gap-2">
       <Button
         variant="outline"
         size="icon"
