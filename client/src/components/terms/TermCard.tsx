@@ -19,25 +19,22 @@ export default function TermCard({ term, className }: TermCardProps) {
           className
         )}
       >
-        {/* Pink accent bar at top */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-ct-term/80 group-hover:bg-ct-term transition-colors duration-300" />
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-ct-term/70 group-hover:bg-ct-term transition-colors duration-300" />
         
         <CardContent className="flex-grow flex flex-col p-6 pt-7">
           <div className="flex justify-between items-start mb-4 gap-4">
-            <div className="bg-ct-term/15 text-ct-term px-2.5 py-1 rounded-md text-xs font-bold inline-flex items-center gap-1.5 shrink-0">
-              <BookMarked className="size-3.5" />
-              מושג
-            </div>
-            
-            {/* Categories - forced neutral so it doesn't clash with pink */}
-            {term.categories && term.categories.length > 0 && (
+            {term.categories && term.categories.length > 0 ? (
               <LimitedCategoryList 
                 categories={term.categories} 
                 maxDisplay={1} 
                 isSelectable={false} 
-                forceColorClass="bg-muted/80 text-muted-foreground border border-border/50 text-xs px-2 py-0.5" 
               />
-            )}
+            ) : <div />}
+            
+            <div className="bg-ct-term/10 text-ct-term/90 border border-ct-term/20 px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 shrink-0 uppercase tracking-wider">
+              <BookMarked className="size-3" />
+              מושג
+            </div>
           </div>
 
           <h3 className="text-xl font-bold text-foreground mb-3 leading-tight group-hover:text-ct-term transition-colors">
