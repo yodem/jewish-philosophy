@@ -33,8 +33,8 @@ export default async function TermPage({ params }: TermPageProps) {
       <article className="max-w-4xl mx-auto">
         {/* Header */}
         <header className="mb-10 flex flex-col items-center">
-          <div className="w-full text-right border-r-4 border-ct-term pr-5 mb-8">
-            <div className="bg-ct-term/10 text-ct-term/90 border border-ct-term/20 px-2.5 py-1 rounded text-sm font-bold inline-flex items-center gap-1.5 mb-3 uppercase tracking-wider">
+          <div className="w-full text-right pr-5 mb-8">
+            <div className="bg-muted text-muted-foreground border border-border/50 px-2.5 py-1 rounded text-sm font-bold inline-flex items-center gap-1.5 mb-3 uppercase tracking-wider">
               <BookMarked className="size-4" />
               מושג
             </div>
@@ -72,7 +72,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="rounded-xl p-6 md:p-8 shadow-sm border border-ct-term/20 bg-ct-term/5 border-r-4 border-r-ct-term">
+          <div className="rounded-xl p-6 md:p-8 shadow-sm border border-border/60 bg-card">
             <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap text-justify">
               {term.description}
             </p>
