@@ -76,7 +76,8 @@ export default function TermsPageClient() {
               { label: "בית", href: "/" },
               { label: "מושגים" }
             ]}
-            className="justify-center mb-6 text-white/60"
+            variant="onDark"
+            className="mb-6 [&_ol]:justify-center"
           />
           <div className="inline-flex items-center gap-2 bg-ct-term/20 border border-ct-term/40 text-ct-term px-3 py-1 rounded text-sm font-semibold mb-4">
             מושג

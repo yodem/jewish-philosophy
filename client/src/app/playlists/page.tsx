@@ -27,7 +27,8 @@ export default async function PlaylistsPage() {
               { label: "בית", href: "/" },
               { label: "סדרות" }
             ]}
-            className="justify-center mb-6 text-white/70"
+            variant="onDark"
+            className="mb-6 [&_ol]:justify-center"
           />
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight">
             סדרות שיעורים
