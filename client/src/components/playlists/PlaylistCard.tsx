@@ -28,15 +28,15 @@ export default function PlaylistCard({ playlist, className }: PlaylistCardProps)
         )}
       >
         {/* Image with play icon overlay */}
-        <div className="w-full overflow-hidden relative aspect-[4/3]">
+        <div className="w-full overflow-hidden relative aspect-video bg-muted">
           {imageUrl ? (
             <StrapiImage
               src={imageUrl}
               alt={playlist.title}
               fill
               quality={75}
-              objectFit="contain"
-              className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+              objectFit="cover"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <div className="w-full h-full bg-muted flex items-center justify-center">
