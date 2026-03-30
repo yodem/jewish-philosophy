@@ -75,7 +75,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
         ? {
             images: [
               {
-                url: `${baseUrl}${path}/opengraph-image`,
+                url: `${baseUrl.replace(/\/$/, '')}${url.startsWith('http') ? new URL(url).pathname : (url.startsWith('/') ? url : `/${url}`)}/opengraph-image`,
                 width: 1200,
                 height: 630,
                 alt: title,
