@@ -76,7 +76,7 @@ export default async function TermPage({ params }: TermPageProps) {
 
           {/* Content */}
           <div className="prose prose-lg md:prose-xl max-w-none text-right mx-auto">
-            <div className="relative rounded-2xl p-8 md:p-12 shadow-xl border border-border/40 bg-card/80 backdrop-blur-sm overflow-hidden">
+            <div className="relative rounded-2xl p-4 sm:p-8 md:p-12 shadow-xl border border-border/40 bg-card/80 backdrop-blur-sm overflow-hidden">
               {/* Decorative accent element */}
               <div className="absolute top-0 right-0 w-2 h-full bg-gradient-to-b from-ct-term/40 to-transparent" />
               <div className="absolute top-0 right-0 w-32 h-32 bg-ct-term/[0.03] rounded-bl-full -z-10" />
@@ -111,6 +111,7 @@ export async function generateMetadata({ params }: TermPageProps): Promise<Metad
     description,
     url: `/terms/${slug}`,
     type: 'article',
+    useRouteOgImage: true,
     publishedTime: term.publishedAt,
     modifiedTime: term.updatedAt,
     authors: term.author ? [term.author.name] : undefined,
