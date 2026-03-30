@@ -4,7 +4,6 @@ import { generateBlogDescription, truncateForOg, wrapOgText } from '@/lib/seo-he
 import { getStrapiMediaEntryUrl, resolveStrapiAssetUrl } from '@/lib/strapi-media';
 import { generateOGImageResponse } from '@/lib/og-image-generator';
 
-export const runtime = 'edge';
 export const contentType = 'image/png';
 export const revalidate = 86400; // Cache for 24 hours
 export const size = { width: 1200, height: 630 };
