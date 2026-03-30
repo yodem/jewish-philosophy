@@ -158,7 +158,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className="min-h-screen bg-background flex flex-col font-sans">
+      <body className="min-h-screen bg-background flex flex-col font-sans overflow-x-hidden">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
@@ -172,7 +172,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <Suspense fallback={
             <>
-              <nav className="w-full bg-navbar text-navbar-foreground py-4 px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
+              <nav className="w-full bg-navbar text-navbar-foreground py-3 px-3 sm:py-4 sm:px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
                 <div className="animate-pulse h-8 w-32 bg-white/20 rounded" />
               </nav>
               <main className="flex-1 flex flex-col w-full">

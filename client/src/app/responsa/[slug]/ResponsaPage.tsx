@@ -79,7 +79,7 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 overflow-x-hidden">
       <JsonLd data={structuredData} />
       {responsa && <ViewCountTracker contentType="responsas" contentId={responsa.id.toString()} />}
       <Breadcrumbs items={[
@@ -104,8 +104,15 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
             </div>
           )}
 
-          <div className="prose prose-lg max-w-none dark:prose-invert bg-muted dark:bg-card p-6 rounded-lg text-justify overflow-hidden">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <div className="prose prose-lg max-w-none dark:prose-invert bg-muted dark:bg-card p-6 rounded-lg text-justify overflow-hidden overflow-wrap-anywhere">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                a: ({ children, href }) => (
+                  <a href={href} className="block mt-1 break-all">{children}</a>
+                )
+              }}
+            >
               {content}
             </ReactMarkdown>
           </div>

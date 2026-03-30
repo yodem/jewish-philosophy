@@ -20,11 +20,11 @@ export default function CommentContent({
   };
 
   return (
-    <div className={`${sizeClasses[size]} dark:prose-invert text-justify overflow-hidden ${className}`}>
+    <div className={`${sizeClasses[size]} dark:prose-invert text-justify overflow-hidden overflow-wrap-anywhere ${className}`}>
       <ReactMarkdown
         components={{
           a: ({ children, href }) => {
-            return <span className="flex"><Link href={href || '/'}><span>{children}</span></Link></span>
+            return <Link href={href || ''} className="block mt-1 break-all">{children}</Link>
           }
         }}
         remarkPlugins={[remarkGfm]}
