@@ -50,7 +50,7 @@ export default function ResponsaPageClient({ responsa, slug }: ResponsaPageClien
             </div>
           )}
 
-          <div className="prose prose-lg max-w-none dark:prose-invert bg-muted dark:bg-card p-6 rounded-lg text-justify overflow-hidden">
+          <div className="prose prose-lg max-w-none dark:prose-invert bg-muted dark:bg-card p-6 rounded-lg text-justify overflow-hidden break-words">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {content}
             </ReactMarkdown>

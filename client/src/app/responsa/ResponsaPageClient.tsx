@@ -114,7 +114,7 @@ export default function ResponsaPageClient() {
         </section>
 
         {/* Content Card */}
-        <section className="max-w-6xl mx-auto px-4 pb-8 w-full">
+        <section className="max-w-6xl mx-auto px-4 pb-8 w-full overflow-x-hidden">
           <div className="bg-card rounded-3xl shadow-lg overflow-hidden border border-border">
             {/* Table Header (Desktop) */}
             <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-5 bg-muted border-b border-border text-muted-foreground font-bold text-sm">
@@ -208,7 +208,7 @@ export default function ResponsaPageClient() {
 
             {/* Pagination */}
             {meta.pagination.pageCount > 1 && (
-              <div className="bg-muted px-8 py-6 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 border-t border-border">
+              <div className="bg-muted px-4 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-4 border-t border-border">
                 <Pagination
                   currentPage={meta.pagination.page}
                   totalPages={meta.pagination.pageCount}
@@ -222,7 +222,7 @@ export default function ResponsaPageClient() {
           </div>
 
           {/* Dark CTA Section */}
-          <div className="mt-12 bg-navbar rounded-3xl p-8 relative overflow-hidden shadow-lg">
+          <div className="mt-12 bg-navbar rounded-3xl p-4 sm:p-8 relative overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-right">
                 <h2 className="text-2xl font-bold text-white mb-2">לא מצאת תשובה לשאלתך?</h2>
