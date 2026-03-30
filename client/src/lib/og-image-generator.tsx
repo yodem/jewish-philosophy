@@ -110,6 +110,32 @@ export function createFallback(text: string, background: string): React.ReactEle
   );
 }
 
-export function generateOGImageResponse(element: React.ReactElement) {
-  return new ImageResponse(element, OG_SIZE);
+export async function generateOGImageResponse(element: React.ReactElement) {
+  const rubikRegular = fetch(
+    new URL('./Rubik-Regular.ttf', import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
+  const rubikBold = fetch(
+    new URL('./Rubik-Bold.ttf', import.meta.url)
+  ).then((res) => res.arrayBuffer());
+
+  const [regularFont, boldFont] = await Promise.all([rubikRegular, rubikBold]);
+
+  return new ImageResponse(element, {
+    ...OG_SIZE,
+    fonts: [
+      {
+        name: 'Rubik',
+        data: regularFont,
+        style: 'normal',
+        weight: 400,
+      },
+      {
+        name: 'Rubik',
+        data: boldFont,
+        style: 'normal',
+        weight: 700,
+      },
+    ],
+  });
 }

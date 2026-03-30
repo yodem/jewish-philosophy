@@ -12,6 +12,7 @@ export interface SEOData {
   tags?: string[];
   keywords?: string;
   locale?: string;
+  useRouteOgImage?: boolean;
 }
 
 export function generateMetadata(seoData: SEOData): Metadata {
@@ -29,7 +30,8 @@ export function generateMetadata(seoData: SEOData): Metadata {
     authors,
     tags,
     keywords,
-    locale = 'he_IL'
+    locale = 'he_IL',
+    useRouteOgImage = false,
   } = seoData;
 
   const fullUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
@@ -58,28 +60,41 @@ export function generateMetadata(seoData: SEOData): Metadata {
       siteName,
       locale,
       type,
-      images: imageUrl
-        ? [
-            {
-              url: imageUrl,
-              width: 1200,
-              height: 630,
-              alt: title,
-            },
-          ]
-        : [],
+      ...(!useRouteOgImage && imageUrl
+        ? {
+            images: [
+              {
+                url: imageUrl,
+                width: 1200,
+                height: 630,
+                alt: title,
+              },
+            ],
+          }
+        : useRouteOgImage 
+        ? {
+            images: [
+              {
+                url: `${baseUrl.replace(/\/$/, '')}${url.startsWith('http') ? new URL(url).pathname : (url.startsWith('/') ? url : `/${url}`)}/opengraph-image`,
+                width: 1200,
+                height: 630,
+                alt: title,
+              }
+            ]
+          }
+        : {}),
       ...(publishedTime && { publishedTime }),
       ...(modifiedTime && { modifiedTime }),
       ...(authors && { authors }),
       ...(tags && { tags }),
     },
     twitter: {
-      card: imageUrl ? 'summary_large_image' : 'summary',
+      card: useRouteOgImage || imageUrl ? 'summary_large_image' : 'summary',
       title,
       description,
       creator: '@shalomtzadik',
       site: '@shalomtzadik',
-      ...(imageUrl && { images: [imageUrl] }),
+      ...((useRouteOgImage || imageUrl) && { images: [imageUrl || `${baseUrl}/opengraph-image.png`] }),
     },
     robots: {
       index: true,
