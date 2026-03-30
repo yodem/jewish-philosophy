@@ -82,7 +82,16 @@ export function generateMetadata(seoData: SEOData): Metadata {
               }
             ]
           }
-        : {}),
+        : {
+            images: [
+              {
+                url: `${baseUrl.replace(/\/$/, '')}/opengraph-image.png`,
+                width: 512,
+                height: 512,
+                alt: siteName,
+              }
+            ]
+          }),
       ...(publishedTime && { publishedTime }),
       ...(modifiedTime && { modifiedTime }),
       ...(authors && { authors }),
@@ -94,7 +103,7 @@ export function generateMetadata(seoData: SEOData): Metadata {
       description,
       creator: '@shalomtzadik',
       site: '@shalomtzadik',
-      ...((useRouteOgImage || imageUrl) && { images: [imageUrl || `${baseUrl}/opengraph-image.png`] }),
+      images: [imageUrl || `${baseUrl.replace(/\/$/, '')}/opengraph-image.png`],
     },
     robots: {
       index: true,
