@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: ResponsaPageProps): Promise<M
     description: questionPreview,
     url: `/responsa/${slug}`,
     type: "article",
+    useRouteOgImage: true,
     publishedTime: responsa.publishedAt,
     modifiedTime: responsa.updatedAt,
     authors: ['שלום צדיק'],

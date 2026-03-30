@@ -46,6 +46,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     url: `/blog/${slug}`,
     type: "article",
     image: imageUrl,
+    useRouteOgImage: true,
     publishedTime: blog.publishedAt,
     authors: [blog.author.name],
     tags: blog.categories?.map((cat: Category) => cat.name),

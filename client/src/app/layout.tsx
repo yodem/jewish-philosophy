@@ -11,6 +11,7 @@ import LayoutClient from './LayoutClient';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { rubik } from '@/lib/fonts';
 
+// Icon attribution (source-only): <a href="https://www.flaticon.com/free-icons/judaism" title="Judaism icons">Judaism icons created by Freepik - Flaticon</a>
 export const metadata: Metadata = {
   title: {
     default: 'בית | שלום צדיק - פילוסופיה דתית',
@@ -37,7 +38,6 @@ export const metadata: Metadata = {
     siteName: 'פילוסופיה דתית',
     locale: 'he_IL',
     type: 'website',
-    images: [],
   },
   twitter: {
     card: 'summary',
@@ -62,7 +62,8 @@ export const metadata: Metadata = {
     'msapplication-TileColor': '#1e3a8a',
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
-    'google-site-verification': 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs'
+    'google-site-verification': 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs',
+    'icon-attribution': 'Judaism icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/judaism)',
   },
   verification: {
     google: 'Zq_s80KKBqFbAgDBh_VH4Ju2-viBuEf24eEZMC26BIs',

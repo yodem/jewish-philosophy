@@ -13,6 +13,7 @@ import { Article, Book, WithContext } from "schema-dts";
 import { BASE_URL } from "../../../../consts";
 import ReactMarkdown from "react-markdown";
 import ViewCountTracker from "@/components/shared/ViewCountTracker";
+import { extractTextFromMarkdown } from "@/lib/seo-helpers";
 
 interface WritingPageProps {
   params: Promise<{ slug: string }>;
@@ -31,10 +32,11 @@ export async function generateMetadata({ params }: WritingPageProps): Promise<Me
 
   return createMetadata({
     title: `${writing.title} | כתבים | שלום צדיק - פילוסופיה דתית`,
-    description: 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
+    description: extractTextFromMarkdown(writing.description || '', 180) || 'פלטפורמה מקוונת ללימוד פילוסופיה דתית',
     url: `/writings/${slug}`,
     type: "article",
     image: getImageUrl(writing.image?.url),
+    useRouteOgImage: true,
     publishedTime: writing.publishedAt,
     authors: [writing.author.name],
     tags: writing.categories?.map(cat => cat.name) || undefined,
