@@ -18,7 +18,7 @@ export default async function LayoutShell({ children }: { children: React.ReactN
       {banner && banner.isActive && (
         <Banner banner={banner} />
       )}
-      <main className="flex-1 flex flex-col w-full pb-12">
+      <main className="flex-1 flex flex-col w-full pb-12 overflow-x-hidden">
         {children}
       </main>
     </>
