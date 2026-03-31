@@ -32,17 +32,17 @@ const Navbar: React.FC<NavbarProps> = ({ header }) => {
   }, []);
 
   return (
-    <nav className="w-full bg-navbar text-navbar-foreground py-4 px-4 sm:px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50">
-      <div className="flex justify-between items-center gap-6">
+    <nav className="w-full bg-navbar text-navbar-foreground py-3 px-3 sm:py-4 sm:px-8 flex items-center justify-between shadow-lg border-b border-white/10 sticky top-0 z-50 overflow-hidden">
+      <div className="flex justify-between items-center gap-4 sm:gap-6 min-w-0">
         {/* Logo */}
         {header?.logo?.image?.url && (
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center shrink-0">
             <StrapiImage
               src={header.logo.image.url}
               alt={header.logo.logoText}
               width={200}
               height={60}
-              className='cursor-pointer'
+              className='cursor-pointer max-w-[120px] sm:max-w-[160px] lg:max-w-[200px] h-auto'
             />
           </Link>
         )}

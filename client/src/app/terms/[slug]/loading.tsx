@@ -26,7 +26,7 @@ export default function TermLoadingPage() {
 
         {/* Content */}
         <div className="prose prose-lg max-w-none text-right mx-auto">
-          <div className="bg-gradient-to-br from-card to-accent/10 rounded-xl p-8 shadow-sm border border-border">
+          <div className="bg-gradient-to-br from-card to-accent/10 rounded-xl p-4 sm:p-8 shadow-sm border border-border">
             <div className="space-y-4">
               <Skeleton className="h-6 w-full" />
               <Skeleton className="h-6 w-5/6" />
