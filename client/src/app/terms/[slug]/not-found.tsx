@@ -56,8 +56,8 @@ export default function TermNotFound() {
           </Button>
         </div>
 
-        <div className="mt-12 p-6 bg-accent/10 rounded-lg">
-          <h2 className="text-lg font-semibold mb-2 text-primary">
+        <div className="mt-12 p-6 bg-muted/50 border border-border rounded-lg">
+          <h2 className="text-lg font-semibold mb-2 text-foreground">
             עזרה נוספת
           </h2>
           <p className="text-muted-foreground text-sm">

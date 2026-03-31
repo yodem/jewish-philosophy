@@ -8,7 +8,7 @@ const Subscribe = dynamic(
     import("@/components/forms/Subscribe").then((mod) => mod.Subscribe),
   {
     loading: () => (
-      <section className="animate-pulse border-t border-border bg-muted/50 p-8 md:p-12">
+      <section className="animate-pulse border-t border-border bg-muted/50 p-4 sm:p-8 md:p-12">
         <div className="mx-auto max-w-2xl text-center">
           <div className="mx-auto mb-2 h-7 w-48 rounded bg-muted" />
           <div className="mx-auto mb-8 h-5 w-80 rounded bg-muted" />
@@ -32,7 +32,7 @@ export default function HomePageClient() {
         placeholder="כתובת האימייל שלך"
         buttonText="הרשמה"
       />
-      <div className="p-8 md:p-12">
+      <div className="p-4 sm:p-8 md:p-12">
         <DonateButton />
       </div>
     </>

@@ -29,3 +29,13 @@ settings.json
 # Logs
 *.log
 logs/
+
+# Playwright MCP
+client/.playwright-mcp/
+
+# Backup files
+server/public/uploads_backup_*/
+
+# Diff/patch files
+*.patch
+pr_diff*.txt
