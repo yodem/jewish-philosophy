@@ -159,7 +159,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
       </head>
-      <body className="min-h-screen bg-background flex flex-col font-sans overflow-x-hidden">
+      <body className="min-h-screen bg-background flex flex-col font-sans">
         {/* Google Tag Manager (noscript) */}
         <noscript>
           <iframe
