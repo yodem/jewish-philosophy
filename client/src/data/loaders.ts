@@ -24,7 +24,7 @@ const pageBySlugQuery = (slug: string) =>
   qs.stringify({
     filters: {
       slug: {
-        $eq: slug,
+        $eqi: slug,
       },
     },
     populate: {
@@ -143,7 +143,7 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
 export async function getPlaylistBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
-      slug: { $eq: slug },
+      slug: { $eqi: slug },
     },
     populate: { 
       videos: { 
@@ -218,7 +218,7 @@ export async function getAllPlaylistVideos(playlistId: number) {
 export async function getVideoBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
-      slug: { $eq: slug },
+      slug: { $eqi: slug },
       title: {
         $ne: 'Private video'
       }
@@ -316,7 +316,7 @@ export async function getBlogsPaginated(page: number = 1, pageSize: number = 12)
 export async function getBlogBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
-      slug: { $eq: slug },
+      slug: { $eqi: slug },
     },
     populate: blogPopulate,
   });
@@ -416,7 +416,7 @@ export async function getAllResponsasForSitemap() {
 export async function getResponsaBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
-      slug: { $eq: slug },
+      slug: { $eqi: slug },
       publishedAt: { $notNull: true },
     },
     populate: {
@@ -497,7 +497,7 @@ export async function createThread(data: { answer: string; answerer: string; par
 export async function getBlogCommentsBySlug(slug: string) {
   const query = qs.stringify({
     filters: {
-      blogSlug: { $eq: slug },
+      blogSlug: { $eqi: slug },
       publishedAt: { $notNull: true }
     },
     sort: ['createdAt:asc'],
@@ -563,7 +563,7 @@ export async function getResponsaComments(responsaId: number) {
 export async function getResponsaCommentsBySlug(responsaSlug: string) {
   const query = qs.stringify({
     filters: {
-      responsaSlug: { $eq: responsaSlug },
+      responsaSlug: { $eqi: responsaSlug },
       publishedAt: { $notNull: true }
     },
     sort: ['createdAt:asc'],
@@ -717,7 +717,7 @@ export async function getWritingsByType(type: 'book' | 'article', page: number =
 export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   const query = qs.stringify({
     filters: {
-      slug: { $eq: slug },
+      slug: { $eqi: slug },
     },
     populate: {
       author: true,
@@ -811,7 +811,7 @@ export async function getTermBySlug(slug: string): Promise<Term | null> {
   const query = qs.stringify({
     filters: {
       slug: {
-        $eq: slug,
+        $eqi: slug,
       },
     },
     populate: {

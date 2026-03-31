@@ -87,7 +87,7 @@ function SubscribeInner({
       className="p-4 md:p-8 w-full max-w-6xl mx-auto"
       aria-label="הרשמה לניוזלטר"
     >
-      <div className="mx-auto max-w-3xl text-center bg-card rounded-2xl shadow-md border border-border p-8 md:p-12">
+      <div className="mx-auto max-w-3xl text-center bg-card rounded-2xl shadow-md border border-border p-4 sm:p-8 md:p-12">
         <h3 className="mb-2 text-2xl font-bold text-foreground">{headline}</h3>
         <p className="mb-8 text-muted-foreground">{content}</p>
         <form

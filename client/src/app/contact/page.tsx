@@ -16,7 +16,7 @@ export default function ContactPage() {
       <div className="max-w-4xl mx-auto">
         {/* Contact Card */}
         <div className="bg-card rounded-xl shadow-lg overflow-hidden mb-12">
-          <div className="p-8 md:p-12">
+          <div className="p-4 sm:p-8 md:p-12">
             <div className="text-center mb-10">
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 צרו קשר
