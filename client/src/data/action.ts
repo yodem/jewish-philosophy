@@ -388,19 +388,19 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
   try {
     const { title, content, questioneer, questioneerEmail } = validatedFields.data;
 
-    // Create a slug from the title (for Hebrew, add a timestamp to ensure uniqueness)
-    // Transliterate Hebrew characters to Latin or use timestamp as fallback
+    // Create a slug — strip everything except ASCII letters, digits, hyphens
     const timestamp = Date.now();
     let slug = title
       .toLowerCase()
-      .replace(/[^\w\s\-\u0590-\u05FF]/g, '')
-      .replace(/\s+/g, '-');
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
 
-    // If slug is empty or very short (likely because of Hebrew chars), use a timestamp prefix
+    // Hebrew titles produce empty slugs after stripping, so use timestamp
     if (slug.length < 3) {
       slug = `question-${timestamp}`;
     } else {
-      // Otherwise, append timestamp to ensure uniqueness
       slug = `${slug}-${timestamp}`;
     }
 
