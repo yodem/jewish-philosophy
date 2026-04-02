@@ -6,26 +6,13 @@ import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::responsa.responsa', ({ strapi }) => ({
   async create(ctx) {
-    console.log('📥 Responsa create called');
-    console.log('  Query params:', JSON.stringify(ctx.query));
-    console.log('  Body data keys:', Object.keys(ctx.request.body?.data || {}));
-
     // Auto-publish user-submitted questions so they appear on the site immediately
     if (!ctx.query.status) {
-      console.log('  No status in query — setting to published');
       ctx.query.status = 'published';
     }
 
     // Call the default create method first
     const response = await super.create(ctx);
-
-    console.log('✅ Responsa created:', JSON.stringify({
-      id: response.data?.id,
-      documentId: response.data?.documentId,
-      title: response.data?.title,
-      slug: response.data?.slug,
-      publishedAt: response.data?.publishedAt,
-    }));
 
     try {
       // Get the created responsa with its data
