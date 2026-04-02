@@ -423,9 +423,6 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       data.questioneerEmail = questioneerEmail;
     }
 
-    console.log('[submitQuestion] Sending to:', `${BASE_URL}/api/responsas`);
-    console.log('[submitQuestion] Data:', JSON.stringify(data));
-
     const responseData = await fetchAPI(`${BASE_URL}/api/responsas`, {
       method: 'POST',
       body: {
@@ -433,10 +430,8 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       },
     });
 
-    console.log('[submitQuestion] Response:', JSON.stringify(responseData));
-
     if (responseData.error || (responseData.status && responseData.status >= 400)) {
-      console.error('[submitQuestion] Error response:', responseData);
+      console.error('Error submitting question:', responseData);
       return {
         ...prevState,
         strapiErrors: responseData.error?.message || "Unknown error",
