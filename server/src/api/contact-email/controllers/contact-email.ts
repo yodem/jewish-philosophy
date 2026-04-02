@@ -38,11 +38,26 @@ ${message}
 נשלח דרך טופס צרו קשר באתר פילוסופיה יהודית
       `.trim();
 
-      // Send the email using Strapi's email service (Strapi v5 syntax)
+      // Resolve email config — try both possible Strapi v5 config paths
+      const toAddress =
+        strapi.config.get('plugin::email.config.settings.supportAddress') ||
+        strapi.config.get('plugin::email.settings.supportAddress') ||
+        process.env.RESEND_SUPPORT_TO_EMAIL;
+      const fromAddress =
+        strapi.config.get('plugin::email.config.settings.defaultFrom') ||
+        strapi.config.get('plugin::email.settings.defaultFrom') ||
+        process.env.RESEND_DEFAULT_FROM_EMAIL;
+
+      if (!toAddress || !fromAddress) {
+        console.error('Email config missing — to:', toAddress, 'from:', fromAddress);
+        return ctx.internalServerError('Email configuration is incomplete');
+      }
+
+      // Send the email using Strapi's email service
       await strapi.plugins.email.services.email.send({
-        to: strapi.config.get('plugin::email.settings.supportAddress'), // Support email address
-        from: strapi.config.get('plugin::email.settings.defaultFrom'), // Use configured default from
-        replyTo: strapi.config.get('plugin::email.settings.defaultFrom'), // User's email for easy reply
+        to: toAddress,
+        from: fromAddress,
+        replyTo: fromAddress,
         subject: emailSubject,
         text: emailBody,
         html: emailBody.replace(/\n/g, '<br>')

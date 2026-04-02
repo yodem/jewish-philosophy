@@ -576,7 +576,7 @@ export interface ApiEmailIssueCategoryEmailIssueCategory
     singularName: 'email-issue-category';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;

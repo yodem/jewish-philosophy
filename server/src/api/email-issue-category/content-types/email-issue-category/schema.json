@@ -8,7 +8,7 @@
     "description": "Categories for contact form issues to help with email filtering"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {

@@ -494,6 +494,37 @@ test.describe('Contact Form', () => {
     // May or may not be enabled depending on category selection
     await page.waitForTimeout(500);
   });
+
+  test('form submission shows success or error feedback', async ({ page }) => {
+    await page.goto('/contact');
+    await page.locator('#name').fill('בודק אוטומטי');
+    await page.locator('#email').fill('test@example.com');
+    await page.locator('#subject').fill('בדיקה אוטומטית');
+    await page.locator('#message').fill('זוהי הודעת בדיקה אוטומטית ארוכה מספיק.');
+
+    // Select a category
+    const categoryBtn = page.locator('button[role="combobox"]').first();
+    if (await categoryBtn.count() === 0) {
+      test.skip();
+      return;
+    }
+    await categoryBtn.click();
+    const firstOption = page.locator('[role="option"]').first();
+    if (await firstOption.count() === 0) {
+      test.skip();
+      return;
+    }
+    await firstOption.click();
+    await page.waitForTimeout(300);
+
+    const submitBtn = page.getByText('שלחו הודעה');
+    await expect(submitBtn).toBeEnabled({ timeout: 3000 });
+    await submitBtn.click();
+
+    // Should show either success or error snackbar (notistack)
+    const snackbar = page.locator('#notistack-snackbar, [class*="notistack"]').first();
+    await expect(snackbar).toBeVisible({ timeout: 15000 });
+  });
 });
 
 // ─── Search ────────────────────────────────────────────────────

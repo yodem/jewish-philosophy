@@ -37,13 +37,22 @@ export async function fetchAPI(url: string, options: FetchAPIOptions) {
   try {
     const response = await fetch(url, {...requestInit, next: { ...requestInit?.next}});
     const contentType = response.headers.get("content-type");
-    if (
-      contentType &&
-      contentType.includes("application/json") &&
-      response.ok
-    ) {
-      return await response.json();
+    const isJson = contentType && contentType.includes("application/json");
+
+    if (isJson) {
+      const data = await response.json();
+      if (!response.ok) {
+        // Strapi returns { error: { message, status, name } } on errors
+        // If it doesn't have that shape, synthesize it
+        return data.error
+          ? data
+          : { error: { message: data.message || response.statusText, status: response.status } };
+      }
+      return data;
     } else {
+      if (!response.ok) {
+        return { error: { message: response.statusText, status: response.status } };
+      }
       return { status: response.status, statusText: response.statusText };
     }
   } catch (error) {
