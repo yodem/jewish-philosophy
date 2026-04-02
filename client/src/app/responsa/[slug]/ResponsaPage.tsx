@@ -79,7 +79,7 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12 overflow-x-hidden">
+    <div className="w-full md:max-w-2xl lg:max-w-4xl md:min-w-[640px] mx-auto px-4 sm:px-6 py-8 md:py-12 overflow-x-hidden">
       <JsonLd data={structuredData} />
       {responsa && <ViewCountTracker contentType="responsas" contentId={responsa.id.toString()} />}
       <Breadcrumbs items={[
@@ -88,7 +88,7 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
         { label: title }
       ]} />
 
-      <div className="max-w-3xl mx-auto">
+      <div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4 text-foreground">{title}</h1>
 
