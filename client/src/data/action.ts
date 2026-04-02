@@ -310,11 +310,11 @@ export async function submitContactAction(prevState: ContactState, formData: For
       },
     });
 
-    if (responseData.error) {
+    if (responseData.error || (responseData.status && responseData.status >= 400)) {
       console.error('Error sending email:', responseData);
       return {
         ...prevState,
-        strapiErrors: responseData.error?.message || "Unknown error",
+        strapiErrors: responseData.error?.message || responseData.statusText || "Unknown error",
         errorMessage: "שגיאה בשליחת ההודעה. אנא נסו שנית.",
         successMessage: "",
       };
@@ -423,6 +423,9 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       data.questioneerEmail = questioneerEmail;
     }
 
+    console.log('[submitQuestion] Sending to:', `${BASE_URL}/api/responsas`);
+    console.log('[submitQuestion] Data:', JSON.stringify(data));
+
     const responseData = await fetchAPI(`${BASE_URL}/api/responsas`, {
       method: 'POST',
       body: {
@@ -430,8 +433,10 @@ export async function submitQuestionAction(prevState: QuestionState, formData: F
       },
     });
 
-    if (responseData.error) {
-      console.error('Error response:', responseData);
+    console.log('[submitQuestion] Response:', JSON.stringify(responseData));
+
+    if (responseData.error || (responseData.status && responseData.status >= 400)) {
+      console.error('[submitQuestion] Error response:', responseData);
       return {
         ...prevState,
         strapiErrors: responseData.error?.message || "Unknown error",
