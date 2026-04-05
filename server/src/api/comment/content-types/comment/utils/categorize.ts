@@ -13,6 +13,11 @@ interface StrapiInstance {
     findMany: (uid: string, options?: object) => Promise<any[]>;
     update: (uid: string, id: number, options: object) => Promise<any>;
   };
+  db: {
+    query: (uid: string) => {
+      update: (options: { where: object; data: object }) => Promise<any>;
+    };
+  };
   log: {
     info: (msg: string) => void;
     warn: (msg: string) => void;
@@ -111,8 +116,9 @@ export async function categorizeResponsa(
     data: { categories: categoryIds },
   });
 
-  // Restore views — entityService.update may reset integer fields with defaults
-  await strapi.entityService.update(RESPONSA_UID, responsaId, {
+  // Restore views using low-level db.query (bypasses entityService defaults reset)
+  await strapi.db.query(RESPONSA_UID).update({
+    where: { id: responsaId },
     data: { views: currentViews },
   });
 

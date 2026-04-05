@@ -147,7 +147,7 @@ export default function ResponsaPageClient() {
                 responsas.map((responsa) => (
                   <div
                     key={responsa.id}
-                    className="px-4 md:px-8 py-4 md:py-6 hover:bg-accent/10 transition-colors cursor-pointer group"
+                    className="px-4 md:px-8 py-4 md:py-6 hover:bg-muted/50 transition-colors cursor-pointer group"
                     onClick={() => router.push(`/responsa/${responsa.slug}`)}
                   >
                     {/* Desktop: grid layout */}
