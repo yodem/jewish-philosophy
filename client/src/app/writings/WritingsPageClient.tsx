@@ -240,7 +240,7 @@ export default function WritingsPageClient() {
                     writings.map((writing) => (
                       <TableRow
                         key={writing.id}
-                        className="cursor-pointer hover:bg-muted/50 transition-colors group"
+                        className="cursor-pointer hover:bg-muted dark:hover:bg-muted/80 transition-colors group"
                         onClick={() => router.push(`/writings/${writing.slug}`)}
                       >
                         <TableCell className="px-6 py-5">
