@@ -36,19 +36,31 @@ export async function categorizeResponsa(
   responsaId: number,
   commentAnswerText: string
 ): Promise<void> {
-  // Use entityService to find by numeric ID, but fetch documentId + views
-  const responsa = await strapi.entityService.findOne(
+  // Step 1: Get documentId from numeric ID (entityService knows numeric IDs)
+  const basicResponsa = await strapi.entityService.findOne(
     RESPONSA_UID,
     responsaId,
-    {
-      populate: { categories: { fields: ["id", "name"] } },
-      fields: ["id", "documentId", "title", "content", "views"],
-    }
+    { fields: ["id", "documentId"] }
   );
+
+  if (!basicResponsa?.documentId) {
+    strapi.log.warn(
+      `${LOG_PREFIX} Responsa ${responsaId} not found — skipping`
+    );
+    return;
+  }
+
+  // Step 2: Read the PUBLISHED version via Document Service (has real views count)
+  const responsa = await strapi.documents(RESPONSA_UID).findOne({
+    documentId: basicResponsa.documentId,
+    status: "published",
+    fields: ["id", "documentId", "title", "content", "views"],
+    populate: { categories: { fields: ["id", "name"] } },
+  });
 
   if (!responsa) {
     strapi.log.warn(
-      `${LOG_PREFIX} Responsa ${responsaId} not found — skipping`
+      `${LOG_PREFIX} Published responsa ${responsaId} not found — skipping`
     );
     return;
   }
