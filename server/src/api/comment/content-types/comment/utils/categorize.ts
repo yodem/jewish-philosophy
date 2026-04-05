@@ -8,16 +8,15 @@ import { buildCategoryPrompt } from "./prompt";
 import { generateContent, parseCategories, type GenerateResult } from "./gemini";
 
 interface StrapiInstance {
+  documents: (uid: string) => {
+    findOne: (options: { documentId: string; fields?: string[]; populate?: object; status?: string }) => Promise<any>;
+    findMany: (options?: { fields?: string[]; populate?: object; limit?: number; status?: string }) => Promise<any[]>;
+    update: (options: { documentId: string; data: object }) => Promise<any>;
+  };
   entityService: {
     findOne: (uid: string, id: number, options?: object) => Promise<any>;
     findMany: (uid: string, options?: object) => Promise<any[]>;
     update: (uid: string, id: number, options: object) => Promise<any>;
-  };
-  db: {
-    query: (uid: string) => {
-      findOne: (options: { where: object; select?: string[] }) => Promise<any>;
-      update: (options: { where: object; data: object }) => Promise<any>;
-    };
   };
   log: {
     info: (msg: string) => void;
@@ -28,6 +27,7 @@ interface StrapiInstance {
 
 interface Category {
   id: number;
+  documentId: string;
   name: string;
 }
 
@@ -36,12 +36,13 @@ export async function categorizeResponsa(
   responsaId: number,
   commentAnswerText: string
 ): Promise<void> {
+  // Use entityService to find by numeric ID, but fetch documentId + views
   const responsa = await strapi.entityService.findOne(
     RESPONSA_UID,
     responsaId,
     {
       populate: { categories: { fields: ["id", "name"] } },
-      fields: ["id", "title", "content", "views"],
+      fields: ["id", "documentId", "title", "content", "views"],
     }
   );
 
@@ -59,9 +60,10 @@ export async function categorizeResponsa(
     return;
   }
 
+  // Fetch categories with documentId (needed for Document Service set syntax)
   const allCategories: Category[] = await strapi.entityService.findMany(
     CATEGORY_UID,
-    { fields: ["id", "name"], pagination: { limit: -1 } }
+    { fields: ["id", "documentId", "name"], pagination: { limit: -1 } }
   );
 
   if (!allCategories?.length) {
@@ -107,28 +109,22 @@ export async function categorizeResponsa(
     return;
   }
 
-  const categoryIds = allCategories
-    .filter((c) => matchedNames.includes(c.name))
-    .map((c) => c.id);
+  const matchingCategories = allCategories.filter((c) =>
+    matchedNames.includes(c.name)
+  );
+  const categoryDocumentIds = matchingCategories.map((c) => c.documentId);
 
-  // Read views directly from DB before update (entityService.update resets integer defaults)
-  const dbResponsa = await strapi.db.query(RESPONSA_UID).findOne({
-    where: { id: responsaId },
-    select: ["views"],
-  });
-  const currentViews = dbResponsa?.views ?? 0;
-
-  await strapi.entityService.update(RESPONSA_UID, responsaId, {
-    data: { categories: categoryIds },
-  });
-
-  // Restore views using low-level db.query (bypasses entityService defaults reset)
-  await strapi.db.query(RESPONSA_UID).update({
-    where: { id: responsaId },
-    data: { views: currentViews },
+  // Single atomic update via Document Service — same approach as analyze-responsas.ts script
+  // Uses documentId + set syntax + views in same payload to prevent race conditions on PostgreSQL
+  await strapi.documents(RESPONSA_UID).update({
+    documentId: responsa.documentId,
+    data: {
+      categories: { set: categoryDocumentIds },
+      views: responsa.views ?? 0,
+    },
   });
 
   strapi.log.info(
-    `${LOG_PREFIX} Responsa "${responsa.title}" → added categories: [${matchedNames.join(", ")}] (views preserved: ${currentViews})`
+    `${LOG_PREFIX} Responsa "${responsa.title}" → added categories: [${matchedNames.join(", ")}] (views preserved: ${responsa.views ?? 0})`
   );
 }
