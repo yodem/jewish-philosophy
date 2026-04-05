@@ -35,7 +35,7 @@ export async function categorizeResponsa(
     responsaId,
     {
       populate: { categories: { fields: ["id", "name"] } },
-      fields: ["id", "title", "content"],
+      fields: ["id", "title", "content", "views"],
     }
   );
 
@@ -106,7 +106,7 @@ export async function categorizeResponsa(
     .map((c) => c.id);
 
   await strapi.entityService.update(RESPONSA_UID, responsaId, {
-    data: { categories: categoryIds },
+    data: { categories: categoryIds, views: responsa.views ?? 0 },
   });
 
   strapi.log.info(

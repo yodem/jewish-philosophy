@@ -31,6 +31,12 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/responsa/${slug}`);
       }
       revalidatePath("/responsa");
+    } else if (model.includes("writing")) {
+      const slug: string | undefined = entry?.slug;
+      if (slug) {
+        revalidatePath(`/writings/${slug}`);
+      }
+      revalidatePath("/writings");
     } else {
       // Generic full-site revalidation as fallback
       revalidatePath("/", "layout");

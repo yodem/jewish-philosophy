@@ -573,6 +573,33 @@ test.describe('Text is in Plural Form', () => {
   });
 });
 
+// ─── 404 Not Found Pages ──────────────────────────────────────
+
+test.describe('404 Not Found Pages', () => {
+  const notFoundRoutes = [
+    { path: '/blog/non-existent-slug-12345', section: 'Blog', expectedText: 'הפוסט לא נמצא' },
+    { path: '/responsa/non-existent-slug-12345', section: 'Responsa', expectedText: 'השאלה לא נמצאה' },
+    { path: '/writings/non-existent-slug-12345', section: 'Writings', expectedText: 'הכתב לא נמצא' },
+    { path: '/terms/non-existent-slug-12345', section: 'Terms', expectedText: 'המושג לא נמצא' },
+  ];
+
+  for (const route of notFoundRoutes) {
+    test(`${route.section} 404 page shows friendly not-found UI`, async ({ page }) => {
+      await page.goto(route.path, { waitUntil: 'domcontentloaded' });
+      // Use heading role to avoid matching <title> tag
+      await expect(page.getByRole('heading', { name: route.expectedText })).toBeVisible({ timeout: 10000 });
+      // Back to home button
+      await expect(page.getByRole('link', { name: 'חזרה לעמוד הבית' })).toBeVisible();
+      // Help section with contact link
+      const helpSection = page.getByText('עזרה נוספת').locator('..');
+      await expect(page.getByText('עזרה נוספת')).toBeVisible();
+      await expect(helpSection.locator('a[href="/contact"]')).toBeVisible();
+      // Breadcrumbs
+      await expect(page.locator('nav[aria-label="ניווט נתיב הדף"]')).toBeVisible();
+    });
+  }
+});
+
 // ─── Responsive ────────────────────────────────────────────────
 
 test.describe('Responsive Breakpoints', () => {
