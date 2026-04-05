@@ -1,16 +1,13 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ContentNotFound from '@/components/shared/ContentNotFound';
 
-export default function NotFound() {
+export default function AboutNotFound() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-      <h2 className="text-3xl font-bold mb-4 text-foreground">העמוד לא נמצא</h2>
-      <p className="text-muted-foreground mb-8">
-        לא הצלחנו למצוא את העמוד שחיפשת
-      </p>
-      <Button asChild>
-        <Link href="/">חזרה לעמוד הבית</Link>
-      </Button>
-    </div>
+    <ContentNotFound
+      title="העמוד לא נמצא"
+      description="העמוד שחיפשתם אינו קיים או שהוסר מהאתר. ייתכן שהקישור שגוי או שהעמוד עבר לכתובת אחרת."
+      backLabel="חזרה לעמוד הבית"
+      backHref="/"
+      breadcrumbParent={{ label: "אודות", href: "/about" }}
+    />
   );
 }

@@ -7,6 +7,7 @@ import type { Blog } from '@/types';
 import { formatDate } from '@/lib/date-utils';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
 import { getStrapiMediaEntryUrl } from '@/lib/strapi-media';
+import { Eye } from 'lucide-react';
 
 interface BlogCardProps {
   blog: Blog;
@@ -68,9 +69,15 @@ export default function BlogCard({ blog, className }: BlogCardProps) {
           </h3>
         </Link>
 
-        {/* Author + Date */}
-        <div className="text-xs text-muted-foreground mb-4">
-          {authorName} &bull; {formatDate(blog.publishedAt)}
+        {/* Author + Date + Views */}
+        <div className="text-xs text-muted-foreground mb-4 flex items-center gap-2 flex-wrap">
+          <span>{authorName} &bull; {formatDate(blog.publishedAt)}</span>
+          {blog.views != null && blog.views > 0 && (
+            <span className="inline-flex items-center gap-1">
+              <Eye className="size-3" />
+              {blog.views.toLocaleString('he-IL')}
+            </span>
+          )}
         </div>
 
         {/* Description */}

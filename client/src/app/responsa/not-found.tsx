@@ -1,16 +1,13 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ContentNotFound from '@/components/shared/ContentNotFound';
 
-export default function NotFound() {
+export default function ResponsaNotFound() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-20 text-center">
-      <h2 className="text-3xl font-bold mb-4 text-foreground">שאלה לא נמצאה</h2>
-      <p className="text-muted-foreground mb-8">
-        לא הצלחנו למצוא את השאלה שחיפשת
-      </p>
-      <Button asChild>
-        <Link href="/responsa">חזרה לשאלות ותשובות</Link>
-      </Button>
-    </div>
+    <ContentNotFound
+      title="השאלה לא נמצאה"
+      description="השאלה שחיפשתם אינה קיימת או שהוסרה מהאתר. ייתכן שהקישור שגוי או שהשאלה עברה לכתובת אחרת."
+      backLabel="חזרה לשאלות ותשובות"
+      backHref="/responsa"
+      breadcrumbParent={{ label: "שאלות ותשובות", href: "/responsa" }}
+    />
   );
 }
