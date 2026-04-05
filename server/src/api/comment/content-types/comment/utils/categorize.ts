@@ -11,7 +11,7 @@ interface StrapiInstance {
   documents: (uid: string) => {
     findOne: (options: { documentId: string; fields?: string[]; populate?: object; status?: string }) => Promise<any>;
     findMany: (options?: { fields?: string[]; populate?: object; limit?: number; status?: string }) => Promise<any[]>;
-    update: (options: { documentId: string; data: object }) => Promise<any>;
+    update: (options: { documentId: string; data: object; status?: string }) => Promise<any>;
   };
   entityService: {
     findOne: (uid: string, id: number, options?: object) => Promise<any>;
@@ -118,6 +118,7 @@ export async function categorizeResponsa(
   // Uses documentId + set syntax + views in same payload to prevent race conditions on PostgreSQL
   await strapi.documents(RESPONSA_UID).update({
     documentId: responsa.documentId,
+    status: "published",
     data: {
       categories: { set: categoryDocumentIds },
       views: responsa.views ?? 0,
