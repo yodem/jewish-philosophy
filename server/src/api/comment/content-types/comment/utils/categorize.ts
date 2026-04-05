@@ -15,6 +15,7 @@ interface StrapiInstance {
   };
   db: {
     query: (uid: string) => {
+      findOne: (options: { where: object; select?: string[] }) => Promise<any>;
       update: (options: { where: object; data: object }) => Promise<any>;
     };
   };
@@ -110,7 +111,12 @@ export async function categorizeResponsa(
     .filter((c) => matchedNames.includes(c.name))
     .map((c) => c.id);
 
-  const currentViews = responsa.views ?? 0;
+  // Read views directly from DB before update (entityService.update resets integer defaults)
+  const dbResponsa = await strapi.db.query(RESPONSA_UID).findOne({
+    where: { id: responsaId },
+    select: ["views"],
+  });
+  const currentViews = dbResponsa?.views ?? 0;
 
   await strapi.entityService.update(RESPONSA_UID, responsaId, {
     data: { categories: categoryIds },
@@ -123,6 +129,6 @@ export async function categorizeResponsa(
   });
 
   strapi.log.info(
-    `${LOG_PREFIX} Responsa "${responsa.title}" → added categories: [${matchedNames.join(", ")}]`
+    `${LOG_PREFIX} Responsa "${responsa.title}" → added categories: [${matchedNames.join(", ")}] (views preserved: ${currentViews})`
   );
 }
