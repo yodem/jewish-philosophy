@@ -105,8 +105,15 @@ export async function categorizeResponsa(
     .filter((c) => matchedNames.includes(c.name))
     .map((c) => c.id);
 
+  const currentViews = responsa.views ?? 0;
+
   await strapi.entityService.update(RESPONSA_UID, responsaId, {
-    data: { categories: categoryIds, views: responsa.views ?? 0 },
+    data: { categories: categoryIds },
+  });
+
+  // Restore views — entityService.update may reset integer fields with defaults
+  await strapi.entityService.update(RESPONSA_UID, responsaId, {
+    data: { views: currentViews },
   });
 
   strapi.log.info(
