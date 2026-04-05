@@ -10,6 +10,7 @@ import ViewCountTracker from "@/components/shared/ViewCountTracker";
 import ResponsaCommentWrapper from "./ResponsaCommentWrapper";
 import { extractTextFromMarkdown } from "@/lib/seo-helpers";
 import { formatDate } from "@/lib/date-utils";
+import { Eye } from "lucide-react";
 
 interface ResponsaPageProps {
   responsa: Responsa;
@@ -96,6 +97,15 @@ export default function ResponsaPage({ responsa, slug }: ResponsaPageProps) {
             <span>נשאל על ידי: {questioneer}</span>
             <span>&#x2022;</span>
             <span>{formatDate(publishedAt)}</span>
+            {responsa.views != null && responsa.views > 0 && (
+              <>
+                <span>&#x2022;</span>
+                <span className="inline-flex items-center gap-1">
+                  <Eye className="size-3.5" />
+                  {responsa.views.toLocaleString('he-IL')} צפיות
+                </span>
+              </>
+            )}
           </div>
 
           {categories && categories.length > 0 && (

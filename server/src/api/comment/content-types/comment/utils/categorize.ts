@@ -126,8 +126,16 @@ export async function categorizeResponsa(
   );
   const categoryDocumentIds = matchingCategories.map((c) => c.documentId);
 
+  // Re-read views RIGHT BEFORE update (views may have incremented during Gemini API call)
+  const freshResponsa = await strapi.documents(RESPONSA_UID).findOne({
+    documentId: responsa.documentId,
+    status: "published",
+    fields: ["views"],
+  });
+  const currentViews = freshResponsa?.views ?? 0;
+
   strapi.log.info(
-    `${LOG_PREFIX} BEFORE update — responsa "${responsa.title}" (docId: ${responsa.documentId}): views=${responsa.views}, categories=${responsa.categories?.length ?? 0}`
+    `${LOG_PREFIX} BEFORE update — responsa "${responsa.title}" (docId: ${responsa.documentId}): views=${currentViews}`
   );
 
   // Single atomic update via Document Service — same approach as analyze-responsas.ts script
@@ -137,7 +145,7 @@ export async function categorizeResponsa(
     status: "published",
     data: {
       categories: { set: categoryDocumentIds },
-      views: responsa.views ?? 0,
+      views: currentViews,
     },
   });
 
