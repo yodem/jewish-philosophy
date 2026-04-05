@@ -732,7 +732,7 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   const path = "/api/writings";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - avoid stale 404s
   if (!res?.data || res.data.length === 0) return null;
 
   return res.data[0];
