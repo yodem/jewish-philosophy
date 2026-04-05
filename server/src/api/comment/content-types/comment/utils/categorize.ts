@@ -126,6 +126,10 @@ export async function categorizeResponsa(
   );
   const categoryDocumentIds = matchingCategories.map((c) => c.documentId);
 
+  strapi.log.info(
+    `${LOG_PREFIX} BEFORE update — responsa "${responsa.title}" (docId: ${responsa.documentId}): views=${responsa.views}, categories=${responsa.categories?.length ?? 0}`
+  );
+
   // Single atomic update via Document Service — same approach as analyze-responsas.ts script
   // Uses documentId + set syntax + views in same payload to prevent race conditions on PostgreSQL
   await strapi.documents(RESPONSA_UID).update({
@@ -137,7 +141,15 @@ export async function categorizeResponsa(
     },
   });
 
+  // Read back to verify
+  const afterUpdate = await strapi.documents(RESPONSA_UID).findOne({
+    documentId: responsa.documentId,
+    status: "published",
+    fields: ["views"],
+    populate: { categories: { fields: ["name"] } },
+  });
+
   strapi.log.info(
-    `${LOG_PREFIX} Responsa "${responsa.title}" → added categories: [${matchedNames.join(", ")}] (views preserved: ${responsa.views ?? 0})`
+    `${LOG_PREFIX} AFTER update — responsa "${responsa.title}": views=${afterUpdate?.views}, categories=${afterUpdate?.categories?.length ?? 0} [${matchedNames.join(", ")}]`
   );
 }
