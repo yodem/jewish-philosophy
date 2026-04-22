@@ -16,6 +16,7 @@ const strapiRemotePattern = {
 const nextConfig: NextConfig = {
   cacheComponents: true,
   images: {
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     // StrapiImage defaults to 85; callers also use 75 and 100
     qualities: [75, 85, 100],
