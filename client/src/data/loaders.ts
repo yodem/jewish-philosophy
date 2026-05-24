@@ -808,11 +808,10 @@ export async function getTermsPaginated(page: number = 1, pageSize: number = 12)
 }
 
 export async function getTermBySlug(slug: string): Promise<Term | null> {
-  const normalizedSlug = slug.toLowerCase();
   const query = qs.stringify({
     filters: {
       slug: {
-        $eqi: normalizedSlug,
+        $eqi: slug,
       },
     },
     populate: {
