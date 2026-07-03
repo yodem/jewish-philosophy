@@ -1,3 +1,5 @@
+import "server-only";
+
 type NextFetchRequestConfig = {
   revalidate?: number | false;
   tags?: string[];
@@ -18,8 +20,8 @@ interface ErrorWithCause extends Error {
 export async function fetchAPI(url: string, options: FetchAPIOptions) {
   const { method, authToken, body, next, headers: customHeaders } = options;
 
-  // Use provided authToken or fall back to environment variable
-  const token = authToken || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
+  // Use provided authToken or fall back to server-only env var, then public env var for backward compatibility
+  const token = authToken || process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
 
   const requestHeaders: HeadersInit = {
     ...(customHeaders || {}),
