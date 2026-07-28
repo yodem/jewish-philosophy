@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { getAllCategories } from '@/data/services';
 import { Category } from '@/types';
 
 export const useCategories = () => {
@@ -13,7 +12,9 @@ export const useCategories = () => {
     const loadCategories = async () => {
       setLoadingCategories(true);
       try {
-        const categoriesData = await getAllCategories();
+        const response = await fetch('/api/categories');
+        if (!response.ok) throw new Error('Failed to fetch categories');
+        const categoriesData = (await response.json()) as Category[];
         const formattedCategories = [
           ...categoriesData.map((cat: Category) => ({
             value: cat.slug,
@@ -33,4 +34,4 @@ export const useCategories = () => {
   }, []);
 
   return { categories, fullCategories, loadingCategories };
-}; 
+};

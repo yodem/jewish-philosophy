@@ -1,13 +1,13 @@
-import { fetchAPI } from "@/utils/fetchApi";
+import { fetchAPI, type FetchAPIResult } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
 import { Category, SearchFilters, SearchResponse } from "@/types";
 
-export async function subscribeService(email: string) {
+export async function subscribeService(email: string): Promise<FetchAPIResult> {
     const url = new URL("/api/newsletter-signups", BASE_URL);
 
     try {
-      const response = await fetchAPI(url.href, {
+      return await fetchAPI(url.href, {
         method: "POST",
         body: {
           data: {
@@ -15,30 +15,30 @@ export async function subscribeService(email: string) {
           },
         },
       });
-
-      return response;
     } catch (error) {
       console.error("Subscribe Service Error:", error);
+      return {
+        data: null,
+        error: { message: "Network error", status: 500 },
+      };
     }
   }
 
-export async function unsubscribeService(email: string) {
+export async function unsubscribeService(email: string): Promise<FetchAPIResult> {
     const url = new URL("/api/newsletter-signups/unsubscribe", BASE_URL);
 
     try {
-      const response = await fetchAPI(url.href, {
+      return await fetchAPI(url.href, {
         method: "DELETE",
         body: {
           email,
         },
       });
-
-      return response;
     } catch (error) {
       console.error("Unsubscribe Service Error:", error);
       return {
         data: null,
-        error: { message: "Network error", status: 500 }
+        error: { message: "Network error", status: 500 },
       };
     }
   }
