@@ -1,3 +1,5 @@
+import "server-only";
+
 type NextFetchRequestConfig = {
   revalidate?: number | false;
   tags?: string[];

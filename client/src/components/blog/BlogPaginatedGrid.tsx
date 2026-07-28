@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import BlogCard from './BlogCard';
 import type { Blog } from '@/types';
 import { cn } from '@/lib/utils';
-import { getBlogsPaginated } from '@/data/loaders';
 
 interface BlogPaginatedGridProps {
   initialBlogs: Blog[];
@@ -55,7 +54,9 @@ export default function BlogPaginatedGrid({
 
     setLoading(true);
     try {
-      const newBlogs = await getBlogsPaginated(page + 1, 10);
+      const response = await fetch(`/api/blogs-paginated?page=${page + 1}&pageSize=10`);
+      if (!response.ok) throw new Error("Failed to fetch blogs");
+      const newBlogs = await response.json();
       if (newBlogs.length === 0) {
         setHasMore(false);
       } else {

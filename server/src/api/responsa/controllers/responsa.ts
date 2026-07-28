@@ -11,6 +11,26 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
       ctx.query.status = 'published';
     }
 
+    // Guard against double-submission: if an identical responsa was created in the
+    // last 10 seconds, return it instead of inserting a duplicate.
+    const incoming = ctx.request?.body?.data;
+    if (incoming?.questioneer && incoming?.title && incoming?.content) {
+      const tenSecondsAgo = new Date(Date.now() - 10000);
+      const duplicate = await strapi.db.query('api::responsa.responsa').findOne({
+        where: {
+          questioneer: incoming.questioneer,
+          title: incoming.title,
+          content: incoming.content,
+          createdAt: { $gt: tenSecondsAgo },
+        },
+      });
+
+      if (duplicate) {
+        // Duplicate submission — return the existing record, skip re-sending the email.
+        return { data: duplicate };
+      }
+    }
+
     // Call the default create method first
     const response = await super.create(ctx);
 
@@ -33,11 +53,9 @@ export default factories.createCoreController('api::responsa.responsa', ({ strap
             plainText: `שלום ${responsa.questioneer}, השאלה שלכם "${responsa.title}" התקבלה בהצלחה! ניתן לצפות בה בקישור הבא: ${questionLink}`
           }
         });
-
-        console.log(`Question confirmation email sent to ${responsa.questioneerEmail} for responsa: ${responsa.title}`);
       }
     } catch (error) {
-      console.error('Failed to send question confirmation email:', error);
+      console.error('Failed to send question confirmation email:', error instanceof Error ? error.message : error);
       // Don't fail the question creation if email fails
     }
 

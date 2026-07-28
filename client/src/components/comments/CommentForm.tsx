@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { addCommentAction, addThreadAction } from "@/data/action";
@@ -40,15 +40,15 @@ export default function CommentForm({
   showHeader = false
 }: CommentFormProps) {
   const action = isThread ? addThreadAction : addCommentAction;
-  const [state, formAction] = useActionState(action, initialState);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [state, formAction, isPending] = useActionState(action, initialState);
   const formRef = useRef<HTMLFormElement>(null);
+  const lastSuccessStateRef = useRef<string>("");
   const { enqueueSnackbar } = useSnackbar();
 
   // Handle successful comment submission
   useEffect(() => {
-    if (state.successMessage && !isSubmitting) {
-      setIsSubmitting(false);
+    if (state.successMessage && state.successMessage !== lastSuccessStateRef.current) {
+      lastSuccessStateRef.current = state.successMessage;
       // Call the callback to refresh comments
       onCommentAdded?.();
 
@@ -74,7 +74,7 @@ export default function CommentForm({
       // Track successful comment submission
       trackCommentSubmission(commentType === 'blog' ? 'Blog Comment' : 'Responsa Comment', 0);
     }
-  }, [state.successMessage, isSubmitting, onCommentAdded, commentType, isThread, onCancel, enqueueSnackbar]);
+  }, [state.successMessage, onCommentAdded, commentType, isThread, onCancel, enqueueSnackbar]);
 
   // Reset form when submission is successful
   useEffect(() => {
@@ -82,15 +82,6 @@ export default function CommentForm({
       formRef.current?.reset();
     }
   }, [state.successMessage]);
-
-  const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true);
-    try {
-      await formAction(formData);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const currentLabels = COMMENT_FORM_LABELS[commentType];
   const headerLabels = COMMENT_LABELS[commentType];
@@ -121,12 +112,12 @@ export default function CommentForm({
         </div>
       )}
 
-      
-      <form ref={formRef} action={handleSubmit} className="space-y-4">
+
+      <form ref={formRef} action={formAction} className="space-y-4">
         {responsaSlug && <input type="hidden" name="responsaSlug" value={responsaSlug} />}
         {blogSlug && <input type="hidden" name="blogSlug" value={blogSlug} />}
         {isThread && parentCommentSlug && <input type="hidden" name="parentCommentSlug" value={parentCommentSlug} />}
-        
+
         <div>
           <label htmlFor="answerer" className="block text-sm font-medium mb-1">
             {currentLabels.nameLabel}
@@ -141,7 +132,7 @@ export default function CommentForm({
             <p className="text-destructive text-sm mt-1">{state.zodErrors.answerer[0]}</p>
           )}
         </div>
-        
+
         <div>
           <label htmlFor="answer" className="block text-sm font-medium mb-1">
             {currentLabels.contentLabel}
@@ -159,13 +150,13 @@ export default function CommentForm({
             <p className="text-destructive text-sm mt-1">{state.zodErrors.answer[0]}</p>
           )}
         </div>
-        
 
-        
+
+
         <div className={isThread ? "flex gap-2" : ""}>
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isPending}
             className={isThread ? "flex-1" : "w-full"}
           >
             {currentLabels.submitButton}
