@@ -37,6 +37,35 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/writings/${slug}`);
       }
       revalidatePath("/writings");
+    } else if (model.includes("playlist")) {
+      const slug: string | undefined = entry?.slug ?? entry?.youtubeId;
+      if (slug) {
+        revalidatePath(`/playlists/${slug}`);
+      }
+      revalidatePath("/playlists");
+    } else if (model.includes("video")) {
+      const playlistSlug: string | undefined =
+        entry?.playlist?.slug ?? entry?.playlist?.youtubeId;
+      const videoSlug: string | undefined = entry?.slug ?? entry?.videoId;
+      if (playlistSlug && videoSlug) {
+        revalidatePath(`/playlists/${playlistSlug}/${videoSlug}`);
+      }
+      if (playlistSlug) {
+        revalidatePath(`/playlists/${playlistSlug}`);
+      }
+      revalidatePath("/playlists");
+    } else if (model.includes("blog")) {
+      const slug: string | undefined = entry?.slug;
+      if (slug) {
+        revalidatePath(`/blog/${slug}`);
+      }
+      revalidatePath("/blog");
+    } else if (model.includes("term")) {
+      const slug: string | undefined = entry?.slug;
+      if (slug) {
+        revalidatePath(`/terms/${slug}`);
+      }
+      revalidatePath("/terms");
     } else {
       // Generic full-site revalidation as fallback
       revalidatePath("/", "layout");

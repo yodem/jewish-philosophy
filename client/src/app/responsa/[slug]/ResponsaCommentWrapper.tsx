@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from "react";
-import { getResponsaBySlug } from "@/data/loaders";
 import { Comment as CommentType } from "@/types";
 import CommentSection from "@/components/comments/CommentSection";
 import SefariaLinker from "@/components/shared/SefariaLinker";
@@ -24,7 +23,9 @@ export default function ResponsaCommentWrapper({
 
   const refreshComments = useCallback(async () => {
     try {
-      const data = await getResponsaBySlug(slug);
+      const response = await fetch(`/api/responsa-by-slug?slug=${encodeURIComponent(slug)}`);
+      if (!response.ok) throw new Error('Failed to fetch responsa');
+      const data = await response.json();
       if (data) {
         setCommentsData(data.comments || []);
       }

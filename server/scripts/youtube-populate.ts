@@ -30,6 +30,17 @@ const getStrapiHeaders = () => {
   };
 };
 
+/** Strapi uid only allows /^[A-Za-z0-9-_.~]*$/ — Hebrew titles fall back to the YouTube id. */
+function generateSlug(title: string, id: string): string {
+  const asciiPart = title
+    .replace(/[^A-Za-z0-9\s-_.~]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toLowerCase();
+  return asciiPart ? `${asciiPart}-${id}` : id;
+}
+
 async function fetchAllPages(baseUrl: string) {
   let items: any[] = [];
   let pageToken = '';
@@ -64,8 +75,33 @@ async function createOrUpdatePlaylist(playlist: any) {
   console.log(`Looking for playlist with youtubeId: ${playlist.id}`);
   console.log(`Found existing playlist:`, existingPlaylist ? `ID: ${existingPlaylist.id}` : 'None');
 
+  const desiredSlug = generateSlug(playlist.snippet.title, playlist.id);
+
   if (existingPlaylist) {
-    console.log(`Skipping existing playlist: ${playlist.snippet.title} (ID: ${existingPlaylist.id})`);
+    const identifier = existingPlaylist.documentId || existingPlaylist.id;
+    if (existingPlaylist.slug !== desiredSlug) {
+      console.log(`Repairing playlist slug "${existingPlaylist.slug}" → "${desiredSlug}"`);
+      const updateRes = await fetch(`${STRAPI_URL}/playlists/${identifier}`, {
+        method: 'PUT',
+        headers: getStrapiHeaders(),
+        body: JSON.stringify({ data: { slug: desiredSlug } }),
+      });
+      const updateData: any = await updateRes.json();
+      if (!updateData.data) {
+        console.error('Playlist slug repair error:', updateData);
+      }
+    } else {
+      console.log(`Skipping existing playlist: ${playlist.snippet.title} (ID: ${existingPlaylist.id})`);
+    }
+    // Ensure published (Strapi v5 drafts are not public)
+    if (!existingPlaylist.publishedAt) {
+      console.log(`Publishing existing playlist: ${playlist.snippet.title}`);
+      await fetch(`${STRAPI_URL}/playlists/${identifier}/actions/publish`, {
+        method: 'POST',
+        headers: getStrapiHeaders(),
+      });
+    }
+    await delay(100);
     return existingPlaylist;
   }
 
@@ -76,7 +112,7 @@ async function createOrUpdatePlaylist(playlist: any) {
       imageUrl300x400: playlist.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: playlist.snippet.thumbnails?.standard?.url || playlist.snippet.thumbnails?.high?.url || '',
       youtubeId: playlist.id,
-      slug: `${playlist.snippet.title.replace(/[^A-Za-z0-9\s-_.~]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}-${playlist.id}`,
+      slug: desiredSlug,
     },
   };
 
@@ -135,18 +171,21 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
 
   if (existingVideo) {
     // Check if the video already has the correct playlist relation
-    if (existingVideo.playlist?.id === strapiPlaylistId) {
+    const desiredSlug = generateSlug(video.snippet.title, video.contentDetails.videoId);
+    const videoIdentifier = existingVideo.documentId || existingVideo.id;
+    const needsPlaylistFix = existingVideo.playlist?.id !== strapiPlaylistId;
+    const needsSlugFix = existingVideo.slug !== desiredSlug;
+
+    if (!needsPlaylistFix && !needsSlugFix) {
       console.log(`Video already has correct playlist relation: ${video.snippet.title} (ID: ${existingVideo.id})`);
       return existingVideo;
     }
 
-    // Update existing video with playlist relation
-    // Use documentId for Strapi v5, fallback to id
-    const videoIdentifier = existingVideo.documentId || existingVideo.id;
-    console.log(`Updating playlist relation for existing video: ${video.snippet.title} (documentId: ${videoIdentifier})`);
+    console.log(`Updating existing video: ${video.snippet.title} (documentId: ${videoIdentifier}) playlist=${needsPlaylistFix} slug=${needsSlugFix}`);
     const updatePayload = {
       data: {
-        playlist: strapiPlaylistId,
+        ...(needsPlaylistFix ? { playlist: strapiPlaylistId } : {}),
+        ...(needsSlugFix ? { slug: desiredSlug } : {}),
       },
     };
 
@@ -175,7 +214,7 @@ async function createOrUpdateVideo(video: any, playlistId: string) {
       imageUrl300x400: video.snippet.thumbnails?.medium?.url || '',
       imageUrlStandard: video.snippet.thumbnails?.standard?.url || video.snippet.thumbnails?.high?.url || '',
       videoId: video.contentDetails.videoId,
-      slug: `${video.snippet.title.replace(/[^A-Za-z0-9\s-_.~]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '').toLowerCase()}-${video.contentDetails.videoId}`,
+      slug: generateSlug(video.snippet.title, video.contentDetails.videoId),
       playlist: strapiPlaylistId,
     },
   };

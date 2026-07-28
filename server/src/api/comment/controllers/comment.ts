@@ -6,19 +6,38 @@ import { factories } from '@strapi/strapi';
 
 export default factories.createCoreController('api::comment.comment', ({ strapi }) => ({
   async create(ctx) {
-    console.log('🚀 Comment controller create method called');
-    console.log('Request body:', ctx.request.body);
-    
     try {
       const { answer, answerer, responsaSlug, blogSlug } = ctx.request.body.data;
-      
+
       // Validate that either responsaSlug or blogSlug is provided, but not both
       if (!responsaSlug && !blogSlug) {
         return ctx.badRequest('Either responsaSlug or blogSlug is required');
       }
-      
+
       if (responsaSlug && blogSlug) {
         return ctx.badRequest('Cannot specify both responsaSlug and blogSlug');
+      }
+
+      // Guard against double-submission: if an identical comment was created in the
+      // last 10 seconds, return it instead of inserting a duplicate.
+      const tenSecondsAgo = new Date(Date.now() - 10000);
+      const duplicateFilters: Record<string, any> = {
+        answerer,
+        answer,
+        createdAt: { $gt: tenSecondsAgo },
+      };
+      if (responsaSlug) {
+        duplicateFilters.responsaSlug = responsaSlug;
+      } else if (blogSlug) {
+        duplicateFilters.blogSlug = blogSlug;
+      }
+
+      const existingComments = await strapi.entityService.findMany('api::comment.comment', {
+        filters: duplicateFilters,
+      }) as any[];
+
+      if (existingComments && existingComments.length > 0) {
+        return { data: existingComments[0] };
       }
 
       // Generate slug from answerer
@@ -56,8 +75,6 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
       let contentData = null;
 
       if (responsaSlug) {
-        console.log('🔍 Finding responsa by slug:', responsaSlug);
-        
         // Find the responsa by slug first
         const responsa = await strapi.entityService.findMany('api::responsa.responsa', {
           filters: { slug: responsaSlug },
@@ -65,7 +82,6 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         }) as any[];
 
         if (!responsa || responsa.length === 0) {
-          console.log('❌ Responsa not found for slug:', responsaSlug);
           return ctx.notFound('Responsa not found');
         }
 
@@ -76,10 +92,7 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
             fields: ['title', 'slug', 'questioneer', 'questioneerEmail']
           }
         };
-        console.log('✅ Found responsa:', contentData);
       } else if (blogSlug) {
-        console.log('🔍 Finding blog by slug:', blogSlug);
-        
         // Find the blog by slug first
         const blog = await strapi.entityService.findMany('api::blog.blog', {
           filters: { slug: blogSlug },
@@ -92,7 +105,6 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
         }) as any[];
 
         if (!blog || blog.length === 0) {
-          console.log('❌ Blog not found for slug:', blogSlug);
           return ctx.notFound('Blog not found');
         }
 
@@ -108,25 +120,16 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
             }
           }
         };
-        console.log('✅ Found blog:', contentData);
       }
 
-      console.log('📝 Creating comment with data:', commentData);
-      
       const comment = await strapi.entityService.create('api::comment.comment', {
         data: commentData,
         populate: populateData
       });
 
-      console.log('✅ Comment created successfully:', comment);
-
       // Send email notification for responsa comments
       if (responsaSlug && contentData?.questioneerEmail && contentData?.questioneerEmail.trim()) {
         const questionLink = `${process.env.FRONTEND_URL || 'https://religousphilosophy.com/'}/responsa/${contentData.slug}`;
-
-        console.log('📬 Sending email notification to:', contentData.questioneerEmail);
-        console.log('Question title:', contentData.title);
-        console.log('Question link:', questionLink);
 
         try {
           await strapi.service("api::email.email").sendStyledEmail({
@@ -141,18 +144,13 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
             }
           });
 
-          console.log(`✅ Email notification sent successfully to ${contentData.questioneerEmail}`);
         } catch (emailError) {
-          console.error('❌ Failed to send email notification:', emailError);
+          console.error('Failed to send email notification:', emailError instanceof Error ? emailError.message : emailError);
           // Don't fail the comment creation if email fails
         }
       } else if (blogSlug && contentData?.author?.email) {
         // Send email notification to blog author
         const blogLink = `${process.env.FRONTEND_URL || 'https://religousphilosophy.com/'}/blog/${contentData.slug}`;
-
-        console.log('📬 Sending email notification to blog author:', contentData.author.email);
-        console.log('Blog title:', contentData.title);
-        console.log('Blog link:', blogLink);
 
         try {
           await strapi.service("api::email.email").sendStyledEmail({
@@ -168,20 +166,15 @@ export default factories.createCoreController('api::comment.comment', ({ strapi 
             }
           });
 
-          console.log(`✅ Email notification sent successfully to ${contentData.author.email}`);
         } catch (emailError) {
-          console.error('❌ Failed to send email notification:', emailError);
+          console.error('Failed to send email notification:', emailError instanceof Error ? emailError.message : emailError);
           // Don't fail the comment creation if email fails
         }
-      } else if (blogSlug) {
-        console.log('❌ No author email found in blog data');
-      } else {
-        console.log('❌ No questioneer email found in responsa data');
       }
 
       return { data: comment };
     } catch (error) {
-      console.error('❌ Error creating comment:', error);
+      console.error('Error creating comment:', error instanceof Error ? error.message : error);
       throw error;
     }
   }

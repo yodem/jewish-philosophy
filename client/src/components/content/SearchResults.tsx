@@ -4,7 +4,6 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SearchFilters, SearchResult, SearchResponse } from '@/types';
-import { searchContent } from '@/data/services';
 import { trackSearch } from '@/lib/analytics';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -50,15 +49,30 @@ const SearchResults: React.FC<SearchResultsProps> = ({ filters }) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await searchContent({ ...filters, sort: sortBy });
-        setResults(response);
+        const params = new URLSearchParams();
+        if (filters.query?.trim()) params.set('query', filters.query.trim());
+        if (filters.contentType && filters.contentType !== 'all') {
+          params.set('contentType', filters.contentType);
+        }
+        if (filters.contentType === 'all') {
+          params.set('contentType', 'all');
+        }
+        if (filters.category && filters.category !== 'all') {
+          params.set('category', filters.category);
+        }
+        sortBy.forEach(sort => params.append('sort', sort));
+
+        const response = await fetch(`/api/search-content?${params.toString()}`);
+        if (!response.ok) throw new Error("Failed to search");
+        const data = await response.json();
+        setResults(data);
 
         if (filters.query) {
           trackSearch(
             filters.query,
             filters.contentType || '',
             filters.category,
-            response?.meta?.pagination?.total || 0
+            data?.meta?.pagination?.total || 0
           );
         }
       } catch {

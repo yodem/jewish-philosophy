@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAllTerms } from "@/data/loaders";
 import { Term } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +29,14 @@ export default function TermsPageClient() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getAllTerms(page, pageSize, debouncedSearchTerm);
+        const params = new URLSearchParams({
+          page: page.toString(),
+          pageSize: pageSize.toString(),
+          ...(debouncedSearchTerm ? { search: debouncedSearchTerm } : {})
+        });
+        const response = await fetch(`/api/terms?${params.toString()}`);
+        if (!response.ok) throw new Error('Failed to fetch terms');
+        const result = await response.json();
         setTerms(result.data);
         setMeta(result.meta);
       } catch (error) {

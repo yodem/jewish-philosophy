@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getAllResponsas } from "@/data/loaders";
 import { Responsa } from "@/types";
 import { LimitedCategoryList } from "@/components/shared/LimitedCategoryList";
 import Breadcrumbs from "@/components/shared/Breadcrumbs";
@@ -35,7 +34,15 @@ export default function ResponsaPageClient() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getAllResponsas(page, pageSize, debouncedSearchTerm, sortFilter);
+        const params = new URLSearchParams({
+          page: page.toString(),
+          pageSize: pageSize.toString(),
+          ...(debouncedSearchTerm ? { search: debouncedSearchTerm } : {}),
+          sortBy: sortFilter
+        });
+        const response = await fetch(`/api/responsas?${params.toString()}`);
+        if (!response.ok) throw new Error('Failed to fetch responsas');
+        const result = await response.json();
         setResponsas(result.data ?? []);
         if (result.meta) setMeta(result.meta);
       } catch (error) {
