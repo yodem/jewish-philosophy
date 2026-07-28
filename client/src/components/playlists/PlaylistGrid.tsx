@@ -1,6 +1,5 @@
 "use client";
 
-import { getPlaylistsPaginated } from "@/data/loaders";
 import PaginatedGrid from "@/components/ui/PaginatedGrid";
 import type { Playlist } from "@/types";
 
@@ -15,8 +14,9 @@ interface PlaylistGridProps {
  */
 export default function PlaylistGrid({ initialPlaylists, baseUrl, className }: PlaylistGridProps) {
   const loadMore = async (page: number) => {
-    const newPlaylists = await getPlaylistsPaginated(page, 10);
-    return newPlaylists;
+    const response = await fetch(`/api/playlists-paginated?page=${page}&pageSize=10`);
+    if (!response.ok) throw new Error("Failed to fetch playlists");
+    return response.json();
   };
 
   return (
