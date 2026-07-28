@@ -56,7 +56,7 @@ export async function subscribeAction(prevState: SubscribeState, formData: FormD
 
     return {
       ...prevState,
-      strapiErrors: response.error.message || "בעיה בהרשמה לניוזלטר",
+      strapiErrors: response.error?.message || "בעיה בהרשמה לניוזלטר",
       errorMessage: "בעיה בהרשמה לניוזלטר, אנא נסו שנית מאוחר יותר.",
       successMessage: "",
     };
