@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -5,7 +7,6 @@ import { CategoryCombobox } from '@/components/ui/category-combobox';
 import { CategoryBadge } from '@/components/shared/CategoryBadge';
 import { Search, Filter } from 'lucide-react';
 import { CONTENT_TYPES } from '../../../consts';
-import { getAllCategories } from '@/data/services';
 import { Category } from '@/types';
 import { trackContentTypeFilter, trackCategoryFilter } from '@/lib/analytics';
 
@@ -46,7 +47,9 @@ const SearchForm: React.FC<SearchFormProps> = ({
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const categoriesData = await getAllCategories();
+        const response = await fetch('/api/categories');
+        if (!response.ok) throw new Error("Failed to fetch categories");
+        const categoriesData = await response.json();
         setCategories(categoriesData);
       } catch (error) {
         console.error('Error loading categories:', error);

@@ -5,7 +5,6 @@ import MediaCard from "@/components/ui/MediaCard";
 import Link from "next/link";
 import type { Video } from "@/types";
 import { cn } from "@/lib/utils";
-import { getPlaylistVideosPaginated } from "@/data/loaders";
 
 interface PlaylistVideoGridProps {
   initialVideos: Video[];
@@ -56,7 +55,9 @@ export default function PlaylistVideoGrid({
     setLoading(true);
     try {
       const pageSize = typeof window !== 'undefined' && window.innerWidth >= 768 ? 12 : 10;
-      const newVideos = await getPlaylistVideosPaginated(playlistId, page + 1, pageSize);
+      const response = await fetch(`/api/playlist-videos?playlistId=${playlistId}&page=${page + 1}&pageSize=${pageSize}`);
+      if (!response.ok) throw new Error("Failed to fetch videos");
+      const newVideos = await response.json();
       if (newVideos.length === 0) {
         setHasMoreVideos(false);
       } else {

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getEmailIssueCategories } from "@/data/loaders";
 import type { EmailIssueCategory } from "@/types";
 
 export function useEmailCategories() {
@@ -13,9 +12,11 @@ export function useEmailCategories() {
     const fetchEmailCategories = async () => {
       try {
         setLoadingEmailCategories(true);
-        const response = await getEmailIssueCategories();
-        if (response?.data) {
-          setEmailCategories(response.data);
+        const response = await fetch('/api/email-issue-categories');
+        if (!response.ok) throw new Error('Failed to fetch email categories');
+        const data = await response.json();
+        if (data?.data) {
+          setEmailCategories(data.data);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load email categories');

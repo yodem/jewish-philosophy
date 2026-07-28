@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getWritingsPaginated, getPageBySlug } from "@/data/loaders";
 import { Writing, Block } from "@/types";
 import {
   Table,
@@ -42,7 +41,9 @@ export default function WritingsPageClient() {
   useEffect(() => {
     async function fetchPageData() {
       try {
-        const pageRes = await getPageBySlug("writings");
+        const response = await fetch(`/api/page-by-slug?slug=writings`);
+        if (!response.ok) throw new Error('Failed to fetch page');
+        const pageRes = await response.json();
         const pageData = pageRes?.data;
         setBlocks(pageData?.[0]?.blocks || []);
       } catch (error) {
@@ -56,13 +57,16 @@ export default function WritingsPageClient() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const result = await getWritingsPaginated(
-          page,
-          pageSize,
-          typeFilter,
-          debouncedSearchTerm || undefined,
-          sortFilter
-        );
+        const params = new URLSearchParams({
+          page: page.toString(),
+          pageSize: pageSize.toString(),
+          type: typeFilter,
+          ...(debouncedSearchTerm ? { search: debouncedSearchTerm } : {}),
+          sortBy: sortFilter
+        });
+        const response = await fetch(`/api/writings-paginated?${params.toString()}`);
+        if (!response.ok) throw new Error('Failed to fetch writings');
+        const result = await response.json();
 
         setWritings(result.data);
         setMeta(result.meta);

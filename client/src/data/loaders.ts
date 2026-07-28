@@ -1,7 +1,18 @@
-import { fetchAPI } from "@/utils/fetchApi";
+import { assertNoStrapiError, fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
 import { Blog, Writing, Term } from "@/types";
+
+const playlistPopulate = {
+  videos: {
+    filters: {
+      title: {
+        $ne: "Private video",
+      },
+    },
+    populate: "*",
+  },
+} as const;
 
 
 const homePageQuery = qs.stringify({
@@ -141,29 +152,34 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
 }
 
 export async function getPlaylistBySlug(slug: string) {
-  const query = qs.stringify({
-    filters: {
-      slug: { $eqi: slug },
-    },
-    populate: { 
-      videos: { 
-        filters: {
-          title: {
-            $ne: 'Private video'
-          }
-        },
-        populate: '*' 
-      } 
-    },
-  });
   const path = "/api/playlists";
-  const url = new URL(path, BASE_URL);
-  url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
-  if (!res?.data || res.data.length === 0) return null;
+  const fetchOpts = { method: "GET" as const, next: { revalidate: 0 } }; // no cache - avoid stale 404s
 
-  const item = res.data?.[0]
-  return item
+  const bySlugQuery = qs.stringify({
+    filters: { slug: { $eqi: slug } },
+    populate: playlistPopulate,
+  });
+  const bySlugUrl = new URL(path, BASE_URL);
+  bySlugUrl.search = bySlugQuery;
+  const bySlugRes = await fetchAPI(bySlugUrl.href, fetchOpts);
+  assertNoStrapiError(bySlugRes, `getPlaylistBySlug(${slug})`);
+  if (Array.isArray(bySlugRes.data) && bySlugRes.data.length > 0) {
+    return bySlugRes.data[0];
+  }
+
+  // Fallback: many Hebrew playlists use youtubeId as the public slug
+  const byYoutubeQuery = qs.stringify({
+    filters: { youtubeId: { $eq: slug } },
+    populate: playlistPopulate,
+  });
+  const byYoutubeUrl = new URL(path, BASE_URL);
+  byYoutubeUrl.search = byYoutubeQuery;
+  const byYoutubeRes = await fetchAPI(byYoutubeUrl.href, fetchOpts);
+  assertNoStrapiError(byYoutubeRes, `getPlaylistBySlug(youtubeId=${slug})`);
+  if (!Array.isArray(byYoutubeRes.data) || byYoutubeRes.data.length === 0) {
+    return null;
+  }
+  return byYoutubeRes.data[0];
 }
 
 export async function getPlaylistVideosPaginated(playlistId: number, page: number = 1, pageSize: number = 12) {
@@ -216,22 +232,34 @@ export async function getAllPlaylistVideos(playlistId: number) {
 }
 
 export async function getVideoBySlug(slug: string) {
-  const query = qs.stringify({
-    filters: {
-      slug: { $eqi: slug },
-      title: {
-        $ne: 'Private video'
-      }
-    },
-    populate: '*',
-  });
   const path = "/api/videos";
-  const url = new URL(path, BASE_URL);
-  url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
-  if (!res?.data || res.data.length === 0) return null;
-  const item = res.data[0]
-  return item
+  const fetchOpts = { method: "GET" as const, next: { revalidate: 0 } }; // no cache - avoid stale 404s
+  const baseFilters = { title: { $ne: "Private video" } };
+
+  const bySlugQuery = qs.stringify({
+    filters: { slug: { $eqi: slug }, ...baseFilters },
+    populate: "*",
+  });
+  const bySlugUrl = new URL(path, BASE_URL);
+  bySlugUrl.search = bySlugQuery;
+  const bySlugRes = await fetchAPI(bySlugUrl.href, fetchOpts);
+  assertNoStrapiError(bySlugRes, `getVideoBySlug(${slug})`);
+  if (Array.isArray(bySlugRes.data) && bySlugRes.data.length > 0) {
+    return bySlugRes.data[0];
+  }
+
+  const byVideoIdQuery = qs.stringify({
+    filters: { videoId: { $eq: slug }, ...baseFilters },
+    populate: "*",
+  });
+  const byVideoIdUrl = new URL(path, BASE_URL);
+  byVideoIdUrl.search = byVideoIdQuery;
+  const byVideoIdRes = await fetchAPI(byVideoIdUrl.href, fetchOpts);
+  assertNoStrapiError(byVideoIdRes, `getVideoBySlug(videoId=${slug})`);
+  if (!Array.isArray(byVideoIdRes.data) || byVideoIdRes.data.length === 0) {
+    return null;
+  }
+  return byVideoIdRes.data[0];
 }
 
 export async function getVideosPaginated(page: number = 1, pageSize: number = 12) {
@@ -324,9 +352,10 @@ export async function getBlogBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - always fetch fresh for real-time view count
-  if (!res?.data || res.data.length === 0) return null;
+  assertNoStrapiError(res, `getBlogBySlug(${slug})`);
+  if (!Array.isArray(res.data) || res.data.length === 0) return null;
 
-  return res.data[0]
+  return res.data[0];
 }
 
 
@@ -465,7 +494,8 @@ export async function getResponsaBySlug(slug: string) {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - always fetch fresh
-  if (!res?.data || res.data.length === 0) return null;
+  assertNoStrapiError(res, `getResponsaBySlug(${slug})`);
+  if (!Array.isArray(res.data) || res.data.length === 0) return null;
 
   return res.data[0];
 }
@@ -733,7 +763,8 @@ export async function getWritingBySlug(slug: string): Promise<Writing | null> {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - avoid stale 404s
-  if (!res?.data || res.data.length === 0) return null;
+  assertNoStrapiError(res, `getWritingBySlug(${slug})`);
+  if (!Array.isArray(res.data) || res.data.length === 0) return null;
 
   return res.data[0];
 }
@@ -824,7 +855,8 @@ export async function getTermBySlug(slug: string): Promise<Term | null> {
   const url = new URL(path, BASE_URL);
   url.search = query;
   const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } }); // no cache - avoid stale 404s
-  if (!res?.data || res.data.length === 0) return null;
+  assertNoStrapiError(res, `getTermBySlug(${slug})`);
+  if (!Array.isArray(res.data) || res.data.length === 0) return null;
 
   return res.data[0];
 }
