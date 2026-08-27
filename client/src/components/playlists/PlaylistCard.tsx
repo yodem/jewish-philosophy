@@ -15,7 +15,12 @@ interface PlaylistCardProps {
  * Purple badge accent per DESIGN.md (playlist = purple).
  */
 export default function PlaylistCard({ playlist, className }: PlaylistCardProps) {
-  const imageUrl = playlist.imageUrl300x400 || playlist.imageUrlStandard || '';
+  const imageUrl =
+    playlist.imageUrl300x400 ||
+    playlist.imageUrlStandard ||
+    playlist.videos?.[0]?.imageUrl300x400 ||
+    playlist.videos?.[0]?.imageUrlStandard ||
+    '';
   const videoCount = playlist.videos?.length ?? 0;
 
   return (
