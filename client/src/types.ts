@@ -70,6 +70,7 @@ export interface Video {
 
 export interface Playlist {
   id: number;
+  documentId?: string;
   title: string;
   description: string;
   imageUrl300x400: string;

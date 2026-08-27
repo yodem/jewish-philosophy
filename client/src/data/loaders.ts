@@ -146,7 +146,11 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 * 7 } });
+  // Short revalidate so new playlists/images appear quickly after CMS updates
+  const res = await fetchAPI(url.href, {
+    method: "GET",
+    next: { revalidate: 60, tags: ["playlists"] },
+  });
   
   return res.data || [];
 }
@@ -185,7 +189,7 @@ export async function getPlaylistBySlug(slug: string) {
 export async function getPlaylistVideosPaginated(playlistId: number, page: number = 1, pageSize: number = 12) {
   const query = qs.stringify({
     filters: {
-      playlists: {
+      playlist: {
         id: { $eq: playlistId }
       },
       title: {
@@ -210,7 +214,7 @@ export async function getPlaylistVideosPaginated(playlistId: number, page: numbe
 export async function getAllPlaylistVideos(playlistId: number) {
   const query = qs.stringify({
     filters: {
-      playlists: {
+      playlist: {
         id: { $eq: playlistId }
       },
       title: {
