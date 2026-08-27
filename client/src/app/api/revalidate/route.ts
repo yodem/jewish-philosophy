@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       }
       revalidatePath("/playlists");
       revalidatePath("/api/playlists-paginated");
-      revalidateTag("playlists");
+      revalidateTag("playlists", "max");
     } else if (model.includes("video")) {
       const playlistSlug: string | undefined =
         entry?.playlist?.slug ?? entry?.playlist?.youtubeId;
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/playlists/${playlistSlug}`);
       }
       revalidatePath("/playlists");
-      revalidateTag("playlists");
+      revalidateTag("playlists", "max");
     } else if (model.includes("blog")) {
       const slug: string | undefined = entry?.slug;
       if (slug) {
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Generic full-site revalidation as fallback
       revalidatePath("/", "layout");
-      revalidateTag("playlists");
+      revalidateTag("playlists", "max");
     }
 
     return NextResponse.json({ revalidated: true });
