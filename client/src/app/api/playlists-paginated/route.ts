@@ -1,7 +1,8 @@
 import { getPlaylistsPaginated } from "@/data/loaders";
 import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
+// Note: do not set `export const dynamic` — incompatible with nextConfig.cacheComponents.
+// Reading request.searchParams already keeps this route request-dynamic.
 
 export async function GET(request: NextRequest) {
   try {
