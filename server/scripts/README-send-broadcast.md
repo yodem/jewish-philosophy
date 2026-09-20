@@ -44,7 +44,7 @@ The script automatically:
 Your environment variables are already set up in `/server/.env`:
 
 ```bash
-RESEND_API_KEY=REDACTED_RESEND_API_KEY  ✅ Already configured
+RESEND_API_KEY=re_your_api_key_here   # set in server/.env — never commit real keys
 RESEND_DEFAULT_FROM_EMAIL=onboarding@resend.dev
 FRONTEND_URL=https://religousphilosophy.com/
 ```

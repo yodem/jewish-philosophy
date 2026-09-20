@@ -44,59 +44,60 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return Promise.race([fetchFn(), timeoutPromise]);
     };
 
-    // Static pages
+    // Static pages — stable lastModified avoids ISR write on every sitemap regen
+    const staticLastMod = new Date('2025-01-01T00:00:00.000Z');
     const staticPages: MetadataRoute.Sitemap = [
       {
         url: normalizedBaseUrl.slice(0, -1), // Remove trailing slash for homepage
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'daily',
         priority: 1.0,
       },
       {
         url: formatUrl('/about'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'monthly',
         priority: 0.8,
       },
       {
         url: formatUrl('/blog'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'daily',
         priority: 0.9,
       },
       {
         url: formatUrl('/playlists'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'weekly',
         priority: 0.8,
       },
       {
         url: formatUrl('/writings'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'weekly',
         priority: 0.8,
       },
       {
         url: formatUrl('/search'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'monthly',
         priority: 0.5,
       },
       {
         url: formatUrl('/responsa'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'daily',
         priority: 0.9,
       },
       {
         url: formatUrl('/contact'), // Contact page (צור קשר)
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'monthly',
         priority: 0.6,
       },
       {
         url: formatUrl('/terms'),
-        lastModified: new Date(),
+        lastModified: staticLastMod,
         changeFrequency: 'yearly',
         priority: 0.3,
       },
@@ -215,28 +216,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch (error) {
     console.error('Error generating sitemap:', error);
     // Return at least static pages if dynamic content fails (including contact)
+    const fallbackLastMod = new Date('2025-01-01T00:00:00.000Z');
     return [
       {
         url: normalizedBaseUrl.slice(0, -1), // Remove trailing slash for homepage
-        lastModified: new Date(),
+        lastModified: fallbackLastMod,
         changeFrequency: 'daily',
         priority: 1.0,
       },
       {
         url: `${normalizedBaseUrl}about`,
-        lastModified: new Date(),
+        lastModified: fallbackLastMod,
         changeFrequency: 'monthly',
         priority: 0.8,
       },
       {
         url: `${normalizedBaseUrl}blog`,
-        lastModified: new Date(),
+        lastModified: fallbackLastMod,
         changeFrequency: 'daily',
         priority: 0.9,
       },
       {
         url: `${normalizedBaseUrl}contact`,
-        lastModified: new Date(),
+        lastModified: fallbackLastMod,
         changeFrequency: 'monthly',
         priority: 0.6,
       },

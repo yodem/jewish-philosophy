@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: VideoPageProps): Promise<Meta
     type: "article",
     image: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
     keywords: `שיעור וידאו, ${video.title}, ${playlist.title}, פילוסופיה דתית, הרמב"ם, שלום צדיק`,
-    publishedTime: new Date().toISOString(),
+    publishedTime: playlist.publishedAt || playlist.createdAt,
     authors: ["שלום צדיק"],
     tags: ["פילוסופיה דתית", "שיעורי וידאו", "הרמב״ם"]
   });
@@ -63,7 +63,7 @@ export default async function VideoDetailPage({ params }: VideoPageProps) {
     description: video.description,
     url: `${baseUrl}/playlists/${playlistSlug}/${videoSlug}`,
     thumbnailUrl: getImageUrl(video.imageUrl300x400 || video.imageUrlStandard),
-    uploadDate: new Date().toISOString(),
+    uploadDate: playlist.publishedAt || playlist.createdAt,
     duration: "PT10M",
     contentUrl: `https://www.youtube.com/watch?v=${video.videoId}`,
     embedUrl: `https://www.youtube.com/embed/${video.videoId}`,

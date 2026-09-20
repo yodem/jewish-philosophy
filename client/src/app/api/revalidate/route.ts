@@ -66,10 +66,17 @@ export async function POST(request: NextRequest) {
         revalidatePath(`/terms/${slug}`);
       }
       revalidatePath("/terms");
-    } else {
-      // Generic full-site revalidation as fallback
+    } else if (model.includes("banner") || model.includes("global") || model.includes("home-page") || model.includes("homepage")) {
+      // Only the shared shell needs refresh for these single types
       revalidatePath("/", "layout");
-      revalidateTag("playlists");
+    } else {
+      // Unknown model: refresh listings only — avoid full-layout blast radius
+      revalidatePath("/");
+      revalidatePath("/blog");
+      revalidatePath("/responsa");
+      revalidatePath("/playlists");
+      revalidatePath("/writings");
+      revalidatePath("/terms");
     }
 
     return NextResponse.json({ revalidated: true });

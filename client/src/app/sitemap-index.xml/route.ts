@@ -4,16 +4,18 @@ export async function GET() {
   // Ensure baseUrl always ends with "/"
   const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   const cleanBaseUrl = normalizedBaseUrl.slice(0, -1); // Remove trailing slash for XML URLs
+  // Stable lastmod — wall-clock timestamps force a new ISR write on every request
+  const lastmod = '2025-01-01T00:00:00.000Z';
   
   const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>${cleanBaseUrl}/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
+    <lastmod>${lastmod}</lastmod>
   </sitemap>
   <sitemap>
     <loc>${cleanBaseUrl}/video/sitemap.xml</loc>
-    <lastmod>${new Date().toISOString()}</lastmod>
+    <lastmod>${lastmod}</lastmod>
   </sitemap>
 </sitemapindex>`;
 

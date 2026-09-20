@@ -81,7 +81,9 @@ export async function getGlobalSettings() {
 export async function getBanner() {
   const path = "/api/banner";
   const url = new URL(path, BASE_URL);
-  return fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 5 } }); // Revalidate every 5 minutes for banner updates
+  // Long TTL: banner rarely changes; Strapi webhook revalidates layout on update.
+  // Short TTL here forces root-layout ISR rewrites across the whole site.
+  return fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
 }
 
 const allPlaylistsQuery = qs.stringify({
@@ -146,10 +148,10 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  // Short revalidate so new playlists/images appear quickly after CMS updates
+  // Prefer on-demand revalidation via /api/revalidate webhook over short TTL.
   const res = await fetchAPI(url.href, {
     method: "GET",
-    next: { revalidate: 60, tags: ["playlists"] },
+    next: { revalidate: 60 * 60 * 24 * 7, tags: ["playlists"] },
   });
   
   return res.data || [];
@@ -876,7 +878,7 @@ export async function getEmailIssueCategories() {
     sort: 'order:asc'
   });
   
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 1 } });
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } });
   
   return res;
 }

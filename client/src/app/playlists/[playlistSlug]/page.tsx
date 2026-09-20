@@ -76,7 +76,7 @@ export default async function PlaylistDetailPage({ params }: PlaylistPageProps) 
           description: video.description,
           url: `${baseUrl}/playlists/${playlistSlug}/${video.slug}`,
           thumbnailUrl: getImageUrl(video.imageUrlStandard || video.imageUrl300x400),
-          uploadDate: new Date().toISOString(),
+          uploadDate: playlist.publishedAt || playlist.createdAt,
         },
       })),
     },
