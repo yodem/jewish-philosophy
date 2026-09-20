@@ -10,7 +10,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
 const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'REDACTED_YOUTUBE_API_KEY';
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || '';
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCCveJN9rRmW22wHRcce68ng';
 
 console.log('STRAPI_API_TOKEN', STRAPI_API_TOKEN);

@@ -9,7 +9,7 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'https://gorgeous-power-cb8382b5a9.strapiapp.com';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
-const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || 'REDACTED_YOUTUBE_API_KEY';
+const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || '';
 
 async function extractPlaylistId(url: string): Promise<string | null> {
   // Handle playlist URLs like: https://www.youtube.com/playlist?list=PLAYLIST_ID
