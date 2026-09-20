@@ -39,9 +39,13 @@ const CONTENT_TYPES_WITH_VIEWS: ContentTypeInfo[] = [
   { apiName: 'terms', displayName: 'term' }
 ];
 
-const STRAPI_BASE_URL = 'http://localhost:1337';
+const STRAPI_BASE_URL = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
 const STRAPI_URL = `${STRAPI_BASE_URL}/api`;
-const STRAPI_API_TOKEN = 'REDACTED_STRAPI_API_TOKEN';
+const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN || '';
+
+if (!STRAPI_API_TOKEN) {
+  console.warn('⚠️  STRAPI_API_TOKEN not found — set it in .env before running this script');
+}
 
 // Helper function to get headers for Strapi API requests
 const getStrapiHeaders = () => {
