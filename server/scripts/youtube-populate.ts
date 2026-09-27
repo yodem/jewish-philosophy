@@ -13,9 +13,9 @@ const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY || '';
 const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCCveJN9rRmW22wHRcce68ng';
 
-console.log('STRAPI_API_TOKEN', STRAPI_API_TOKEN);
+console.log('STRAPI_API_TOKEN', STRAPI_API_TOKEN ? 'set' : 'missing');
 console.log('STRAPI_BASE_URL', STRAPI_BASE_URL);
-console.log('YOUTUBE_API_KEY', YOUTUBE_API_KEY);
+console.log('YOUTUBE_API_KEY', YOUTUBE_API_KEY ? 'set' : 'missing');
 console.log('CHANNEL_ID', CHANNEL_ID);
 
 // Helper function to get headers for Strapi API requests

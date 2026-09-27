@@ -31,22 +31,22 @@ cd server
 # Import a playlist by ID
 ts-node scripts/youtube-single.ts --playlist PLxxx
 
-# Import a single video by ID
-ts-node scripts/youtube-single.ts --video dQw4w9WgXcQ
+# Import a single video by ID into an existing Strapi playlist
+pnpm tsx scripts/youtube-single.ts --into PLK70rcL51I3Q --video dQw4w9WgXcQ
 
 # Import using full URLs
-ts-node scripts/youtube-single.ts --url "https://www.youtube.com/playlist?list=PLxxx"
-ts-node scripts/youtube-single.ts --url "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-ts-node scripts/youtube-single.ts --url "https://youtu.be/dQw4w9WgXcQ"
+pnpm tsx scripts/youtube-single.ts --url "https://www.youtube.com/playlist?list=PLxxx"
+pnpm tsx scripts/youtube-single.ts --into PLK70rcL51I3Q --url "https://youtu.be/dQw4w9WgXcQ"
 ```
 
 ### Command Line Options
 
 | Option | Short | Description | Example |
 |--------|-------|-------------|---------|
-| `--playlist` | `-p` | YouTube playlist ID | `--playlist PLxxx` |
-| `--video` | `-v` | YouTube video ID | `--video dQw4w9WgXcQ` |
-| `--url` | `-u` | Full YouTube URL | `--url "https://..."` |
+| `--playlist` | `-p` | YouTube playlist ID to import | `--playlist PLxxx` |
+| `--into` | | Existing Strapi playlist `youtubeId` or slug | `--into PLK70rcL51I3Q` |
+| `--video` | `-v` | YouTube video ID (repeatable) | `--video dQw4w9WgXcQ` |
+| `--url` | `-u` | Full YouTube URL (repeatable) | `--url "https://..."` |
 
 ### Examples
 
@@ -81,9 +81,9 @@ ts-node scripts/youtube-single.ts --url "https://youtu.be/dQw4w9WgXcQ"
 5. **Verifies relations** to ensure everything is linked correctly
 
 ### For Individual Videos:
-1. **Fetches video details** from YouTube API
+1. **Fetches video details** from the YouTube API, or oEmbed if `YOUTUBE_API_KEY` is missing
 2. **Creates or updates** the video in Strapi
-3. **Note**: Individual videos need to be manually associated with playlists in Strapi admin
+3. **Assigns** the video to `--into` / `--playlist` (required for standalone videos)
 
 ## Output
 
