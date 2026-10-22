@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { parseSSE } from '../src/components/sadik-chat/sse';
 
 /**
  * The bridge is mocked: every test fulfils POST /api/sadik-chat with a canned
@@ -172,5 +173,79 @@ test.describe('Sadik side chat', () => {
     const dialog = await openChat(page);
     await ask(page, 'שאלה');
     await expect(dialog.getByRole('alert')).toContainText('אירעה שגיאה, נסו שוב מאוחר יותר');
+  });
+});
+
+test.describe('Sadik chat robustness', () => {
+  test('malformed stored transcript does not break the page', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'sadik-chat-v1',
+        JSON.stringify([null, 5, { role: 'bot', text: 'x' }, { role: 'bot', text: 'y', citations: [null] }, { role: 'user', text: 'שאלה תקינה' }]),
+      );
+    });
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText('שאלה תקינה')).toBeVisible();
+  });
+
+  test('non-JSON stored transcript does not break the page', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('sadik-chat-v1', '{not json'));
+    await page.goto('/');
+    await expect(await openChat(page)).toBeVisible();
+  });
+});
+
+test.describe('Sadik chat route guards', () => {
+  const json = { 'content-type': 'application/json' };
+
+  test('415 without JSON content type', async ({ request }) => {
+    const res = await request.post('/api/sadik-chat', {
+      headers: { 'content-type': 'text/plain', 'x-forwarded-for': '10.1.0.1' },
+      data: 'hi',
+    });
+    expect(res.status()).toBe(415);
+  });
+
+  test('403 for cross-site requests', async ({ request }) => {
+    const site = await request.post('/api/sadik-chat', {
+      headers: { ...json, 'sec-fetch-site': 'cross-site', 'x-forwarded-for': '10.1.0.2' },
+      data: { message: 'hi' },
+    });
+    expect(site.status()).toBe(403);
+    const origin = await request.post('/api/sadik-chat', {
+      headers: { ...json, origin: 'https://evil.example', 'x-forwarded-for': '10.1.0.2' },
+      data: { message: 'hi' },
+    });
+    expect(origin.status()).toBe(403);
+  });
+
+  test('429 after 10 requests per IP', async ({ request }) => {
+    const headers = { ...json, 'x-forwarded-for': '10.1.0.3, 192.168.0.1' };
+    for (let i = 0; i < 10; i++) {
+      const res = await request.post('/api/sadik-chat', { headers, data: { message: 'hi' } });
+      expect(res.status()).not.toBe(429);
+    }
+    const res = await request.post('/api/sadik-chat', { headers, data: { message: 'hi' } });
+    expect(res.status()).toBe(429);
+    const other = await request.post('/api/sadik-chat', {
+      headers: { ...json, 'x-forwarded-for': '10.1.0.4' },
+      data: { message: 'hi' },
+    });
+    expect(other.status()).not.toBe(429);
+  });
+});
+
+test.describe('parseSSE', () => {
+  test('handles split chunks and CRLF', () => {
+    const buf = { rest: '' };
+    expect(parseSSE('event: delta\r\ndata: {"te', buf)).toEqual([]);
+    const out = parseSSE('xt":"a"}\r\n\r\nevent: final\ndata: {"text":"b"}\n\n', buf);
+    expect(out).toEqual([
+      { event: 'delta', data: { text: 'a' } },
+      { event: 'final', data: { text: 'b' } },
+    ]);
+    expect(buf.rest).toBe('');
   });
 });

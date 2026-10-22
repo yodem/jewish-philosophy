@@ -26,11 +26,31 @@ function safeUrl(url: string): string | null {
   return /^(https?:\/\/|\/(?!\/))/.test(url) ? url : null;
 }
 
+function isValidMessage(m: unknown): m is ChatMessage {
+  if (!m || typeof m !== 'object') return false;
+  const { role, text, citations } = m as Record<string, unknown>;
+  if (typeof text !== 'string') return false;
+  if (role === 'user') return true;
+  return (
+    role === 'bot' &&
+    Array.isArray(citations) &&
+    citations.every(
+      (c) =>
+        c &&
+        typeof c === 'object' &&
+        typeof (c as Citation).n === 'number' &&
+        typeof (c as Citation).title === 'string' &&
+        typeof (c as Citation).url === 'string' &&
+        typeof (c as Citation).source_type === 'string',
+    )
+  );
+}
+
 function loadTranscript(): ChatMessage[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as ChatMessage[]) : [];
+    return Array.isArray(parsed) ? parsed.filter(isValidMessage) : [];
   } catch {
     return [];
   }
