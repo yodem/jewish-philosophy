@@ -6,6 +6,15 @@ const WhatsappButton = dynamic(() => import('@/components/shared/WhatsappButton'
   loading: () => null
 });
 
+const SadikChat = dynamic(() => import('@/components/sadik-chat/SadikChat'), {
+  loading: () => null
+});
+
 export default function LayoutClient() {
-  return <WhatsappButton />;
+  return (
+    <>
+      <WhatsappButton />
+      <SadikChat />
+    </>
+  );
 }
