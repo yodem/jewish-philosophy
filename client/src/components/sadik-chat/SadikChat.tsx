@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { parseSSE } from './sse';
+import { parseSseEvent, parseStoredMessage } from './validate';
 import type { BotMessage, ChatMessage, Citation, SourceType, Vote } from './types';
 
 const STORAGE_KEY = 'sadik-chat-v1';
@@ -26,34 +27,11 @@ function safeUrl(url: string): string | null {
   return /^(https?:\/\/|\/(?!\/))/.test(url) ? url : null;
 }
 
-function isValidMessage(m: unknown): m is ChatMessage {
-  if (!m || typeof m !== 'object') return false;
-  const { role, text, citations } = m as Record<string, unknown>;
-  if (typeof text !== 'string') return false;
-  if (role === 'user') return true;
-  const { turn_id, vote } = m as Record<string, unknown>;
-  return (
-    role === 'bot' &&
-    (turn_id === undefined || typeof turn_id === 'string') &&
-    (vote === undefined || vote === 'up' || vote === 'down') &&
-    Array.isArray(citations) &&
-    citations.every(
-      (c) =>
-        c &&
-        typeof c === 'object' &&
-        typeof (c as Citation).n === 'number' &&
-        typeof (c as Citation).title === 'string' &&
-        typeof (c as Citation).url === 'string' &&
-        typeof (c as Citation).source_type === 'string',
-    )
-  );
-}
-
 function loadTranscript(): ChatMessage[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.filter(isValidMessage) : [];
+    return Array.isArray(parsed) ? parsed.flatMap((m) => parseStoredMessage(m) ?? []) : [];
   } catch {
     return [];
   }
@@ -262,18 +240,17 @@ export default function SadikChat() {
         const { done, value } = await reader.read();
         if (done) break;
         for (const ev of parseSSE(decoder.decode(value, { stream: true }), buf)) {
-          const data = ev.data as { text?: string; citations?: Citation[]; message?: string; turn_id?: string };
-          if (ev.event === 'delta' && typeof data.text === 'string') {
-            const chunk = data.text;
-            patchBot((m) => ({ ...m, text: m.text + chunk }));
-          } else if (ev.event === 'final' && typeof data.text === 'string') {
+          const parsed = parseSseEvent(ev);
+          if (!parsed) continue;
+          if (parsed.kind === 'delta') {
+            patchBot((m) => ({ ...m, text: m.text + parsed.text }));
+          } else if (parsed.kind === 'final') {
             finished = true;
-            const finalText = data.text;
-            const citations = Array.isArray(data.citations) ? data.citations : [];
-            const turn_id = typeof data.turn_id === 'string' && data.turn_id ? data.turn_id : undefined;
-            patchBot((m) => ({ ...m, text: finalText, citations, turn_id }));
-          } else if (ev.event === 'error') {
-            fail(typeof data.message === 'string' && data.message ? data.message : GENERIC_ERROR);
+            patchBot((m) => ({ ...m, text: parsed.text, citations: parsed.citations, turn_id: parsed.turn_id }));
+          } else {
+            fail(parsed.kind === 'error' && parsed.message ? parsed.message : GENERIC_ERROR);
+            void reader.cancel().catch(() => {});
+            return;
           }
         }
       }

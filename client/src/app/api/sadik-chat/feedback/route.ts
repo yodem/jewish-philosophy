@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createRateLimiter, guardRequest } from '../_guards';
+import { FEEDBACK_TIMEOUT_MS } from '../_deadline';
 
 const TURN_ID_RE = /^[\w.:-]{1,128}$/;
 const rateLimited = createRateLimiter();
@@ -32,8 +33,10 @@ export async function POST(request: NextRequest) {
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({ turn_id, value }),
       cache: 'no-store',
+      signal: AbortSignal.any([request.signal, AbortSignal.timeout(FEEDBACK_TIMEOUT_MS)]),
     });
-  } catch {
+  } catch (err) {
+    if ((err as Error).name === 'TimeoutError') return NextResponse.json({ error: 'bridge timed out' }, { status: 504 });
     return NextResponse.json({ error: 'bridge unreachable' }, { status: 502 });
   }
   if (upstream.status === 404) return NextResponse.json({ error: 'unknown turn' }, { status: 404 });

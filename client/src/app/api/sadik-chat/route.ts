@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 import { createRateLimiter, guardRequest } from './_guards';
+import { BridgeTimeoutError, fetchBridgeStream } from './_deadline';
 
 const COOKIE = 'sadik_session';
 const SESSION_RE = /^[0-9a-f]{32}$/;
@@ -38,23 +39,28 @@ export async function POST(request: NextRequest) {
   const session = existing && SESSION_RE.test(existing) ? existing : randomBytes(16).toString('hex');
 
   let upstream: Response;
+  let stream: ReadableStream<Uint8Array> | null;
   try {
-    upstream = await fetch(new URL('/chat', bridgeUrl), {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        Accept: 'text/event-stream',
+    ({ response: upstream, body: stream } = await fetchBridgeStream(
+      new URL('/chat', bridgeUrl),
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+        },
+        body: JSON.stringify({ session, message }),
+        cache: 'no-store',
       },
-      body: JSON.stringify({ session, message }),
-      signal: request.signal,
-      cache: 'no-store',
-    });
-  } catch {
+      request.signal,
+    ));
+  } catch (err) {
+    if (err instanceof BridgeTimeoutError) return NextResponse.json({ error: 'bridge timed out' }, { status: 504 });
     return NextResponse.json({ error: 'bridge unreachable' }, { status: 502 });
   }
 
-  if (!upstream.ok || !upstream.body) {
+  if (!stream) {
     return NextResponse.json({ error: 'bridge error' }, { status: upstream.status === 429 ? 429 : 502 });
   }
 
@@ -65,5 +71,5 @@ export async function POST(request: NextRequest) {
     'X-Accel-Buffering': 'no',
   });
   headers.append('Set-Cookie', sessionCookie(session, (request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')) === 'https'));
-  return new Response(upstream.body, { status: 200, headers });
+  return new Response(stream, { status: 200, headers });
 }
