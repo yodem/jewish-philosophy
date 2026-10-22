@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { parseSSE } from './sse';
-import type { BotMessage, ChatMessage, Citation, SourceType } from './types';
+import type { BotMessage, ChatMessage, Citation, SourceType, Vote } from './types';
 
 const STORAGE_KEY = 'sadik-chat-v1';
 const TITLE = 'שאלו את פרופ׳ צדיק (AI)';
@@ -31,8 +31,11 @@ function isValidMessage(m: unknown): m is ChatMessage {
   const { role, text, citations } = m as Record<string, unknown>;
   if (typeof text !== 'string') return false;
   if (role === 'user') return true;
+  const { turn_id, vote } = m as Record<string, unknown>;
   return (
     role === 'bot' &&
+    (turn_id === undefined || typeof turn_id === 'string') &&
+    (vote === undefined || vote === 'up' || vote === 'down') &&
     Array.isArray(citations) &&
     citations.every(
       (c) =>
@@ -112,7 +115,34 @@ function CitationChip({ citation }: { citation: Citation }) {
   );
 }
 
-function BotBubble({ message }: { message: BotMessage }) {
+const THUMBS: { value: Vote; label: string; icon: string }[] = [
+  { value: 'up', label: 'תשובה טובה', icon: '👍' },
+  { value: 'down', label: 'תשובה לא טובה', icon: '👎' },
+];
+
+function Thumbs({ vote, onVote }: { vote?: Vote; onVote: (value: Vote) => void }) {
+  return (
+    <div className="mt-1.5 flex gap-1">
+      {THUMBS.map((t) => (
+        <button
+          key={t.value}
+          type="button"
+          aria-label={t.label}
+          aria-pressed={vote === t.value}
+          disabled={vote !== undefined}
+          onClick={() => onVote(t.value)}
+          className={`rounded-md px-1.5 py-0.5 text-sm focus-visible:outline-2 focus-visible:outline-blue-500 ${
+            vote === t.value ? 'bg-[#e9e4d8]' : vote ? 'opacity-40' : 'hover:bg-[#e9e4d8]'
+          }`}
+        >
+          {t.icon}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function BotBubble({ message, onVote }: { message: BotMessage; onVote: (value: Vote) => void }) {
   return (
     <div
       role={message.error ? 'alert' : undefined}
@@ -128,6 +158,7 @@ function BotBubble({ message }: { message: BotMessage }) {
           ))}
         </ul>
       )}
+      {message.turn_id && !message.error && <Thumbs vote={message.vote} onVote={onVote} />}
     </div>
   );
 }
@@ -177,6 +208,32 @@ export default function SadikChat() {
     });
   }, []);
 
+  // One vote per answer, optimistic: a failed POST puts the buttons back so the vote can be retried.
+  async function vote(index: number, value: Vote) {
+    const target = messages[index];
+    if (!target || target.role !== 'bot' || !target.turn_id || target.vote) return;
+    const turnId = target.turn_id;
+    const setVote = (v: Vote | undefined) =>
+      setMessages((prev) =>
+        prev.map((m, i) => {
+          if (i !== index || m.role !== 'bot' || m.turn_id !== turnId) return m;
+          const { vote: _old, ...rest } = m;
+          return v ? { ...rest, vote: v } : rest;
+        }),
+      );
+    setVote(value);
+    try {
+      const res = await fetch('/api/sadik-chat/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ turn_id: turnId, value }),
+      });
+      if (!res.ok) setVote(undefined);
+    } catch {
+      setVote(undefined);
+    }
+  }
+
   async function send(text: string) {
     setMessages((prev) => [...prev, { role: 'user', text }, { role: 'bot', text: '', citations: [] }]);
     setBusy(true);
@@ -205,7 +262,7 @@ export default function SadikChat() {
         const { done, value } = await reader.read();
         if (done) break;
         for (const ev of parseSSE(decoder.decode(value, { stream: true }), buf)) {
-          const data = ev.data as { text?: string; citations?: Citation[]; message?: string };
+          const data = ev.data as { text?: string; citations?: Citation[]; message?: string; turn_id?: string };
           if (ev.event === 'delta' && typeof data.text === 'string') {
             const chunk = data.text;
             patchBot((m) => ({ ...m, text: m.text + chunk }));
@@ -213,7 +270,8 @@ export default function SadikChat() {
             finished = true;
             const finalText = data.text;
             const citations = Array.isArray(data.citations) ? data.citations : [];
-            patchBot((m) => ({ ...m, text: finalText, citations }));
+            const turn_id = typeof data.turn_id === 'string' && data.turn_id ? data.turn_id : undefined;
+            patchBot((m) => ({ ...m, text: finalText, citations, turn_id }));
           } else if (ev.event === 'error') {
             fail(typeof data.message === 'string' && data.message ? data.message : GENERIC_ERROR);
           }
@@ -277,7 +335,7 @@ export default function SadikChat() {
                   {m.text}
                 </div>
               ) : (
-                <BotBubble key={i} message={m} />
+                <BotBubble key={i} message={m} onVote={(value) => void vote(i, value)} />
               ),
             )}
           </div>

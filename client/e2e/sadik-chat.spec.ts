@@ -176,6 +176,70 @@ test.describe('Sadik side chat', () => {
   });
 });
 
+test.describe('Sadik chat feedback', () => {
+  const answer = sse([
+    { event: 'final', data: { text: 'תשובה לדירוג', citations: [], abstained: false, flags: [], turn_id: 't-123' } },
+  ]);
+
+  async function mockFeedback(page: Page, status = 200) {
+    const posted: unknown[] = [];
+    await page.route('**/api/sadik-chat/feedback', async (route) => {
+      posted.push(route.request().postDataJSON());
+      await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify({ ok: status === 200 }) });
+    });
+    return posted;
+  }
+
+  test('thumbs posts turn_id and value', async ({ page }) => {
+    await mockChat(page, answer);
+    const posted = await mockFeedback(page);
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await expect(dialog.getByText('תשובה לדירוג')).toBeVisible();
+    await dialog.getByRole('button', { name: 'תשובה לא טובה' }).click();
+    await expect(dialog.getByRole('button', { name: 'תשובה לא טובה' })).toHaveAttribute('aria-pressed', 'true');
+    expect(posted).toEqual([{ turn_id: 't-123', value: 'down' }]);
+    // one vote per answer
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toBeDisabled();
+    await expect(dialog.getByRole('button', { name: 'תשובה לא טובה' })).toBeDisabled();
+  });
+
+  test('vote is shown as chosen after reload', async ({ page }) => {
+    await mockChat(page, answer);
+    await mockFeedback(page);
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await dialog.getByRole('button', { name: 'תשובה טובה' }).click();
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toHaveAttribute('aria-pressed', 'true');
+    await page.reload();
+    const reopened = await openChat(page);
+    await expect(reopened.getByRole('button', { name: 'תשובה טובה' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(reopened.getByRole('button', { name: 'תשובה לא טובה' })).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  test('failed post leaves the answer unrated', async ({ page }) => {
+    await mockChat(page, answer);
+    await mockFeedback(page, 502);
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await dialog.getByRole('button', { name: 'תשובה טובה' }).click();
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toHaveAttribute('aria-pressed', 'false');
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toBeEnabled();
+  });
+
+  test('answers without turn_id show no thumbs', async ({ page }) => {
+    await mockChat(page, sse([{ event: 'final', data: { text: 'ללא מזהה', citations: [], abstained: false, flags: [] } }]));
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await expect(dialog.getByText('ללא מזהה')).toBeVisible();
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toHaveCount(0);
+  });
+});
+
 test.describe('Sadik chat robustness', () => {
   test('malformed stored transcript does not break the page', async ({ page }) => {
     await page.addInitScript(() => {
@@ -219,6 +283,19 @@ test.describe('Sadik chat route guards', () => {
       data: { message: 'hi' },
     });
     expect(origin.status()).toBe(403);
+  });
+
+  test('feedback route applies the same guards', async ({ request }) => {
+    const cross = await request.post('/api/sadik-chat/feedback', {
+      headers: { ...json, 'sec-fetch-site': 'cross-site', 'x-forwarded-for': '10.1.0.5' },
+      data: { turn_id: 't', value: 'up' },
+    });
+    expect(cross.status()).toBe(403);
+    const plain = await request.post('/api/sadik-chat/feedback', {
+      headers: { 'content-type': 'text/plain', 'x-forwarded-for': '10.1.0.5' },
+      data: 'hi',
+    });
+    expect(plain.status()).toBe(415);
   });
 
   test('429 after 10 requests per IP', async ({ request }) => {

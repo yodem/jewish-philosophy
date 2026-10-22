@@ -26,11 +26,15 @@ export interface UserMessage {
   text: string;
 }
 
+export type Vote = 'up' | 'down';
+
 export interface BotMessage {
   role: 'bot';
   text: string;
   citations: Citation[];
   error?: boolean;
+  turn_id?: string;
+  vote?: Vote;
 }
 
 export type ChatMessage = UserMessage | BotMessage;
