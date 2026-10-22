@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
-import { createRateLimiter, guardRequest } from './_guards';
+import { createRateLimiters, guardRequest } from './_guards';
 import { BridgeTimeoutError, fetchBridgeStream } from './_deadline';
 
 const COOKIE = 'sadik_session';
@@ -13,7 +13,7 @@ function sessionCookie(id: string, secure: boolean): string {
   return parts.join('; ');
 }
 
-const rateLimited = createRateLimiter();
+const rateLimited = createRateLimiters(10, 10);
 
 export async function POST(request: NextRequest) {
   const rejected = guardRequest(request, rateLimited);

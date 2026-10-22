@@ -1,6 +1,8 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
+import { NextRequest } from 'next/server';
+import { clientIp, createRateLimiters, sessionKey } from '../src/app/api/sadik-chat/_guards';
 import { parseSSE } from '../src/components/sadik-chat/sse';
 import { parseSseEvent } from '../src/components/sadik-chat/validate';
 import { fetchBridgeStream, BridgeTimeoutError } from '../src/app/api/sadik-chat/_deadline';
@@ -302,19 +304,49 @@ test.describe('Sadik chat route guards', () => {
     expect(plain.status()).toBe(415);
   });
 
-  test('429 after 10 requests per IP', async ({ request }) => {
-    const headers = { ...json, 'x-forwarded-for': '10.1.0.3, 192.168.0.1' };
-    for (let i = 0; i < 10; i++) {
-      const res = await request.post('/api/sadik-chat', { headers, data: { message: '' } });
-      expect(res.status()).not.toBe(429);
+  // Empty messages are rejected with 400 after the rate guards, so no real bridge turn is started.
+  test('spoofed forwarded headers do not bypass the limit', async ({ request }) => {
+    let limited = 0;
+    for (let i = 0; i < 11; i++) {
+      const res = await request.post('/api/sadik-chat', {
+        headers: { ...json, 'x-forwarded-for': `10.2.0.${i}`, 'x-real-ip': `10.3.0.${i}` },
+        data: { message: '' },
+      });
+      if (res.status() === 429) limited++;
     }
-    const res = await request.post('/api/sadik-chat', { headers, data: { message: '' } });
-    expect(res.status()).toBe(429);
-    const other = await request.post('/api/sadik-chat', {
-      headers: { ...json, 'x-forwarded-for': '10.1.0.4' },
-      data: { message: '' },
-    });
-    expect(other.status()).not.toBe(429);
+    expect(limited).toBe(1);
+  });
+});
+
+test.describe('rate-limit helpers', () => {
+  const h = (xff: string) => new Headers({ 'x-forwarded-for': xff, 'x-real-ip': '9.9.9.9' });
+
+  test('forwarding headers are ignored unless the proxy is trusted', () => {
+    expect(clientIp(h('1.2.3.4'), false)).toBe('direct');
+    expect(clientIp(h('1.2.3.5'), false)).toBe('direct');
+  });
+
+  test('trusted proxy mode uses first hop', () => {
+    expect(clientIp(h('1.2.3.4, 10.0.0.1'), true)).toBe('1.2.3.4');
+    expect(clientIp(new Headers({ 'x-real-ip': '9.9.9.9' }), true)).toBe('9.9.9.9');
+    expect(clientIp(new Headers(), true)).toBe('direct');
+  });
+
+  test('session limit applies', () => {
+    const { session } = createRateLimiters(1000, 3);
+    const a = 'a'.repeat(32);
+    expect([1, 2, 3, 4].map(() => session(a))).toEqual([false, false, false, true]);
+    expect(session('b'.repeat(32))).toBe(false);
+    const { session: s2 } = createRateLimiters(1000, 2);
+    expect([s2('no-session'), s2('no-session'), s2('no-session')]).toEqual([false, false, true]);
+  });
+
+  test('sessionKey falls back to the shared no-session bucket', () => {
+    const req = (cookie?: string) =>
+      new NextRequest('http://localhost/x', { headers: cookie ? { cookie } : {} });
+    expect(sessionKey(req(`sadik_session=${'c'.repeat(32)}`))).toBe('c'.repeat(32));
+    expect(sessionKey(req('sadik_session=bad'))).toBe('no-session');
+    expect(sessionKey(req())).toBe('no-session');
   });
 });
 

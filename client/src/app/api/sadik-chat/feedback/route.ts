@@ -1,9 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createRateLimiter, guardRequest } from '../_guards';
+import { createRateLimiters, guardRequest } from '../_guards';
 import { FEEDBACK_TIMEOUT_MS } from '../_deadline';
 
 const TURN_ID_RE = /^[\w.:-]{1,128}$/;
-const rateLimited = createRateLimiter();
+const rateLimited = createRateLimiters(60, 30);
 
 export async function POST(request: NextRequest) {
   const rejected = guardRequest(request, rateLimited);
