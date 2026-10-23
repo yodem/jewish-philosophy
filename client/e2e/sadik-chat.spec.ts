@@ -3,7 +3,7 @@ import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { NextRequest } from 'next/server';
 import { POST as feedbackPost } from '../src/app/api/sadik-chat/feedback/route';
-import { clientIp, createRateLimiters, guardRequest, proxyGuard, resolveSession } from '../src/app/api/sadik-chat/_guards';
+import { LIMITER_CAPACITY, clientIp, createRateLimiters, createWindowLimiter, guardRequest, proxyGuard, resolveSession } from '../src/app/api/sadik-chat/_guards';
 import { parseSSE } from '../src/components/sadik-chat/sse';
 import { parseSseEvent } from '../src/components/sadik-chat/validate';
 import { fetchBridgeStream, BridgeTimeoutError } from '../src/app/api/sadik-chat/_deadline';
@@ -389,6 +389,76 @@ test.describe('rate-limit helpers', () => {
     const limiters = createRateLimiters(3, 1000);
     const statuses = Array.from({ length: 4 }, () => guardRequest(req(), limiters).rejection?.status ?? 200);
     expect(statuses).toEqual([200, 200, 200, 429]);
+  });
+});
+
+test.describe('parseSSE equivalence across chunkings', () => {
+  const streams: Record<string, string> = {
+    'CRLF data with LF delimiters': 'event: delta\r\ndata: {"text":"a"}\r\n\nevent: final\r\ndata: {"text":"b"}\r\n\n',
+    'pure CRLF': 'event: delta\r\ndata: {"text":"a"}\r\n\r\nevent: final\r\ndata: {"text":"b"}\r\n\r\n',
+    'pure LF': 'event: delta\ndata: {"text":"a"}\n\nevent: final\ndata: {"text":"b"}\n\n',
+    'lone CR': 'event: delta\rdata: {"text":"a"}\r\revent: final\rdata: {"text":"b"}\r\r',
+  };
+  const run = (chunks: string[]) => {
+    const buf: { rest: string; skipLf?: boolean } = { rest: '' };
+    return chunks.flatMap((c) => parseSSE(c, buf));
+  };
+  for (const [name, stream] of Object.entries(streams)) {
+    test(`${name}: whole == every split == one char per chunk`, () => {
+      const whole = run([stream]);
+      expect(whole).toHaveLength(2);
+      for (let i = 0; i <= stream.length; i++) {
+        expect(run([stream.slice(0, i), stream.slice(i)]), `split at ${i}`).toEqual(whole);
+      }
+      expect(run([...stream])).toEqual(whole);
+    });
+  }
+
+  test('CR, LF, LF delivered separately clears the CR flag', () => {
+    const buf: { rest: string; skipLf?: boolean } = { rest: '' };
+    const out = ['event: final\r', '\n', 'data: {"text":"x"}\r', '\n', '\n'].flatMap((c) => parseSSE(c, buf));
+    expect(out).toEqual([{ event: 'final', data: { text: 'x' } }]);
+  });
+});
+
+test.describe('rate limiter capacity', () => {
+  test('IP-rejected requests allocate no session bucket; 6,001 cookieless requests stay within capacity', () => {
+    const limiters = createRateLimiters(10, 1000);
+    let rejected = 0;
+    for (let i = 0; i < 6001; i++) {
+      const r = guardRequest(
+        new NextRequest('http://localhost/x', { method: 'POST', headers: { 'content-type': 'application/json' } }),
+        limiters,
+      );
+      if (r.rejection?.status === 429) rejected++;
+    }
+    expect(rejected).toBe(5991);
+    expect(limiters.sizes().session).toBe(10);
+    expect(limiters.sizes().session).toBeLessThanOrEqual(LIMITER_CAPACITY);
+    expect(limiters.sizes().ip).toBe(1);
+  });
+
+  test('size never exceeds capacity and eviction work per call is bounded', () => {
+    const cap = 100;
+    const lim = createWindowLimiter(5, cap);
+    let maxWork = 0;
+    for (let i = 0; i < cap * 20; i++) {
+      lim.check(`k${i}`);
+      maxWork = Math.max(maxWork, lim.lastWork());
+      expect(lim.size()).toBeLessThanOrEqual(cap);
+    }
+    expect(lim.size()).toBe(cap);
+    expect(maxWork).toBeLessThanOrEqual(9);
+  });
+
+  test('expired entries are evicted first and the limit still applies to live keys', () => {
+    const lim = createWindowLimiter(2, 3, 20);
+    const t0 = Date.now();
+    lim.check('a'); lim.check('b'); lim.check('c');
+    while (Date.now() - t0 < 25) { /* wait out the 20 ms window */ }
+    lim.check('d');
+    expect(lim.size()).toBe(1);
+    expect([lim.check('d'), lim.check('d')]).toEqual([false, true]);
   });
 });
 

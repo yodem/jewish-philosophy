@@ -8,8 +8,11 @@ import type { SSEEvent } from './types';
  * ending. Events whose `data` is not valid JSON are skipped.
  */
 export function parseSSE(chunk: string, buf: { rest: string; skipLf?: boolean }): SSEEvent[] {
-  if (buf.skipLf && chunk.startsWith('\n')) chunk = chunk.slice(1);
-  if (chunk.length > 0) buf.skipLf = chunk.endsWith('\r');
+  if (chunk.length > 0) {
+    // The pending LF belongs to the previous CR: drop it, and clear the flag even when it was the whole chunk.
+    if (buf.skipLf && chunk.startsWith('\n')) chunk = chunk.slice(1);
+    buf.skipLf = chunk.endsWith('\r');
+  }
   const text = (buf.rest + chunk).replace(/\r\n?/g, '\n');
   const blocks = text.split('\n\n');
   buf.rest = blocks.pop() ?? '';

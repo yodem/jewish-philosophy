@@ -55,35 +55,78 @@ export function withSessionCookie<T extends Response>(response: T, request: Next
   return response;
 }
 
-function createWindowLimiter(limit: number) {
+/** Hard cap on keys held by each limiter map. */
+export const LIMITER_CAPACITY = 10_000;
+/** Entries examined for expiry per new key at capacity: bounds eviction work per request. */
+const EVICT_SCAN = 8;
+
+export interface WindowLimiter {
+  /** Records a hit for the key; true when it is over the limit. */
+  check: (key: string) => boolean;
+  size: () => number;
+  /** Map entries examined by the most recent check (eviction work). */
+  lastWork: () => number;
+}
+
+/**
+ * Sliding-window limiter with a hard key capacity. The Map is kept in last-hit order
+ * (a hit re-inserts its key), so the oldest entries come first. A new key at capacity
+ * examines at most EVICT_SCAN entries from the front, dropping expired ones, and if none
+ * expired drops the oldest, so size never exceeds capacity and work per call is O(1).
+ */
+export function createWindowLimiter(limit: number, capacity = LIMITER_CAPACITY, windowMs = RATE_WINDOW_MS): WindowLimiter {
   const hits = new Map<string, number[]>();
-  return (key: string): boolean => {
-    const now = Date.now();
-    const recent = (hits.get(key) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-    if (recent.length >= limit) {
-      hits.set(key, recent);
-      return true;
-    }
-    recent.push(now);
-    hits.set(key, recent);
-    if (hits.size > 5000) {
-      for (const [k, times] of hits) {
-        if (times.every((t) => now - t >= RATE_WINDOW_MS)) hits.delete(k);
+  let work = 0;
+  const evict = (now: number) => {
+    let dropped = false;
+    let scanned = 0;
+    for (const [k, times] of hits) {
+      if (scanned++ >= EVICT_SCAN) break;
+      work++;
+      if (now - times[times.length - 1] >= windowMs) {
+        hits.delete(k);
+        dropped = true;
+      } else {
+        break; // last-hit order: everything after is newer, so nothing else is expired
       }
     }
-    return false;
+    if (!dropped && hits.size >= capacity) {
+      const oldest = hits.keys().next().value;
+      if (oldest !== undefined) hits.delete(oldest);
+      work++;
+    }
+  };
+  return {
+    check(key) {
+      work = 0;
+      const now = Date.now();
+      const existing = hits.get(key);
+      if (existing === undefined && hits.size >= capacity) evict(now);
+      const recent = (existing ?? []).filter((t) => now - t < windowMs);
+      const limited = recent.length >= limit;
+      if (!limited) recent.push(now);
+      // A counted hit re-inserts the key so the Map stays in last-hit order; a rejected hit leaves its position.
+      if (!limited && existing !== undefined) hits.delete(key);
+      hits.set(key, recent);
+      return limited;
+    },
+    size: () => hits.size,
+    lastWork: () => work,
   };
 }
 
 export interface RateLimiters {
   ip: (ip: string) => boolean;
   session: (session: string) => boolean;
+  sizes: () => { ip: number; session: number };
 }
 
 // In-memory and per-instance: a cheap guard, not a global quota.
 // Each route makes its own limiters so feedback votes never eat the chat budget.
-export function createRateLimiters(ipLimit: number, sessionLimit: number): RateLimiters {
-  return { ip: createWindowLimiter(ipLimit), session: createWindowLimiter(sessionLimit) };
+export function createRateLimiters(ipLimit: number, sessionLimit: number, capacity = LIMITER_CAPACITY): RateLimiters {
+  const ip = createWindowLimiter(ipLimit, capacity);
+  const session = createWindowLimiter(sessionLimit, capacity);
+  return { ip: ip.check, session: session.check, sizes: () => ({ ip: ip.size(), session: session.size() }) };
 }
 
 function crossOrigin(request: NextRequest): boolean {
@@ -124,9 +167,8 @@ export function guardRequest(request: NextRequest, limiters: RateLimiters, opts:
     return reject({ error: 'content type must be application/json' }, 415);
   }
   if (opts.requireSession && session.fresh) return reject({ error: 'no session' }, 403);
-  // Evaluate both so each request is counted against both buckets.
-  const ipLimited = limiters.ip(clientIp(request.headers));
-  const sessionLimited = limiters.session(session.id);
-  if (ipLimited || sessionLimited) return reject({ error: 'too many requests' }, 429);
+  // IP first: an IP-rejected request allocates no session bucket.
+  if (limiters.ip(clientIp(request.headers))) return reject({ error: 'too many requests' }, 429);
+  if (limiters.session(session.id)) return reject({ error: 'too many requests' }, 429);
   return { session, rejection: null };
 }
