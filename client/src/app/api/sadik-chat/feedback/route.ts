@@ -6,8 +6,8 @@ const TURN_ID_RE = /^[\w.:-]{1,128}$/;
 const rateLimited = createRateLimiters(60, 30);
 
 export async function POST(request: NextRequest) {
-  const rejected = guardRequest(request, rateLimited);
-  if (rejected) return rejected;
+  const { rejection } = guardRequest(request, rateLimited, { requireSession: true });
+  if (rejection) return rejection;
 
   const bridgeUrl = process.env.SADIK_BRIDGE_URL;
   const token = process.env.SADIK_BRIDGE_TOKEN;

@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { NextRequest } from 'next/server';
-import { clientIp, createRateLimiters, sessionKey } from '../src/app/api/sadik-chat/_guards';
+import { clientIp, createRateLimiters, guardRequest, resolveSession } from '../src/app/api/sadik-chat/_guards';
 import { parseSSE } from '../src/components/sadik-chat/sse';
 import { parseSseEvent } from '../src/components/sadik-chat/validate';
 import { fetchBridgeStream, BridgeTimeoutError } from '../src/app/api/sadik-chat/_deadline';
@@ -304,6 +304,24 @@ test.describe('Sadik chat route guards', () => {
     expect(plain.status()).toBe(415);
   });
 
+  test('rejected request still sets a session cookie', async ({ request }) => {
+    const res = await request.post('/api/sadik-chat', {
+      headers: { 'content-type': 'text/plain' },
+      data: 'hi',
+    });
+    expect(res.status()).toBe(415);
+    expect(res.headers()['set-cookie']).toMatch(/^sadik_session=[0-9a-f]{32}; Path=\/; HttpOnly; SameSite=Lax/);
+  });
+
+  test('feedback without session cookie is 403', async ({ request }) => {
+    const res = await request.post('/api/sadik-chat/feedback', {
+      headers: json,
+      data: { turn_id: 't', value: 'up' },
+    });
+    expect(res.status()).toBe(403);
+    expect(await res.json()).toEqual({ error: 'no session' });
+  });
+
   // Empty messages are rejected with 400 after the rate guards, so no real bridge turn is started.
   test('spoofed forwarded headers do not bypass the limit', async ({ request }) => {
     let limited = 0;
@@ -337,16 +355,39 @@ test.describe('rate-limit helpers', () => {
     const a = 'a'.repeat(32);
     expect([1, 2, 3, 4].map(() => session(a))).toEqual([false, false, false, true]);
     expect(session('b'.repeat(32))).toBe(false);
-    const { session: s2 } = createRateLimiters(1000, 2);
-    expect([s2('no-session'), s2('no-session'), s2('no-session')]).toEqual([false, false, true]);
   });
 
-  test('sessionKey falls back to the shared no-session bucket', () => {
-    const req = (cookie?: string) =>
-      new NextRequest('http://localhost/x', { headers: cookie ? { cookie } : {} });
-    expect(sessionKey(req(`sadik_session=${'c'.repeat(32)}`))).toBe('c'.repeat(32));
-    expect(sessionKey(req('sadik_session=bad'))).toBe('no-session');
-    expect(sessionKey(req())).toBe('no-session');
+  const req = (cookie?: string, headers: Record<string, string> = {}) =>
+    new NextRequest('http://localhost/x', { method: 'POST', headers: { 'content-type': 'application/json', ...(cookie ? { cookie } : {}), ...headers } });
+
+  test('resolveSession keeps a valid cookie and mints a fresh id otherwise', () => {
+    expect(resolveSession(req(`sadik_session=${'c'.repeat(32)}`))).toEqual({ id: 'c'.repeat(32), fresh: false });
+    const bad = resolveSession(req('sadik_session=bad'));
+    const none = resolveSession(req());
+    expect(bad.fresh && none.fresh).toBe(true);
+    expect(bad.id).toMatch(/^[0-9a-f]{32}$/);
+    expect(bad.id).not.toBe(none.id);
+  });
+
+  test('distinct new visitors each get their own session bucket', () => {
+    const prev = process.env.SADIK_TRUST_PROXY;
+    process.env.SADIK_TRUST_PROXY = '1';
+    try {
+      const limiters = createRateLimiters(1000, 10);
+      const statuses = Array.from({ length: 11 }, (_, i) =>
+        guardRequest(req(undefined, { 'x-forwarded-for': `10.9.0.${i}` }), limiters).rejection?.status ?? 200,
+      );
+      expect(statuses.filter((st) => st === 429)).toEqual([]);
+    } finally {
+      if (prev === undefined) delete process.env.SADIK_TRUST_PROXY;
+      else process.env.SADIK_TRUST_PROXY = prev;
+    }
+  });
+
+  test('a cookie-dropping client is still stopped by the per-IP limiter', () => {
+    const limiters = createRateLimiters(3, 1000);
+    const statuses = Array.from({ length: 4 }, () => guardRequest(req(), limiters).rejection?.status ?? 200);
+    expect(statuses).toEqual([200, 200, 200, 429]);
   });
 });
 

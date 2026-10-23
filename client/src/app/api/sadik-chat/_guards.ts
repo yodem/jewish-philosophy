@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const RATE_WINDOW_MS = 60_000;
@@ -15,10 +16,23 @@ export function clientIp(headers: Headers, trustProxy = process.env.SADIK_TRUST_
   return forwarded || headers.get('x-real-ip')?.trim() || 'direct';
 }
 
-/** The sadik_session cookie when well formed, else one shared "no-session" bucket. */
-export function sessionKey(request: NextRequest): string {
-  const value = request.cookies.get('sadik_session')?.value;
-  return value && SESSION_RE.test(value) ? value : 'no-session';
+const COOKIE = 'sadik_session';
+
+/** The visitor's session: the valid sadik_session cookie, else a freshly minted id (fresh = true). */
+export function resolveSession(request: NextRequest): { id: string; fresh: boolean } {
+  const value = request.cookies.get(COOKIE)?.value;
+  if (value && SESSION_RE.test(value)) return { id: value, fresh: false };
+  return { id: randomBytes(16).toString('hex'), fresh: true };
+}
+
+/** Set-Cookie on a response, so rejected requests still give a real browser its own session. */
+export function withSessionCookie<T extends Response>(response: T, request: NextRequest, session: { id: string; fresh: boolean }): T {
+  if (!session.fresh) return response;
+  const secure = (request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')) === 'https';
+  const parts = [`${COOKIE}=${session.id}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${60 * 60 * 24 * 30}`];
+  if (secure) parts.push('Secure');
+  response.headers.append('Set-Cookie', parts.join('; '));
+  return response;
 }
 
 function createWindowLimiter(limit: number) {
@@ -67,19 +81,32 @@ function crossOrigin(request: NextRequest): boolean {
   return false;
 }
 
-/** Same-origin, JSON content-type and per-IP and per-session guards; returns the rejection response, or null to proceed. */
-export function guardRequest(request: NextRequest, limiters: RateLimiters): NextResponse | null {
-  if (crossOrigin(request)) {
-    return NextResponse.json({ error: 'forbidden' }, { status: 403 });
-  }
+export interface GuardResult {
+  session: { id: string; fresh: boolean };
+  /** The rejection response (already carrying the session cookie when one was minted), or null to proceed. */
+  rejection: NextResponse | null;
+}
+
+/**
+ * Same-origin, JSON content-type, session and per-IP / per-session guards.
+ * The session is minted before the limiters run, so every visitor has their own session
+ * bucket; the per-IP limiter is the backstop against clients that drop cookies.
+ * With requireSession, a request without a valid session cookie is 403 (feedback only follows a chat turn).
+ */
+export function guardRequest(request: NextRequest, limiters: RateLimiters, opts: { requireSession?: boolean } = {}): GuardResult {
+  const session = resolveSession(request);
+  const reject = (body: object, status: number) => ({
+    session,
+    rejection: withSessionCookie(NextResponse.json(body, { status }), request, session),
+  });
+  if (crossOrigin(request)) return reject({ error: 'forbidden' }, 403);
   if (!(request.headers.get('content-type') ?? '').toLowerCase().startsWith('application/json')) {
-    return NextResponse.json({ error: 'content type must be application/json' }, { status: 415 });
+    return reject({ error: 'content type must be application/json' }, 415);
   }
+  if (opts.requireSession && session.fresh) return reject({ error: 'no session' }, 403);
   // Evaluate both so each request is counted against both buckets.
   const ipLimited = limiters.ip(clientIp(request.headers));
-  const sessionLimited = limiters.session(sessionKey(request));
-  if (ipLimited || sessionLimited) {
-    return NextResponse.json({ error: 'too many requests' }, { status: 429 });
-  }
-  return null;
+  const sessionLimited = limiters.session(session.id);
+  if (ipLimited || sessionLimited) return reject({ error: 'too many requests' }, 429);
+  return { session, rejection: null };
 }

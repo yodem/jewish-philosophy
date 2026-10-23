@@ -1,42 +1,32 @@
-import { randomBytes } from 'node:crypto';
 import { NextResponse, type NextRequest } from 'next/server';
-import { createRateLimiters, guardRequest } from './_guards';
+import { createRateLimiters, guardRequest, withSessionCookie } from './_guards';
 import { BridgeTimeoutError, fetchBridgeStream } from './_deadline';
 
-const COOKIE = 'sadik_session';
-const SESSION_RE = /^[0-9a-f]{32}$/;
 const MAX_MESSAGE = 2000;
-
-function sessionCookie(id: string, secure: boolean): string {
-  const parts = [`${COOKIE}=${id}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${60 * 60 * 24 * 30}`];
-  if (secure) parts.push('Secure');
-  return parts.join('; ');
-}
 
 const rateLimited = createRateLimiters(10, 10);
 
 export async function POST(request: NextRequest) {
-  const rejected = guardRequest(request, rateLimited);
-  if (rejected) return rejected;
+  const { session, rejection } = guardRequest(request, rateLimited);
+  if (rejection) return rejection;
+  // Every response below carries the session cookie, success or failure.
+  const reply = <T extends Response>(res: T): T => withSessionCookie(res, request, session);
 
   const bridgeUrl = process.env.SADIK_BRIDGE_URL;
   const token = process.env.SADIK_BRIDGE_TOKEN;
   if (!bridgeUrl || !token) {
-    return NextResponse.json({ error: 'sadik chat is not configured' }, { status: 503 });
+    return reply(NextResponse.json({ error: 'sadik chat is not configured' }, { status: 503 }));
   }
 
   let message: unknown;
   try {
     ({ message } = await request.json());
   } catch {
-    return NextResponse.json({ error: 'invalid JSON' }, { status: 400 });
+    return reply(NextResponse.json({ error: 'invalid JSON' }, { status: 400 }));
   }
   if (typeof message !== 'string' || !message.trim() || message.length > MAX_MESSAGE) {
-    return NextResponse.json({ error: 'invalid message' }, { status: 400 });
+    return reply(NextResponse.json({ error: 'invalid message' }, { status: 400 }));
   }
-
-  const existing = request.cookies.get(COOKIE)?.value;
-  const session = existing && SESSION_RE.test(existing) ? existing : randomBytes(16).toString('hex');
 
   let upstream: Response;
   let stream: ReadableStream<Uint8Array> | null;
@@ -50,18 +40,18 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'application/json',
           Accept: 'text/event-stream',
         },
-        body: JSON.stringify({ session, message }),
+        body: JSON.stringify({ session: session.id, message }),
         cache: 'no-store',
       },
       request.signal,
     ));
   } catch (err) {
-    if (err instanceof BridgeTimeoutError) return NextResponse.json({ error: 'bridge timed out' }, { status: 504 });
-    return NextResponse.json({ error: 'bridge unreachable' }, { status: 502 });
+    if (err instanceof BridgeTimeoutError) return reply(NextResponse.json({ error: 'bridge timed out' }, { status: 504 }));
+    return reply(NextResponse.json({ error: 'bridge unreachable' }, { status: 502 }));
   }
 
   if (!stream) {
-    return NextResponse.json({ error: 'bridge error' }, { status: upstream.status === 429 ? 429 : 502 });
+    return reply(NextResponse.json({ error: 'bridge error' }, { status: upstream.status === 429 ? 429 : 502 }));
   }
 
   const headers = new Headers({
@@ -70,6 +60,5 @@ export async function POST(request: NextRequest) {
     Connection: 'keep-alive',
     'X-Accel-Buffering': 'no',
   });
-  headers.append('Set-Cookie', sessionCookie(session, (request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')) === 'https'));
-  return new Response(stream, { status: 200, headers });
+  return reply(new Response(stream, { status: 200, headers }));
 }
