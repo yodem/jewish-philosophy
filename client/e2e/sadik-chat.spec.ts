@@ -2,7 +2,8 @@ import { test, expect, type Page } from '@playwright/test';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { NextRequest } from 'next/server';
-import { clientIp, createRateLimiters, guardRequest, resolveSession } from '../src/app/api/sadik-chat/_guards';
+import { POST as feedbackPost } from '../src/app/api/sadik-chat/feedback/route';
+import { clientIp, createRateLimiters, guardRequest, proxyGuard, resolveSession } from '../src/app/api/sadik-chat/_guards';
 import { parseSSE } from '../src/components/sadik-chat/sse';
 import { parseSseEvent } from '../src/components/sadik-chat/validate';
 import { fetchBridgeStream, BridgeTimeoutError } from '../src/app/api/sadik-chat/_deadline';
@@ -607,5 +608,60 @@ test.describe('bridge deadlines', () => {
     });
     expect(response.status).toBe(500);
     expect(body).toBeNull();
+  });
+});
+
+test.describe('production proxy guard', () => {
+  test('production without SADIK_TRUST_PROXY=1 is 503 proxy not configured', async () => {
+    const res = proxyGuard({ NODE_ENV: 'production' });
+    expect(res?.status).toBe(503);
+    expect(await res?.json()).toEqual({ error: 'proxy not configured' });
+    expect(proxyGuard({ NODE_ENV: 'production', SADIK_TRUST_PROXY: '0' })?.status).toBe(503);
+  });
+  test('production with the proxy trusted, and non-production, pass', () => {
+    expect(proxyGuard({ NODE_ENV: 'production', SADIK_TRUST_PROXY: '1' })).toBeNull();
+    expect(proxyGuard({ NODE_ENV: 'development' })).toBeNull();
+    expect(proxyGuard({})).toBeNull();
+  });
+});
+
+test.describe('feedback forwards the session', () => {
+  let bridge: Server;
+  let received: { auth?: string; body?: unknown } = {};
+  const env = { SADIK_BRIDGE_URL: process.env.SADIK_BRIDGE_URL, SADIK_BRIDGE_TOKEN: process.env.SADIK_BRIDGE_TOKEN };
+
+  test.beforeAll(async () => {
+    bridge = createServer((req, res) => {
+      let data = '';
+      req.on('data', (c) => (data += c));
+      req.on('end', () => {
+        received = { auth: req.headers.authorization, body: JSON.parse(data) };
+        res.writeHead(200, { 'Content-Type': 'application/json' }).end('{"ok":true}');
+      });
+    });
+    await new Promise<void>((r) => bridge.listen(0, '127.0.0.1', r));
+    process.env.SADIK_BRIDGE_URL = `http://127.0.0.1:${(bridge.address() as AddressInfo).port}`;
+    process.env.SADIK_BRIDGE_TOKEN = 'test-token';
+  });
+  test.afterAll(async () => {
+    await new Promise((r) => bridge.close(r));
+    for (const [k, v] of Object.entries(env)) {
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+  });
+
+  test('the cookie session id is sent to the bridge as `session`', async () => {
+    const sid = 'ab'.repeat(16);
+    const res = await feedbackPost(
+      new NextRequest('http://localhost:4000/api/sadik-chat/feedback', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', cookie: `sadik_session=${sid}` },
+        body: JSON.stringify({ turn_id: 't-1', value: 'up' }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    expect(received.body).toEqual({ turn_id: 't-1', value: 'up', session: sid });
+    expect(received.auth).toBe('Bearer test-token');
   });
 });

@@ -13,7 +13,7 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'NEXT_PUBLIC_STRAPI_BASE_URL=http://localhost:1337 pnpm start -p 4000',
+    command: 'SADIK_TRUST_PROXY=1 NEXT_PUBLIC_STRAPI_BASE_URL=http://localhost:1337 pnpm start -p 4000',
     port: 4000,
     reuseExistingServer: true,
     timeout: 60000,

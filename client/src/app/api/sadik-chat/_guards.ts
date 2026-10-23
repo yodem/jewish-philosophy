@@ -16,6 +16,26 @@ export function clientIp(headers: Headers, trustProxy = process.env.SADIK_TRUST_
   return forwarded || headers.get('x-real-ip')?.trim() || 'direct';
 }
 
+/**
+ * A production deploy without SADIK_TRUST_PROXY=1 would put every visitor in the one "direct" IP bucket.
+ * Set SADIK_TRUST_PROXY=1 on Vercel (its edge overwrites x-forwarded-for); elsewhere only behind a proxy you control.
+ */
+export function proxyMisconfigured(env: Record<string, string | undefined> = process.env): boolean {
+  return env.NODE_ENV === 'production' && env.SADIK_TRUST_PROXY !== '1';
+}
+
+let proxyWarned = false;
+
+/** The 503 response when the proxy is not configured for production (logs once), else null. */
+export function proxyGuard(env: Record<string, string | undefined> = process.env): NextResponse | null {
+  if (!proxyMisconfigured(env)) return null;
+  if (!proxyWarned) {
+    proxyWarned = true;
+    console.error('sadik-chat disabled: NODE_ENV=production requires SADIK_TRUST_PROXY=1 (behind a trusted proxy such as Vercel)');
+  }
+  return NextResponse.json({ error: 'proxy not configured' }, { status: 503 });
+}
+
 const COOKIE = 'sadik_session';
 
 /** The visitor's session: the valid sadik_session cookie, else a freshly minted id (fresh = true). */

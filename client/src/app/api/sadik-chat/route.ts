@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createRateLimiters, guardRequest, withSessionCookie } from './_guards';
+import { createRateLimiters, guardRequest, proxyGuard, withSessionCookie } from './_guards';
 import { BridgeTimeoutError, fetchBridgeStream } from './_deadline';
 
 const MAX_MESSAGE = 2000;
@@ -7,6 +7,8 @@ const MAX_MESSAGE = 2000;
 const rateLimited = createRateLimiters(10, 10);
 
 export async function POST(request: NextRequest) {
+  const misconfigured = proxyGuard();
+  if (misconfigured) return misconfigured;
   const { session, rejection } = guardRequest(request, rateLimited);
   if (rejection) return rejection;
   // Every response below carries the session cookie, success or failure.

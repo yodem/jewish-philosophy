@@ -1,12 +1,14 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createRateLimiters, guardRequest } from '../_guards';
+import { createRateLimiters, guardRequest, proxyGuard } from '../_guards';
 import { FEEDBACK_TIMEOUT_MS } from '../_deadline';
 
 const TURN_ID_RE = /^[\w.:-]{1,128}$/;
 const rateLimited = createRateLimiters(60, 30);
 
 export async function POST(request: NextRequest) {
-  const { rejection } = guardRequest(request, rateLimited, { requireSession: true });
+  const misconfigured = proxyGuard();
+  if (misconfigured) return misconfigured;
+  const { session, rejection } = guardRequest(request, rateLimited, { requireSession: true });
   if (rejection) return rejection;
 
   const bridgeUrl = process.env.SADIK_BRIDGE_URL;
@@ -31,7 +33,7 @@ export async function POST(request: NextRequest) {
     upstream = await fetch(new URL('/feedback', bridgeUrl), {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ turn_id, value }),
+      body: JSON.stringify({ turn_id, value, session: session.id }),
       cache: 'no-store',
       signal: AbortSignal.any([request.signal, AbortSignal.timeout(FEEDBACK_TIMEOUT_MS)]),
     });
