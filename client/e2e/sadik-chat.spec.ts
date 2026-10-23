@@ -25,6 +25,8 @@ type Cite = {
   source_type: string;
   speaker: string;
   quote: string | null;
+  locator_label?: string | null;
+  kind?: 'quote' | 'reference';
 };
 
 function sse(events: { event: string; data: unknown }[]): string {
@@ -139,6 +141,85 @@ test.describe('Sadik side chat', () => {
     const visitor = dialog.locator('[data-source-type="comment"]');
     await expect(visitor.getByText('גולש', { exact: true })).toBeVisible();
     await expect(primary.getByText('גולש')).toHaveCount(0);
+  });
+
+  test('quote citation shows a prominent blockquote, a link to the place and the page badge; reference shows the moment badge', async ({ page }) => {
+    await mockChat(
+      page,
+      sse([
+        {
+          event: 'final',
+          data: {
+            text: 'הרמב״ם כתב[1] וגם נאמר בהרצאה[2]',
+            citations: [
+              cite(1, 'primary', {
+                speaker: 'maimonides',
+                title: 'מורה הנבוכים ג, כ',
+                url: 'https://example.com/guide#page=3',
+                quote: 'לא יתכן שתתחדש לו ידיעה עד שידע עתה',
+                locator_label: 'עמ׳ 3',
+                kind: 'quote',
+              }),
+              cite(2, 'video', {
+                title: 'הרצאה על בחירה',
+                url: 'https://www.youtube.com/watch?v=abc&t=125',
+                locator_label: '02:05',
+                kind: 'reference',
+              }),
+            ],
+            further_reading: [
+              { title: 'שו״ת על ידיעה', url: 'https://example.com/responsa/1', locator_label: null, source_type: 'responsa' },
+              { title: 'הרצאה נוספת', url: 'https://www.youtube.com/watch?v=def&t=60', locator_label: '01:00', source_type: 'video' },
+            ],
+            abstained: false,
+            flags: [],
+          },
+        },
+      ]),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    const quote = dialog.locator('[data-source-type="primary"]');
+    await expect(quote.locator('blockquote')).toHaveText('לא יתכן שתתחדש לו ידיעה עד שידע עתה');
+    await expect(quote.getByRole('link')).toHaveAttribute('href', 'https://example.com/guide#page=3');
+    await expect(quote.locator('[data-locator]')).toHaveText('עמ׳ 3');
+    await expect(quote.getByText('הרמב״ם', { exact: true })).toBeVisible();
+    const ref = dialog.locator('[data-source-type="video"]').first();
+    await expect(ref.locator('blockquote')).toHaveCount(0);
+    await expect(ref.getByRole('link')).toHaveAttribute('href', 'https://www.youtube.com/watch?v=abc&t=125');
+    await expect(ref.locator('[data-locator]')).toHaveText('▶ 02:05');
+    const further = dialog.locator('[data-further-reading]');
+    await expect(further.getByText('להעמקה')).toBeVisible();
+    await expect(further.getByRole('link')).toHaveCount(2);
+    await expect(further.getByRole('link').nth(1)).toHaveAttribute('href', 'https://www.youtube.com/watch?v=def&t=60');
+    await expect(further.locator('[data-locator]')).toHaveText('▶ 01:00');
+  });
+
+  test('a non-http link is not rendered as a link and further reading survives a reload', async ({ page }) => {
+    await mockChat(
+      page,
+      sse([
+        {
+          event: 'final',
+          data: {
+            text: 'טענה[1]',
+            citations: [cite(1, 'blog', { url: 'javascript:alert(1)' })],
+            further_reading: [{ title: 'קריאה', url: 'https://example.com/r', locator_label: null, source_type: 'blog' }],
+            abstained: false,
+            flags: [],
+          },
+        },
+      ]),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await expect(dialog.locator('[data-source-type="blog"]').getByRole('link')).toHaveCount(0);
+    await expect(dialog.locator('[data-further-reading]').getByRole('link')).toHaveCount(1);
+    await page.reload();
+    const again = await openChat(page);
+    await expect(again.locator('[data-further-reading]').getByRole('link')).toHaveAttribute('href', 'https://example.com/r');
   });
 
   test('persists across navigation', async ({ page }) => {
@@ -523,6 +604,16 @@ test.describe('parseSseEvent validation', () => {
     expect(f).toMatchObject({ kind: 'final', text: 't', turn_id: 'tid' });
   });
 
+  test('accepts the optional locator_label, kind and further_reading', () => {
+    const c = { ...good, locator_label: '02:05', kind: 'reference' };
+    const f = parseSseEvent(final({ citations: [c], further_reading: [{ title: 'x', url: 'https://e.com', locator_label: null, source_type: 'blog' }] }));
+    expect(f).toMatchObject({ kind: 'final' });
+    expect((f as { citations: { locator_label: string | null }[] }).citations[0].locator_label).toBe('02:05');
+    expect((f as { further_reading: unknown[] }).further_reading).toHaveLength(1);
+    expect(parseSseEvent(final({ citations: [{ ...good, locator_label: null }] }))).toMatchObject({ kind: 'final' });
+    expect((parseSseEvent(final()) as { further_reading: unknown[] }).further_reading).toEqual([]);
+  });
+
   test('ignores unknown events', () => {
     expect(parseSseEvent({ event: 'ping', data: {} })).toBeNull();
   });
@@ -541,6 +632,12 @@ test.describe('parseSseEvent validation', () => {
       final({ citations: [{ ...good, source_type: 'nope' }] }),
       final({ citations: [{ ...good, speaker: 'nope' }] }),
       final({ citations: [{ ...good, chunk_id: 3 }] }),
+      final({ citations: [{ ...good, locator_label: 5 }] }),
+      final({ citations: [{ ...good, kind: 'nope' }] }),
+      final({ further_reading: 'x' }),
+      final({ further_reading: [null] }),
+      final({ further_reading: [{ title: 'x', url: 5, source_type: 'blog' }] }),
+      final({ further_reading: [{ title: 'x', url: 'https://e.com', source_type: 'nope' }] }),
       final({ abstained: 'no' }),
       final({ abstained: undefined }),
       final({ turn_id: 7 }),

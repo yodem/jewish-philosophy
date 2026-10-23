@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
 import { parseSSE } from './sse';
 import { parseSseEvent, parseStoredMessage } from './validate';
-import type { BotMessage, ChatMessage, Citation, SourceType, Vote } from './types';
+import type { BotMessage, ChatMessage, Citation, FurtherReading, SourceType, Vote } from './types';
 
 const STORAGE_KEY = 'sadik-chat-v1';
 const TITLE = 'שאלו את פרופ׳ צדיק (AI)';
@@ -62,34 +62,79 @@ function AnswerText({ text }: { text: string }) {
   );
 }
 
-function CitationChip({ citation }: { citation: Citation }) {
-  const chip = CHIP[citation.source_type] ?? CHIP.primary;
-  const href = safeUrl(citation.url);
-  const title = (
-    <>
-      <span className="font-semibold">[{citation.n}]</span> {citation.title}
-    </>
+/** "▶ mm:ss" for a video moment, "עמ׳ N" for a PDF page. */
+function badgeText(label: string): string {
+  return /^\d/.test(label) ? `▶ ${label}` : label;
+}
+
+function LocatorBadge({ label }: { label?: string | null }) {
+  if (!label) return null;
+  return (
+    <span data-locator className="ms-1.5 inline-block rounded-md bg-[#e9e4d8] px-1.5 py-px text-xs font-medium text-[#333]" dir="ltr">
+      {badgeText(label)}
+    </span>
   );
+}
+
+const LINK_CLASS = 'font-medium text-blue-800 underline underline-offset-2 hover:text-blue-950';
+
+function SourceLink({ url, children }: { url: string; children: ReactNode }) {
+  const href = safeUrl(url);
+  return href ? (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>
+      {children} <span aria-hidden>↗</span>
+    </a>
+  ) : (
+    <span>{children}</span>
+  );
+}
+
+function TypeChip({ type }: { type: SourceType }) {
+  const chip = CHIP[type] ?? CHIP.primary;
+  return (
+    <span data-chip-label className={`${chip.className} me-1.5 inline-block rounded-md px-1.5 py-px text-xs text-white`}>
+      {chip.label}
+    </span>
+  );
+}
+
+function CitationChip({ citation }: { citation: Citation }) {
   return (
     <li data-source-type={citation.source_type} className="text-[13px] leading-snug text-[#333]">
-      <span
-        data-chip-label
-        className={`${chip.className} me-1.5 inline-block rounded-md px-1.5 py-px text-xs text-white`}
-      >
-        {chip.label}
-      </span>
+      <TypeChip type={citation.source_type} />
       {citation.speaker === 'visitor' && (
         <span className="me-1.5 inline-block rounded-md bg-gray-200 px-1.5 py-px text-xs text-[#333]">גולש</span>
       )}
-      {href ? (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
-          {title}
-        </a>
-      ) : (
-        <span>{title}</span>
+      {citation.speaker === 'maimonides' && (
+        <span className="me-1.5 inline-block rounded-md bg-gray-200 px-1.5 py-px text-xs text-[#333]">הרמב״ם</span>
       )}
-      {citation.quote && <q className="mt-0.5 block text-xs text-[#555]">{citation.quote}</q>}
+      <SourceLink url={citation.url}>
+        <span className="font-semibold">[{citation.n}]</span> {citation.title}
+      </SourceLink>
+      <LocatorBadge label={citation.locator_label} />
+      {citation.quote && (
+        <blockquote className="mt-1 border-s-4 border-[#b9ad8f] bg-white px-2.5 py-1.5 text-[13px] leading-relaxed text-[#222]">
+          {citation.quote}
+        </blockquote>
+      )}
     </li>
+  );
+}
+
+function FurtherReadingList({ items }: { items: FurtherReading[] }) {
+  return (
+    <section data-further-reading className="mt-3 border-t border-[#ddd] pt-2">
+      <h3 className="mb-1 text-xs font-semibold text-[#555]">להעמקה</h3>
+      <ul className="grid gap-1">
+        {items.map((f, i) => (
+          <li key={i} data-source-type={f.source_type} className="text-[13px] leading-snug text-[#333]">
+            <TypeChip type={f.source_type} />
+            <SourceLink url={f.url}>{f.title}</SourceLink>
+            <LocatorBadge label={f.locator_label} />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 
@@ -136,6 +181,7 @@ function BotBubble({ message, onVote }: { message: BotMessage; onVote: (value: V
           ))}
         </ul>
       )}
+      {message.further_reading && message.further_reading.length > 0 && <FurtherReadingList items={message.further_reading} />}
       {message.turn_id && !message.error && <Thumbs vote={message.vote} onVote={onVote} />}
     </div>
   );
@@ -246,7 +292,7 @@ export default function SadikChat() {
             patchBot((m) => ({ ...m, text: m.text + parsed.text }));
           } else if (parsed.kind === 'final') {
             finished = true;
-            patchBot((m) => ({ ...m, text: parsed.text, citations: parsed.citations, turn_id: parsed.turn_id }));
+            patchBot((m) => ({ ...m, text: parsed.text, citations: parsed.citations, further_reading: parsed.further_reading, turn_id: parsed.turn_id }));
           } else {
             fail(parsed.kind === 'error' && parsed.message ? parsed.message : GENERIC_ERROR);
             void reader.cancel().catch(() => {});
