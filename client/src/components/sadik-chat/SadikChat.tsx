@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from 'react';
+import { parseAnswer, type Inline } from './markdown';
 import { parseSSE } from './sse';
 import { parseSseEvent, parseStoredMessage } from './validate';
 import type { BotMessage, ChatMessage, Citation, FurtherReading, SourceType, Vote } from './types';
@@ -45,20 +46,66 @@ function saveTranscript(messages: ChatMessage[]) {
   }
 }
 
-function AnswerText({ text }: { text: string }) {
-  const parts = text.split(/(\[\d+\])/g);
+const MARKER_CLASS = 'font-semibold text-blue-700';
+
+function citeId(idPrefix: string, n: number): string {
+  return `${idPrefix}-cite-${n}`;
+}
+
+function renderInline(nodes: Inline[], idPrefix: string, cited: Set<number>): ReactNode[] {
+  return nodes.map((node, i) => {
+    if (node.t === 'text') return node.v;
+    if (node.t === 'bold') return <strong key={i}>{renderInline(node.c, idPrefix, cited)}</strong>;
+    if (!cited.has(node.n)) {
+      return (
+        <sup key={i} className={MARKER_CLASS}>
+          {node.raw}
+        </sup>
+      );
+    }
+    return (
+      <sup key={i} className={MARKER_CLASS}>
+        <a
+          href={`#${citeId(idPrefix, node.n)}`}
+          data-cite-marker={node.n}
+          className="no-underline hover:underline"
+          onClick={(e) => {
+            e.preventDefault();
+            const target = document.getElementById(citeId(idPrefix, node.n));
+            target?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            target?.focus({ preventScroll: true });
+          }}
+        >
+          {node.raw}
+        </a>
+      </sup>
+    );
+  });
+}
+
+function AnswerText({ text, idPrefix, citations }: { text: string; idPrefix: string; citations: Citation[] }) {
+  const cited = new Set(citations.map((c) => c.n));
   return (
-    <p className="whitespace-pre-wrap">
-      {parts.map((part, i) =>
-        /^\[\d+\]$/.test(part) ? (
-          <sup key={i} className="font-semibold text-blue-700">
-            {part}
-          </sup>
+    <div data-answer className="grid gap-2">
+      {parseAnswer(text).map((block, i) =>
+        block.t === 'ul' ? (
+          <ul key={i} className="list-disc ps-5">
+            {block.items.map((item, j) => (
+              <li key={j}>{renderInline(item, idPrefix, cited)}</li>
+            ))}
+          </ul>
         ) : (
-          part
+          <p key={i}>
+            {block.lines.map((line, j) => (
+              <Fragment key={j}>
+                {j > 0 && <br />}
+                {renderInline(line, idPrefix, cited)}
+              </Fragment>
+            ))}
+          </p>
         ),
       )}
-    </p>
+    </div>
   );
 }
 
@@ -98,9 +145,14 @@ function TypeChip({ type }: { type: SourceType }) {
   );
 }
 
-function CitationChip({ citation }: { citation: Citation }) {
+function CitationChip({ citation, idPrefix }: { citation: Citation; idPrefix: string }) {
   return (
-    <li data-source-type={citation.source_type} className="text-[13px] leading-snug text-[#333]">
+    <li
+      id={citeId(idPrefix, citation.n)}
+      tabIndex={-1}
+      data-source-type={citation.source_type}
+      className="text-[13px] leading-snug text-[#333] focus-visible:outline-2 focus-visible:outline-blue-500"
+    >
       <TypeChip type={citation.source_type} />
       {citation.speaker === 'visitor' && (
         <span className="me-1.5 inline-block rounded-md bg-gray-200 px-1.5 py-px text-xs text-[#333]">גולש</span>
@@ -165,7 +217,7 @@ function Thumbs({ vote, onVote }: { vote?: Vote; onVote: (value: Vote) => void }
   );
 }
 
-function BotBubble({ message, onVote }: { message: BotMessage; onVote: (value: Vote) => void }) {
+function BotBubble({ message, onVote, idPrefix }: { message: BotMessage; onVote: (value: Vote) => void; idPrefix: string }) {
   return (
     <div
       role={message.error ? 'alert' : undefined}
@@ -173,11 +225,11 @@ function BotBubble({ message, onVote }: { message: BotMessage; onVote: (value: V
         message.error ? 'bg-red-50 text-red-800' : 'bg-[#f5f5f5]'
       }`}
     >
-      {message.text ? <AnswerText text={message.text} /> : <span aria-hidden>…</span>}
+      {message.text ? <AnswerText text={message.text} idPrefix={idPrefix} citations={message.citations} /> : <span aria-hidden>…</span>}
       {message.citations.length > 0 && (
         <ul className="mt-2 grid gap-1">
           {message.citations.map((c) => (
-            <CitationChip key={c.n} citation={c} />
+            <CitationChip key={c.n} citation={c} idPrefix={idPrefix} />
           ))}
         </ul>
       )}
@@ -358,7 +410,7 @@ export default function SadikChat() {
                   {m.text}
                 </div>
               ) : (
-                <BotBubble key={i} message={m} onVote={(value) => void vote(i, value)} />
+                <BotBubble key={i} message={m} idPrefix={`sadik-m${i}`} onVote={(value) => void vote(i, value)} />
               ),
             )}
           </div>

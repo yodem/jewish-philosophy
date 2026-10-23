@@ -6,6 +6,7 @@ import { POST as feedbackPost } from '../src/app/api/sadik-chat/feedback/route';
 import { LIMITER_CAPACITY, clientIp, createRateLimiters, createWindowLimiter, guardRequest, proxyGuard, resolveSession } from '../src/app/api/sadik-chat/_guards';
 import { parseSSE } from '../src/components/sadik-chat/sse';
 import { parseSseEvent } from '../src/components/sadik-chat/validate';
+import { parseAnswer, parseInline } from '../src/components/sadik-chat/markdown';
 import { fetchBridgeStream, BridgeTimeoutError } from '../src/app/api/sadik-chat/_deadline';
 
 /**
@@ -215,7 +216,7 @@ test.describe('Sadik side chat', () => {
     await page.goto('/');
     const dialog = await openChat(page);
     await ask(page, 'שאלה');
-    await expect(dialog.locator('[data-source-type="blog"]').getByRole('link')).toHaveCount(0);
+    await expect(dialog.locator('[id$="-cite-1"]').getByRole('link')).toHaveCount(0); // the citation itself: no link for a javascript: url
     await expect(dialog.locator('[data-further-reading]').getByRole('link')).toHaveCount(1);
     await page.reload();
     const again = await openChat(page);
@@ -830,5 +831,91 @@ test.describe('feedback forwards the session', () => {
     expect(res.status).toBe(200);
     expect(received.body).toEqual({ turn_id: 't-1', value: 'up', session: sid });
     expect(received.auth).toBe('Bearer test-token');
+  });
+});
+
+test.describe('answer markdown', () => {
+  const MARKDOWN =
+    '**הרמב״ם** קובע שיש בחירה [1].\nשורה שנייה באותה פסקה.\n\nפסקה שנייה עם **הדגשה [2]** ועם **כוכבית פתוחה\n\n- נקודה ראשונה [1]\n- נקודה **שנייה**\n- <b>לא תגית</b> ו-[9]\n\nסיום';
+
+  test('parseAnswer builds paragraphs, line breaks, bullets and bold; everything else stays text', async () => {
+    const blocks = parseAnswer(MARKDOWN);
+    expect(blocks.map((b) => b.t)).toEqual(['p', 'p', 'ul', 'p']);
+    expect(blocks[0]).toMatchObject({ t: 'p', lines: [expect.any(Array), expect.any(Array)] });
+    expect(blocks[2]).toMatchObject({ t: 'ul', items: [expect.any(Array), expect.any(Array), expect.any(Array)] });
+    expect(parseInline('א **ב** [3]')).toEqual([
+      { t: 'text', v: 'א ' },
+      { t: 'bold', c: [{ t: 'text', v: 'ב' }] },
+      { t: 'text', v: ' ' },
+      { t: 'cite', n: 3, raw: '[3]' },
+    ]);
+    // unclosed, spaced or empty emphasis is literal; a lone hyphen is not a bullet; CRLF is a line break
+    expect(parseInline('**פתוח')).toEqual([{ t: 'text', v: '**פתוח' }]);
+    expect(parseInline('** רווח **')).toEqual([{ t: 'text', v: '** רווח **' }]);
+    expect(parseInline('****')).toEqual([{ t: 'text', v: '****' }]);
+    expect(parseAnswer('-\n-x')).toEqual([{ t: 'p', lines: [[{ t: 'text', v: '-' }], [{ t: 'text', v: '-x' }]] }]);
+    expect(parseAnswer('א\r\nב')).toMatchObject([{ t: 'p', lines: [expect.any(Array), expect.any(Array)] }]);
+    expect(parseAnswer('   \n\n')).toEqual([]);
+  });
+
+  test('renders bold, paragraphs, line breaks and bullets as elements, with no literal ** and no HTML passthrough', async ({ page }) => {
+    await mockChat(
+      page,
+      sse([
+        {
+          event: 'final',
+          data: { text: MARKDOWN, citations: [cite(1, 'responsa'), cite(2, 'writing', { kind: 'quote', quote: 'ציטוט מילה מילה מילה מילה' })], abstained: false, flags: [] },
+        },
+      ]),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    const answer = dialog.locator('[data-answer]');
+    await expect(answer.locator('strong').first()).toHaveText('הרמב״ם');
+    await expect(answer.locator('strong')).toHaveCount(3);
+    await expect(answer.locator('p')).toHaveCount(3);
+    await expect(answer.locator('p').first().locator('br')).toHaveCount(1);
+    await expect(answer.locator('ul > li')).toHaveCount(3);
+    const text = (await answer.innerText()).replace(/\s+/g, ' ');
+    expect(text).toContain('**כוכבית פתוחה'); // an unclosed emphasis is shown as written
+    expect(text.match(/\*\*/g)).toHaveLength(1);
+    expect(text).toContain('<b>לא תגית</b>');
+    await expect(answer.locator('b, script, img')).toHaveCount(0);
+    await expect(answer.getByText('[9]')).toBeVisible(); // a marker without a citation stays plain text
+    await expect(answer.locator('a[data-cite-marker="9"]')).toHaveCount(0);
+  });
+
+  test('a [n] marker links to its citation and moves focus there', async ({ page }) => {
+    await mockChat(
+      page,
+      sse([{ event: 'final', data: { text: 'טענה [2].', citations: [cite(1, 'responsa'), cite(2, 'blog')], abstained: false, flags: [] } }]),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    const marker = dialog.locator('a[data-cite-marker="2"]');
+    await expect(marker).toHaveText('[2]');
+    const href = await marker.getAttribute('href');
+    expect(href).toMatch(/^#sadik-m\d+-cite-2$/);
+    await marker.click();
+    await expect(dialog.locator(`[data-source-type="blog"]`)).toBeFocused();
+    expect(new URL(page.url()).hash).toBe('');
+    await expect(dialog.locator('[data-source-type="blog"]')).toHaveAttribute('id', href!.slice(1));
+  });
+
+  test('markdown inside a streaming delta renders as it grows and survives the final replace', async ({ page }) => {
+    await mockChat(
+      page,
+      sse([
+        { event: 'delta', data: { text: 'תחילה **מודג' } },
+        { event: 'delta', data: { text: 'ש** וסוף' } },
+        { event: 'final', data: { text: 'תחילה **מודגש** וסוף', citations: [], abstained: false, flags: [] } },
+      ]),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה');
+    await expect(dialog.locator('[data-answer] strong')).toHaveText('מודגש');
   });
 });
