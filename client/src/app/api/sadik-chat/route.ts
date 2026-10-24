@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     return reply(NextResponse.json({ error: 'invalid conversation' }, { status: 400 }));
   }
 
-  const user = await resolveUser(session);
+  const user = await resolveUser(request, session);
   const headers: Record<string, string> = {
     Authorization: `Bearer ${config.token}`,
     'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'invalid feedback' }, { status: 400 });
   }
 
-  const user = await resolveUser(session);
+  const user = await resolveUser(request, session);
   let upstream: Response;
   try {
     upstream = await bridgeFetch(config, '/feedback', { method: 'POST', body: { user, turn_id, value } }, request.signal);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { signIn as authSignIn, signOut as authSignOut } from 'next-auth/react';
 import { track } from './analytics';
 import { clearStore, loadStore, newConversationId, saveStore, titleFrom, upsert, type LocalStore } from './conversation';
 import { download, toJson, toMarkdown } from './export';
@@ -310,15 +311,16 @@ export function useSadikChat(open: boolean): SadikChatState {
     [title, messages],
   );
 
+  // Google sign-in through Auth.js (POST with its CSRF token); back to this page afterwards (same-origin path only).
   const signIn = useCallback(() => {
     track('sign_in');
-    const back = window.location.pathname.startsWith('/') ? window.location.pathname : '/';
-    window.location.href = `/api/auth/signin/google?callbackUrl=${encodeURIComponent(back)}`;
+    void authSignIn('google', { redirectTo: window.location.pathname });
   }, []);
 
+  // Sign-out also clears the conversations kept in this browser.
   const signOut = useCallback(() => {
     clearStore();
-    window.location.href = '/api/auth/signout';
+    void authSignOut({ redirectTo: window.location.pathname });
   }, []);
 
   return {

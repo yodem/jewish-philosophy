@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   }
   if (typeof turnId !== 'string' || !TURN_ID_RE.test(turnId)) return NextResponse.json({ error: 'invalid turn' }, { status: 400 });
 
-  const user = await resolveUser(session);
+  const user = await resolveUser(request, session);
   let upstream: Response;
   try {
     upstream = await bridgeFetch(config, '/share', { method: 'POST', body: { turn_id: turnId, kind: user.kind, id: user.id } }, request.signal);
