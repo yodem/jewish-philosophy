@@ -119,3 +119,25 @@ test('sign-out clears the conversations kept in this browser', async ({ page }) 
   await expect.poll(() => page.evaluate(() => localStorage.getItem('sadik-chat-v2'))).toBeNull();
   await expect.poll(async () => (await page.context().cookies(BASE)).some((c) => c.name === 'authjs.session-token')).toBe(false);
 });
+
+test('a per-commit preview host starts sign-in on the canonical AUTH_URL origin (top-level navigation, no cross-origin fetch)', async ({ page }) => {
+  let googleUrl: URL | null = null;
+  await page.route('https://accounts.google.com/**', async (route) => {
+    googleUrl = new URL(route.request().url());
+    await route.fulfill({ status: 200, contentType: 'text/html', body: '<p>stub</p>' });
+  });
+  const preview = BASE.replace('localhost', '127.0.0.1'); // not the AUTH_URL host
+  await page.goto(`${preview}/`);
+  const dialog = await openChat(page);
+  await dialog.getByRole('button', { name: /התחברות/ }).click();
+  await expect.poll(() => googleUrl?.href ?? '', { timeout: 15000 }).toContain('accounts.google.com');
+  expect(googleUrl!.searchParams.get('redirect_uri')).toBe(`${BASE}/api/auth/callback/google`);
+  expect(googleUrl!.searchParams.get('code_challenge_method')).toBe('S256');
+});
+
+test('the gate still redirects other Auth.js paths on a foreign host to the canonical origin', async ({ request }) => {
+  const preview = BASE.replace('localhost', '127.0.0.1');
+  const res = await request.get(`${preview}/api/auth/providers`, { maxRedirects: 0 });
+  expect(res.status()).toBe(307);
+  expect(res.headers().location).toBe(`${BASE}/api/auth/providers`);
+});

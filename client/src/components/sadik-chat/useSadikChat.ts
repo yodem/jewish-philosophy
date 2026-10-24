@@ -19,6 +19,7 @@ export const RATE_ERROR = 'שאלתם הרבה בזמן קצר. נסו שוב ב
 export const BUSY_ERROR = 'העומס גבוה כרגע. נסו שוב בעוד דקה.';
 export const QUOTA_MESSAGE = 'שאלה אחת ביום ללא התחברות — התחברו כדי להמשיך';
 
+const SIGNIN_PARAM = 'sadik_signin';
 const JSON_HEADERS = { 'Content-Type': 'application/json' };
 
 export type ShareResult = { ok: true; url: string } | { ok: false };
@@ -313,10 +314,37 @@ export function useSadikChat(open: boolean): SadikChatState {
   );
 
   // Google sign-in through Auth.js (POST with its CSRF token); back to this page afterwards (same-origin path only).
-  const signIn = useCallback(() => {
-    track('sign_in');
+  // The OAuth flow must start on the canonical AUTH_URL origin: from any other host (a per-commit preview) the browser
+  // first navigates there (a fetch would be redirected across origins and fail CORS), carrying only a start flag.
+  const startSignIn = useCallback(() => {
     void authSignIn('google', { redirectTo: window.location.pathname });
   }, []);
+
+  const signIn = useCallback(() => {
+    track('sign_in');
+    void (async () => {
+      try {
+        const res = await fetch('/api/auth/canonical-origin', { cache: 'no-store' });
+        const { origin } = (await res.json()) as { origin?: unknown };
+        if (res.ok && typeof origin === 'string' && origin !== window.location.origin) {
+          window.location.assign(`${origin}${window.location.pathname}?${SIGNIN_PARAM}=1`);
+          return;
+        }
+      } catch {
+        // fall through: start here, as before
+      }
+      startSignIn();
+    })();
+  }, [startSignIn]);
+
+  // Landing on the canonical origin with the start flag: remove it from the URL, then begin the Google flow.
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get(SIGNIN_PARAM) !== '1') return;
+    url.searchParams.delete(SIGNIN_PARAM);
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    startSignIn();
+  }, [startSignIn]);
 
   // Sign-out also clears the conversations kept in this browser.
   const signOut = useCallback(() => {
