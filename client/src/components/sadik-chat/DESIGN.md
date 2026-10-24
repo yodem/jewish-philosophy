@@ -37,8 +37,8 @@ the margin, lettered א ב ג."
 | `--sc-alert` | `#9E2530` | `#FF9AA2` | errors |
 | `--sc-scrim` | `rgb(15 21 41 / .42)` | `rgb(4 7 16 / .62)` | page dim behind the desktop panel |
 
-Contrast (WCAG, measured on `--sc-sheet` and `--sc-ground`): ink ≥ 14:1, ink-2 ≥ 7:1, ink-3 ≥ 4.6:1, verdigris ≥ 6:1,
-lapis ≥ 8:1, on-lapis on lapis ≥ 9:1, in both themes. Colour is never the only signal: gloss groups carry names,
+Contrast (WCAG, computed for both `--sc-sheet` and `--sc-ground`, lowest of the two themes): ink 13.3:1, ink-2 6.8:1,
+ink-3 4.85:1, verdigris 6.1:1, lapis 8.7:1, alert 6.5:1, on-lapis on lapis 9.5:1, ink on leaf 10.3:1. Colour is never the only signal: gloss groups carry names,
 the active rail item has a weight change and a leaf mark, the chosen vote has `aria-pressed` and a filled state.
 
 Dark is designed, not inverted: the ground goes to a deep lapis (not black), the sheet lifts one step, the accents
@@ -78,12 +78,14 @@ Inline links are underlined (offset 3px, thickness 1px).
 
 1. **Panel.** Desktop: a centered sheet, `min(1100px, 92vw) × min(86vh, 920px)`, over a scrim; mobile (< 640px): full screen.
    Opens from the site's 💬 button. Esc closes and returns focus to the button.
-2. **Header.** Title (David) + a small "בינה מלאכותית" tag; then text-labelled controls: אודות (ⓘ), theme, ייצוא (when there
-   is a conversation), שיחה חדשה (anonymous, when there is a conversation), sign-in (only when sign-in is configured), and ✕ (aria-label).
-   Narrow widths keep icons but every icon has a visible-on-hover title and an aria-label.
-3. **Turn = page + margin.** The question in David 24/700, then the answer page. The answer's `[n]` become verdigris
-   Hebrew letters (superscript, a button: click/Enter scrolls to and flashes the gloss). In a container ≥ 760px wide the
-   glosses sit in a margin column beside the answer; below that they follow the answer under a short rule.
+2. **Header.** Title (David) + a small "בינה מלאכותית" tag; then controls: אודות (ⓘ + word), theme, ייצוא (when there is
+   an answer), שיחה חדשה (anonymous, when there is a conversation), sign-in (only when sign-in is configured), ✕.
+   Every icon-only control has an aria-label and a title. On a phone, theme / export / new conversation move into an
+   "עוד" (⋯) menu whose items are words, so the title keeps its room.
+3. **Turn = page + margin.** The question in David 24/700, then one sheet (the leaf) holding the answer and its
+   margin. The answer's `[n]` become verdigris Hebrew letters (superscript buttons: click/Enter scrolls to, focuses and
+   flashes the gloss). In a conversation area ≥ 860px wide the glosses sit in a margin column beside the answer (the one
+   vertical rule); narrower, they follow the answer under a rule, in two columns from 600px.
 4. **Glosses.** Three named groups, only when non-empty: ציטוטים (quotation in David, ״…״, then the source line),
    מקורות (letter, kind label, title, locator), להעמקה (no letter: these are not cited in the text). Group names are
    verdigris Rubik 12.5/500. Letters hang in the inline-start gutter, like printed glosses.
@@ -95,7 +97,8 @@ Inline links are underlined (offset 3px, thickness 1px).
 7. **Composer.** One primary action per view: "שאלו" (lapis fill). A visible label above the field ("השאלה שלכם" /
    "שאלת המשך"); the placeholder is an example, never the label. Enter sends, Shift+Enter breaks a line.
 8. **Empty state.** David heading "על מה תרצו לשאול?", one plain sentence on how answers are built, six starter
-   questions as a two-column list of David lines on the sheet (one column on mobile).
+   questions set like a book's index: a verdigris topic word over each question in David, rows divided by rules, two
+   columns from 640px (one on a phone). No cards.
 9. **Quota.** The anonymous daily limit replaces the answer slot with "שאלה אחת ביום ללא התחברות — התחברו כדי להמשיך"
    and, when sign-in is configured, the primary "התחברות עם Google" (the composer is disabled, so this is the one primary action).
 10. **Rail (signed-in).** At the inline start, on the ground: "שיחה חדשה", then conversation titles, newest first.
@@ -120,3 +123,7 @@ Inline links are underlined (offset 3px, thickness 1px).
   the panel's own toggle flips the same setting, so the site and chat never disagree.
 - 2026-10-24 · Kind labels as words (הרצאה, מאמר, שו״ת, בלוג…) instead of 📄/💬 emoji: emoji render in system colour and
   break the palette; ▶ stays on time locators because it says "play from here".
+- 2026-10-24 · Starter cards → an index list (topic + question): the first screenshots read as the SaaS-card kit.
+- 2026-10-24 · The answer and its margin became one sheet: separate card + floating margin did not read as one page.
+  Margin breakpoint raised from 760 to 860px after the rail screenshot showed a cramped 170px margin.
+- 2026-10-24 · Phone header: overflow "עוד" menu after the 375px screenshot showed the title colliding with the tools.
