@@ -200,6 +200,7 @@ export default function SadikChat() {
         dir="rtl"
         lang="he"
       >
+        {signedIn && railOpen && <div className="sc-rail-scrim" onClick={() => setRailOpen(false)} aria-hidden />}
         {signedIn && (
           <nav className="sc-rail" aria-label="שיחות" data-open={railOpen} data-rail>
             <button

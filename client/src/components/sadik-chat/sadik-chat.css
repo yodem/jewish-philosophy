@@ -257,9 +257,16 @@
   }
 }
 @media (min-width: 900px) {
-  .sc-rail-toggle {
+  .sc-rail-toggle,
+  .sc-rail-scrim {
     display: none;
   }
+}
+.sc-rail-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--sc-scrim);
 }
 
 /* ---------- main column ---------- */
