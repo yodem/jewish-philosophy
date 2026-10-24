@@ -1,4 +1,4 @@
-import type { BotMessage, ChatMessage, Citation, FurtherReading, SourceType, SSEEvent, Speaker } from './types';
+import type { BotMessage, ChatMessage, Citation, Conversation, ConversationSummary, FurtherReading, SharedAnswer, SourceType, SSEEvent, Speaker } from './types';
 
 export const SOURCE_TYPES: readonly SourceType[] = [
   'responsa',
@@ -8,10 +8,17 @@ export const SOURCE_TYPES: readonly SourceType[] = [
   'video',
   'playlist',
   'academic',
+  'article',
+  'web',
   'comment',
   'primary',
 ];
-export const SPEAKERS: readonly Speaker[] = ['sadik', 'visitor', 'maimonides'];
+export const SPEAKERS: readonly Speaker[] = ['sadik', 'visitor', 'maimonides', 'other'];
+
+/** Preview text is shown as plain text; the bridge caps it at 280 chars, this only bounds a tampered value. */
+const SNIPPET_MAX = 600;
+const optSnippet = (v: unknown) => v === undefined || v === null || typeof v === 'string';
+const snippetOf = (v: unknown) => (typeof v === 'string' && v.trim() ? v.slice(0, SNIPPET_MAX) : undefined);
 
 const isRecord = (v: unknown): v is Record<string, unknown> => !!v && typeof v === 'object' && !Array.isArray(v);
 const optString = (v: unknown) => v === undefined || typeof v === 'string';
@@ -19,7 +26,7 @@ const optString = (v: unknown) => v === undefined || typeof v === 'string';
 /** Returns a normalised Citation, or null when any field is missing or has the wrong type. */
 export function parseCitation(c: unknown): Citation | null {
   if (!isRecord(c)) return null;
-  const { n, chunk_id, title, url, source_type, speaker, quote, locator_label, kind } = c;
+  const { n, chunk_id, title, url, source_type, speaker, quote, locator_label, kind, snippet } = c;
   if (typeof n !== 'number' || !Number.isFinite(n)) return null;
   if (typeof title !== 'string' || typeof url !== 'string') return null;
   if (!SOURCE_TYPES.includes(source_type as SourceType)) return null;
@@ -27,6 +34,7 @@ export function parseCitation(c: unknown): Citation | null {
   if (!optString(chunk_id) || !(optString(quote) || quote === null)) return null;
   if (!(optString(locator_label) || locator_label === null)) return null;
   if (kind !== undefined && kind !== 'quote' && kind !== 'reference') return null;
+  if (!optSnippet(snippet)) return null;
   const out: Citation = {
     n,
     chunk_id: (chunk_id as string | undefined) ?? '',
@@ -38,6 +46,8 @@ export function parseCitation(c: unknown): Citation | null {
   };
   if (typeof locator_label === 'string' || locator_label === null) out.locator_label = locator_label;
   if (kind !== undefined) out.kind = kind;
+  const snip = snippetOf(snippet);
+  if (snip) out.snippet = snip;
   return out;
 }
 
@@ -47,11 +57,16 @@ function parseFurther(list: unknown): FurtherReading[] | null {
   const out: FurtherReading[] = [];
   for (const f of list) {
     if (!isRecord(f)) return null;
-    const { title, url, locator_label, source_type } = f;
+    const { title, url, locator_label, snippet } = f;
+    // A record without a type (the bridge sends "") reads as a generic source.
+    const source_type = f.source_type === '' ? 'primary' : f.source_type;
     if (typeof title !== 'string' || typeof url !== 'string') return null;
     if (!SOURCE_TYPES.includes(source_type as SourceType)) return null;
-    if (!(optString(locator_label) || locator_label === null)) return null;
-    out.push({ title, url, locator_label: (locator_label as string | null | undefined) ?? null, source_type: source_type as SourceType });
+    if (!(optString(locator_label) || locator_label === null) || !optSnippet(snippet)) return null;
+    const item: FurtherReading = { title, url, locator_label: (locator_label as string | null | undefined) ?? null, source_type: source_type as SourceType };
+    const snip = snippetOf(snippet);
+    if (snip) item.snippet = snip;
+    out.push(item);
   }
   return out;
 }
@@ -83,7 +98,59 @@ export function parseStoredMessage(m: unknown): ChatMessage | null {
   if (m.turn_id !== undefined) bot.turn_id = m.turn_id as string;
   if (m.vote !== undefined) bot.vote = m.vote as BotMessage['vote'];
   if (m.error === true) bot.error = true;
+  if (m.quota === true) bot.quota = true;
   return bot;
+}
+
+export const CONVERSATION_ID_RE = /^[0-9a-f]{32}$/;
+const TITLE_MAX = 80;
+
+/** Validates one stored conversation; null drops it (bad id or no valid messages). */
+export function parseStoredConversation(c: unknown): Conversation | null {
+  if (!isRecord(c) || typeof c.id !== 'string' || !CONVERSATION_ID_RE.test(c.id) || !Array.isArray(c.messages)) return null;
+  const messages = c.messages.flatMap((m) => parseStoredMessage(m) ?? []);
+  if (!messages.length) return null;
+  const title = typeof c.title === 'string' ? c.title.slice(0, TITLE_MAX) : '';
+  const updated = typeof c.updated === 'number' && Number.isFinite(c.updated) ? c.updated : 0;
+  return { id: c.id, title, messages, updated };
+}
+
+/** The signed-in conversation list from the bridge (via the site route); invalid rows are dropped. */
+export function parseConversationList(list: unknown): ConversationSummary[] {
+  if (!Array.isArray(list)) return [];
+  return list.flatMap((r): ConversationSummary[] => {
+    if (!isRecord(r) || typeof r.conversation_id !== 'string' || !CONVERSATION_ID_RE.test(r.conversation_id)) return [];
+    return [{
+      id: r.conversation_id,
+      title: typeof r.title === 'string' ? r.title.slice(0, TITLE_MAX) : '',
+      last_ts: typeof r.last_ts === 'string' ? r.last_ts : '',
+      n_turns: typeof r.n_turns === 'number' ? r.n_turns : 0,
+    }];
+  });
+}
+
+/** One conversation's turns from the bridge -> chat messages; a turn whose answer fails validation is skipped. */
+export function parseConversationTurns(list: unknown): ChatMessage[] {
+  if (!Array.isArray(list)) return [];
+  return list.flatMap((t): ChatMessage[] => {
+    if (!isRecord(t) || typeof t.question !== 'string') return [];
+    const final = parseSseEvent({ event: 'final', data: t.final });
+    if (!final || final.kind !== 'final') return [];
+    const bot: BotMessage = { role: 'bot', text: final.text, citations: final.citations };
+    if (final.further_reading.length) bot.further_reading = final.further_reading;
+    if (final.turn_id) bot.turn_id = final.turn_id;
+    return [{ role: 'user', text: t.question }, bot];
+  });
+}
+
+/** The public payload of a shared answer, or null. */
+export function parseSharedAnswer(d: unknown): SharedAnswer | null {
+  if (!isRecord(d) || typeof d.question !== 'string') return null;
+  const final = parseSseEvent({ event: 'final', data: { ...d, abstained: false } });
+  if (!final || final.kind !== 'final') return null;
+  const out: SharedAnswer = { question: d.question, text: final.text, citations: final.citations, further_reading: final.further_reading };
+  if (typeof d.ts === 'string') out.ts = d.ts;
+  return out;
 }
 
 export type ParsedEvent =

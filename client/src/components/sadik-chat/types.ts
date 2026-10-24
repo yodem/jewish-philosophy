@@ -1,3 +1,4 @@
+/** Known source kinds; the bridge may add new ones (e.g. `article`), which render with a generic label. */
 export type SourceType =
   | 'responsa'
   | 'writing'
@@ -6,10 +7,13 @@ export type SourceType =
   | 'video'
   | 'playlist'
   | 'academic'
+  | 'article'
   | 'comment'
-  | 'primary';
+  | 'primary'
+  | (string & {});
 
-export type Speaker = 'sadik' | 'visitor' | 'maimonides';
+/** `sadik`, `visitor`, `maimonides`, or another speaker the bridge names (`other`). */
+export type Speaker = 'sadik' | 'visitor' | 'maimonides' | (string & {});
 
 export interface Citation {
   n: number;
@@ -23,6 +27,8 @@ export interface Citation {
   locator_label?: string | null;
   /** `quote`: a verbatim quotation from a primary source or article; `reference`: title + link only. Absent on old messages. */
   kind?: 'quote' | 'reference';
+  /** Up to ~280 chars of the verified source text, for the source preview. */
+  snippet?: string;
 }
 
 export interface FurtherReading {
@@ -30,6 +36,7 @@ export interface FurtherReading {
   url: string;
   locator_label: string | null;
   source_type: SourceType;
+  snippet?: string;
 }
 
 export interface UserMessage {
@@ -45,6 +52,8 @@ export interface BotMessage {
   citations: Citation[];
   further_reading?: FurtherReading[];
   error?: boolean;
+  /** The anonymous daily quota blocked this question: the UI asks the visitor to sign in. */
+  quota?: boolean;
   turn_id?: string;
   vote?: Vote;
 }
@@ -54,4 +63,32 @@ export type ChatMessage = UserMessage | BotMessage;
 export interface SSEEvent {
   event: string;
   data: unknown;
+}
+
+/** One conversation: a uuid4 hex id shared by every turn (the bridge keeps one multi-turn session per id). */
+export interface Conversation {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  updated: number;
+}
+
+/** A row of the signed-in conversation list. */
+export interface ConversationSummary {
+  id: string;
+  title: string;
+  last_ts: string;
+  n_turns: number;
+}
+
+/** What the site knows about sign-in: disabled (no AUTH_* configured), signed out, or signed in. */
+export type AuthState = 'disabled' | 'signed_out' | 'signed_in';
+
+/** The read-only payload of a shared answer. */
+export interface SharedAnswer {
+  question: string;
+  text: string;
+  citations: Citation[];
+  further_reading: FurtherReading[];
+  ts?: string;
 }
