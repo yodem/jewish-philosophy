@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import { Download, Info, LogIn, LogOut, Menu, Moon, MoreHorizontal, Plus, Sun, X } from 'lucide-react';
 import { chatFontClasses } from './fonts';
 import { hasExportable } from './export';
+import { glossLetter } from './format';
 import { STARTERS } from './starters';
 import { Turn } from './Turn';
 import { useSadikChat } from './useSadikChat';
@@ -13,6 +14,12 @@ import './sadik-chat.css';
 const TITLE = 'שאלו את פרופ׳ צדיק';
 const DIALOG_LABEL = 'שאלו את פרופ׳ צדיק (AI)';
 const DISCLOSURE = 'בינה מלאכותית שנבנתה מכתביו של פרופ׳ שלום צדיק — לא פרופ׳ צדיק עצמו';
+
+/** "24.10" from an ISO timestamp, like a page number in an index; empty when unparsable. */
+function shortDate(iso: string): string {
+  const d = new Date(iso);
+  return Number.isNaN(d.getTime()) ? '' : `${d.getDate()}.${d.getMonth() + 1}`;
+}
 
 /** Pairs each question with the answer after it. */
 function toTurns(messages: ChatMessage[]): { question: string; answer?: BotMessage; index: number }[] {
@@ -229,22 +236,29 @@ export default function SadikChat() {
                 <X aria-hidden />
               </button>
             </div>
-            <p className="sc-rail-title">השיחות שלכם</p>
+            <p className="sc-rail-title">מפתח השיחות</p>
             {chat.conversations.length ? (
               <ul className="sc-rail-list">
-                {chat.conversations.map((c) => (
+                {chat.conversations.map((c, i) => (
                   <li key={c.id}>
                     <button
                       type="button"
                       className="sc-rail-item"
                       aria-current={c.id === chat.conversationId}
+                      aria-label={c.title || 'שיחה ללא כותרת'}
                       title={c.title}
                       onClick={() => {
                         void chat.openConversation(c.id);
                         setRailOpen(false);
                       }}
                     >
-                      {c.title || 'שיחה ללא כותרת'}
+                      <span className="sc-rail-letter sc-letter" aria-hidden>
+                        {glossLetter(i + 1)}
+                      </span>
+                      <span className="sc-rail-text">{c.title || 'שיחה ללא כותרת'}</span>
+                      <span className="sc-rail-date" aria-hidden>
+                        {shortDate(c.last_ts)}
+                      </span>
                     </button>
                   </li>
                 ))}
@@ -360,8 +374,10 @@ export default function SadikChat() {
                   {STARTERS.slice(0, 3).map((s, i) => (
                     <li key={s.question}>
                       <button type="button" className="sc-starter" data-starter={i} onClick={() => submit(s.question, i)} disabled={chat.quotaHit}>
+                        <span className="sc-starter-letter sc-letter" aria-hidden>{glossLetter(i + 1)}</span>
                         <span className="sc-starter-topic">{s.topic}</span>
                         <span className="sc-starter-q">{s.question}</span>
+                        <span className="sc-starter-go" aria-hidden>←</span>
                       </button>
                     </li>
                   ))}
@@ -375,13 +391,16 @@ export default function SadikChat() {
                     {' '}
                     ובשוליים מחכה המקור.
                   </p>
+                  <p className="sc-folio-hint">בחרו שאלה מן השוליים, או כתבו שאלה משלכם למטה</p>
                 </div>
                 <ul className="sc-folio-side sc-folio-side--end" aria-label="עוד שאלות לדוגמה">
                   {STARTERS.slice(3).map((s, j) => (
                     <li key={s.question}>
                       <button type="button" className="sc-starter" data-starter={j + 3} onClick={() => submit(s.question, j + 3)} disabled={chat.quotaHit}>
+                        <span className="sc-starter-letter sc-letter" aria-hidden>{glossLetter(j + 4)}</span>
                         <span className="sc-starter-topic">{s.topic}</span>
                         <span className="sc-starter-q">{s.question}</span>
+                        <span className="sc-starter-go" aria-hidden>←</span>
                       </button>
                     </li>
                   ))}
@@ -427,7 +446,7 @@ export default function SadikChat() {
                       }}
                       rows={1}
                       maxLength={2000}
-                      placeholder={empty ? 'למשל: מה דעת הרמב״ם על ההשגחה?' : 'למשל: ומה השיב לו קרשקש?'}
+                      placeholder={empty ? 'למשל: הרמב״ם על ההשגחה' : 'למשל: ומה השיב קרשקש?'}
                     />
                     <button type="submit" className="sc-btn sc-btn--primary" disabled={chat.busy}>
                       שליחה

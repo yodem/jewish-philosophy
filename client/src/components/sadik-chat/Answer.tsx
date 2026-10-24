@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { track } from './analytics';
 import { glossLetter, kindLabel, locatorText, safeUrl } from './format';
 import { parseAnswer, type Block, type Inline } from './markdown';
@@ -241,93 +241,53 @@ interface PreviewItem {
   snippet?: string;
 }
 
-type OpenBy = 'hover' | 'focus' | 'click';
-
 /**
- * A source name (the gloss's lemma) that opens a preview of the source text: hover with a mouse, keyboard focus, or
- * a tap/click (which pins it). It opens below the name, or above when the conversation area has no room below, and
- * never taller than the room it has. In a narrow area it unfolds in place. The preview holds the only outbound link.
+ * A source name (the gloss's lemma). Click, tap or Enter unfolds the preview in place under its entry, pushing the
+ * following entries down, never as a layer over the list; "סגירה" or Esc folds it. The preview holds the only
+ * outbound link.
  */
 function SourceButton({ item, group, label }: { item: PreviewItem; group: Group; label: string }) {
-  const [openBy, setOpenBy] = useState<OpenBy | null>(null);
-  const wrapRef = useRef<HTMLSpanElement>(null);
-  const previewRef = useRef<HTMLSpanElement>(null);
-  const closeTimer = useRef<number | undefined>(undefined);
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const id = useId();
 
-  const cancelClose = () => window.clearTimeout(closeTimer.current);
-  const close = useCallback(() => setOpenBy(null), []);
-
   useEffect(() => {
-    if (!openBy) return;
-    const onDown = (e: PointerEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) close();
-    };
+    if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
-        close();
-        wrapRef.current?.querySelector('button')?.focus();
+        setOpen(false);
+        buttonRef.current?.focus();
       }
     };
-    document.addEventListener('pointerdown', onDown);
     document.addEventListener('keydown', onKey, true);
-    return () => {
-      document.removeEventListener('pointerdown', onDown);
-      document.removeEventListener('keydown', onKey, true);
-    };
-  }, [openBy, close]);
-
-  // Collision handling: flip above when the room below (inside the scrolling conversation area) is short.
-  useLayoutEffect(() => {
-    const pv = previewRef.current;
-    const anchor = wrapRef.current;
-    if (!openBy || !pv || !anchor || getComputedStyle(pv).position !== 'absolute') return;
-    const area = anchor.closest('.sc-scroll')?.getBoundingClientRect() ?? { top: 0, bottom: window.innerHeight };
-    const a = anchor.getBoundingClientRect();
-    const below = area.bottom - a.bottom - 12;
-    const above = a.top - area.top - 12;
-    const need = pv.scrollHeight;
-    const side = need > below && above > below ? 'top' : 'bottom';
-    pv.dataset.side = side;
-    pv.style.setProperty('--sc-preview-max', `${Math.max(140, side === 'top' ? above : below)}px`);
-  }, [openBy]);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [open]);
 
   return (
-    <span
-      ref={wrapRef}
-      className="sc-preview-anchor"
-      onPointerEnter={(e) => {
-        if (e.pointerType !== 'mouse') return;
-        cancelClose();
-        setOpenBy((v) => v ?? 'hover');
-      }}
-      onPointerLeave={(e) => {
-        if (e.pointerType !== 'mouse') return;
-        closeTimer.current = window.setTimeout(() => setOpenBy((v) => (v === 'hover' ? null : v)), 180);
-      }}
-      onBlur={(e) => {
-        if (!wrapRef.current?.contains(e.relatedTarget as Node)) setOpenBy((v) => (v === 'focus' ? null : v));
-      }}
-    >
-      <button
-        type="button"
-        className="sc-src"
-        aria-expanded={!!openBy}
-        aria-controls={openBy ? id : undefined}
-        onFocus={(e) => {
-          if (e.currentTarget.matches(':focus-visible')) setOpenBy((v) => v ?? 'focus');
-        }}
-        onClick={() => setOpenBy((v) => (v === 'click' ? null : 'click'))}
-      >
+    <span className="sc-preview-anchor">
+      <button ref={buttonRef} type="button" className="sc-src" aria-expanded={open} aria-controls={open ? id : undefined} onClick={() => setOpen((v) => !v)}>
         {item.title}
       </button>
-      {openBy && (
-        <span ref={previewRef} id={id} role="dialog" aria-label={`תצוגה מקדימה: ${item.title}`} className="sc-preview" data-preview onPointerEnter={cancelClose}>
+      {open && (
+        <span id={id} role="region" aria-label={`תצוגה מקדימה: ${item.title}`} className="sc-preview" data-preview>
           <span className="sc-preview-head">
             <span className="sc-kind">{label}</span>
-            <span className="sc-preview-title">{item.title}</span>
+            <button
+              type="button"
+              className="sc-btn sc-btn--icon sc-preview-close"
+              aria-label="סגירת התצוגה המקדימה"
+              title="סגירה"
+              onClick={() => {
+                setOpen(false);
+                buttonRef.current?.focus();
+              }}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
           </span>
           {item.snippet ? <span className="sc-preview-text">{item.snippet}</span> : <span className="sc-preview-empty">אין תצוגה מקדימה למקור הזה.</span>}
           <span className="sc-preview-foot">

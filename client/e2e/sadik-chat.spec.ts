@@ -150,7 +150,8 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     expect(new URL(page.url()).hash).toBe('');
   });
 
-  test('source preview: tap/click pins it with the snippet and the outbound link; Esc closes; hover and focus open it', async ({ page }) => {
+  test('source preview: click unfolds it in place with the snippet and the outbound link; close and Esc fold it; hover does not open it', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 860 });
     await page.goto('/');
     const dialog = await openChat(page);
     await ask(page, QUESTION);
@@ -163,38 +164,27 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(link).toHaveAttribute('href', 'https://www.youtube.com/watch?v=abc123&t=314');
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
-    await page.keyboard.press('Escape');
+    // in place: it pushes the next entry down instead of covering it
+    const pv = (await preview.boundingBox())!;
+    const next = (await dialog.locator('[data-n="5"]').boundingBox())!;
+    expect(next.y).toBeGreaterThanOrEqual(pv.y + pv.height - 1);
+    expect(await preview.evaluate((el) => getComputedStyle(el).position)).toBe('static');
+    await preview.getByRole('button', { name: 'סגירת התצוגה המקדימה' }).click();
     await expect(preview).toHaveCount(0);
-    await expect(dialog).toBeVisible(); // Esc closed the preview, not the panel
-    // hover with a mouse
-    await dialog.locator('[data-n="7"] .sc-src').hover();
-    await expect(dialog.locator('[data-preview]')).toContainText('אין תצוגה מקדימה למקור הזה.');
-    await page.mouse.move(1, 1);
+    await expect(src).toBeFocused();
+    await src.click();
+    await page.keyboard.press('Escape');
     await expect(dialog.locator('[data-preview]')).toHaveCount(0);
-    // keyboard focus opens it, and Tab reaches the link inside it
-    await dialog.locator('[data-n="4"] .sc-src').focus();
-    await page.keyboard.press('Tab');
-    await expect(dialog.locator('[data-preview]')).toHaveCount(1);
+    await expect(dialog).toBeVisible(); // Esc folded the preview, not the panel
+    await dialog.locator('[data-n="7"] .sc-src').hover();
+    await expect(dialog.locator('[data-preview]')).toHaveCount(0);
+    // keyboard: Enter unfolds it, Tab reaches its close button and then the link
+    await dialog.locator('[data-n="5"] .sc-src').focus();
+    await page.keyboard.press('Enter');
     await expect(dialog.locator('[data-preview]')).toContainText('השואל מבקש להבין');
     await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
     await expect(page.locator(':focus')).toHaveText('לפתיחת המקור');
-  });
-
-  test('the preview stays inside the conversation area: it flips above a source near the bottom', async ({ page }) => {
-    await page.setViewportSize({ width: 1280, height: 860 });
-    await page.goto('/');
-    const dialog = await openChat(page);
-    await ask(page, QUESTION);
-    const last = dialog.locator('[data-group="further"] .sc-src').last();
-    await last.evaluate((el) => el.scrollIntoView({ block: 'end' }));
-    await last.click();
-    const preview = dialog.locator('[data-preview]');
-    await expect(preview).toBeVisible();
-    await expect(preview).toHaveAttribute('data-side', 'top');
-    const area = (await dialog.locator('.sc-scroll').boundingBox())!;
-    const box = (await preview.boundingBox())!;
-    expect(box.y).toBeGreaterThanOrEqual(area.y - 1);
-    expect(box.y + box.height).toBeLessThanOrEqual(area.y + area.height + 1);
   });
 
   test('on a phone each paragraph is followed by its gloss strip; a letter unfolds the gloss in place', async ({ page }) => {

@@ -17,8 +17,9 @@ The chat is laid out the same way, and that is the one bold idea; everything els
 - The empty conversation is a blank page: the invitation in the middle, the six starter questions as two flanking
   columns of glosses around it, with the page's vertical rules.
 - The anonymous daily limit is a bookplate: a framed slip (double rule) with one action.
-- Colour: light is cool lapis paper with verdigris letters (the copper-green of illumination); dark is a lapis night
-  with gilded letters (lapis and gold leaf, the two pigments of an illuminated Hebrew manuscript). One ambient motion:
+- Colour, two materials: light is **verdigris day** (a pale copper-patina binding around a bright page, verdigris
+  letters, lapis action); dark is **lapis night** (a lapis binding, a dark page, gilded letters). Lapis, verdigris and
+  gold leaf are the pigments of an illuminated Hebrew manuscript. One ambient motion:
   three celestial spheres (גלגלים) turn while an answer is being written.
 
 What a visitor should remember an hour later: "the answer looked like a page of Talmud: the text in the middle,
@@ -30,20 +31,20 @@ the sources around it in Rashi script, lettered א ב ג."
 
 | Role | Light | Dark | Use |
 |---|---|---|---|
-| `--sc-ground` | `#E9EDF3` | `#141833` | panel background, rail |
-| `--sc-sheet` | `#F7F8FB` | `#1C2142` | the page (answer, empty page, popovers, composer) |
-| `--sc-ink` | `#1A2033` | `#ECEAF3` | main text, headings |
-| `--sc-ink-2` | `#3F4862` | `#C3C1D6` | commentary text, source lines, metadata |
-| `--sc-rule` | `#C7CFDD` | `#343A66` | page rules (margin edge, header foot, starter dividers) |
+| `--sc-ground` | `#DCE8E2` (patina) | `#141833` | panel background, rail, the binding around the page |
+| `--sc-sheet` | `#FBFCFB` | `#1C2142` | the page (answer, empty page, popovers, composer) |
+| `--sc-ink` | `#142320` | `#ECEAF3` | main text, headings |
+| `--sc-ink-2` | `#384C46` | `#C3C1D6` | commentary text, source lines, metadata |
+| `--sc-rule` | `#B7CCC3` | `#343A66` | page rules (margin edge, header foot, entry rules) |
 | `--sc-lapis` | `#24398C` | `#AEBEFF` | primary button, links, focus ring |
-| `--sc-on-lapis` | `#F7F8FB` | `#141833` | text on the primary fill |
-| `--sc-letter` | `#145F52` (verdigris) | `#E2C77A` (gilt) | gloss letters everywhere, group names, active marks |
-| `--sc-letter-wash` | verdigris 12% | gilt 16% | flash on a gloss reached from its letter, hover on a letter |
+| `--sc-on-lapis` | `#FBFCFB` | `#141833` | text on the primary fill |
+| `--sc-letter` | `#0E5A4B` (verdigris) | `#E2C77A` (gilt) | gloss letters everywhere, group names, active marks |
+| `--sc-letter-wash` | verdigris 12% | gilt 16% | flash on a gloss reached from its letter, hover/press on entries |
 | `--sc-alert` | `#9E2530` | `#FF9AA2` | errors |
-| `--sc-scrim` | `rgb(15 21 41 / .55)` | `rgb(4 6 16 / .66)` | page dim behind the desktop panel and phone sheets |
+| `--sc-scrim` | patina 82% + blur | `rgb(4 6 16 / .7)` + blur | behind the desktop panel, sheets and the info popover |
 
-Contrast (WCAG, lowest of `--sc-sheet` / `--sc-ground`; both themes measured with `scripts` in the log): ink ≥ 13:1,
-ink-2 ≥ 7:1, lapis ≥ 8.5:1, letter ≥ 6:1 (verdigris) / 9:1 (gilt), alert ≥ 6.4:1, on-lapis ≥ 9:1. There is no
+Contrast (WCAG, lowest of `--sc-sheet` / `--sc-ground`, both themes computed): ink ≥ 12.9:1, ink-2 ≥ 7.2:1,
+lapis ≥ 8.1:1, letter ≥ 6.4:1 (verdigris) / 9.4:1 (gilt), alert ≥ 6:1, on-lapis ≥ 9.6:1. There is no
 third, lighter grey any more: metadata uses ink-2 at a readable size. Colour is never the only signal: groups are
 named, the active rail item has a bar and weight, the chosen vote has `aria-pressed` and a fill.
 
@@ -91,21 +92,22 @@ Measure: answer column ≤ 34em of the read size (≈ 60-68 characters); comment
 4. **Glosses.** ציטוטים: letter + lemma (bold source name in square letters) + the quotation in Rashi script + kind and
    locator. מקורות: letter + lemma + kind + locator; the lemma opens the preview. להעמקה: no letter (not cited).
    Group names in the letter colour, 13.5/600.
-5. **Source preview.** Hover (mouse), keyboard focus or click opens it under the lemma; it flips above when there is no
-   room below inside the conversation area, and is never wider than the column it covers. On a phone it unfolds in
-   place (no floating layer over the composer). Holds kind, name, the snippet in Rashi script, locator, "לפתיחת המקור".
+5. **Source preview.** Click, tap or Enter on the lemma unfolds the preview in place, under its entry, pushing the
+   following entries down (never a layer over the list); a "סגירה" button and Esc fold it. Holds kind, name, the
+   snippet in Rashi script, locator, "לפתיחת המקור".
 6. **Letters.** In the text: superscript buttons in the letter colour, 0.8em/700; click scrolls to, focuses and
    flashes the gloss (or unfolds the phone strip item). The same glyph, colour and weight in every place.
 7. **Actions.** 👍 / 👎 (aria-pressed) and "שיתוף" (preview of what becomes public, then the link).
 8. **Composer.** The send button is always a filled primary (empty input just refocuses the field). Under the quota
    the field is replaced by a sentence; the slip's button is the one action.
-9. **Empty page.** The invitation (display size) and one sentence in the middle column; six starters as two flanking
-   commentary columns of three (topic in the letter colour + the question), rules between columns as on a printed
-   page. On a phone: invitation, then the six as a list.
+9. **Empty page.** The invitation (display size), one sentence and "בחרו שאלה או כתבו משלכם" in the middle column; six
+   starters as two flanking columns of ruled entries: a leading letter (א-ו), topic, question, and ← at the end; hover
+   and press wash the entry in the letter colour. On a phone: compact entries that fit above the composer.
 10. **Quota slip.** A framed bookplate (double rule in the letter colour, 3px radius) centred on the page: the
     required sentence at title size, one supporting line, and "התחברות עם Google" when sign-in is configured.
-11. **Rail.** "שיחה חדשה", "השיחות שלכם", titles up to two lines (no ellipsis on one line); active = a letter-colour bar at
-    the inline start + weight 600. Phone: a drawer with its own "סגירה" button and a scrim.
+11. **Rail = the book's index (מפתח).** "שיחה חדשה", then "מפתח השיחות": each entry a ruled index line with its letter,
+    the title (up to two lines) and the date set like a page number at the line's end. Active = letter-colour bar,
+    weight 600, the page colour behind it. Phone: a full-width drawer with its own close button.
 12. **Info (ⓘ).** Desktop popover inside the panel; phone: a bottom sheet with a close button. The disclosure as a
     heading (exact text), then "איך נבנות התשובות" and "מה נשמר" in 15px ink.
 
@@ -140,3 +142,14 @@ Measure: answer column ≤ 34em of the read size (≈ 60-68 characters); comment
   - Empty "stock suggestion screen" → the starters flank the invitation like commentaries on a page.
   - Quota "generic card" → a bookplate slip; the composer shows a sentence instead of a dead field.
   - Rail titles truncated → two lines; active mark in the letter colour instead of a gold wash; drawer close button.
+- 2026-10-24 · Revision 2 after the second judge (mean 5.8; answer 6, empty 5, info 6, preview 5, quota 7, rail 6):
+  - Starters did not read as tappable → ruled entries with a leading letter, hover/press wash and ←; compact on phones
+    so all six fit above the composer.
+  - Preview covered its own list → it now unfolds in place under the entry with a close button; it no longer opens on
+    hover or focus (an in-place unfold on hover would make the list jump). Ruling recorded in the report.
+  - Navy "outline" around the light modal = the site's navy hero showing at the panel's sides → a light, blurred
+    patina scrim in light mode (and blur in dark) so nothing hard-edged shows behind the panel.
+  - Light theme "flat grey-blue" → its own material: verdigris day (patina binding, bright page), not an inversion of
+    the lapis night; specificity checked (no cream, no rust).
+  - Rail "standard sidebar" → an index (מפתח) with letters and dates.
+  - Also: the info popover dims what is behind it; quota sentence balanced; letters larger on phones.
