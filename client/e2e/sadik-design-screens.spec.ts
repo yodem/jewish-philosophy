@@ -25,6 +25,7 @@ async function setup(page: Page, theme: 'light' | 'dark', opts: { signedIn?: boo
     localStorage.removeItem('sadik-chat-v2');
   }, theme);
   await page.route('**/googletagmanager.com/**', (r) => r.abort());
+  await page.route('**/linker.v3.js', (r) => r.fulfill({ contentType: 'text/javascript', body: '' }));
   await page.route('**/api/sadik-chat/me', (r) =>
     r.fulfill({ contentType: 'application/json', body: JSON.stringify({ auth: opts.signedIn ? 'signed_in' : 'signed_out' }) }),
   );
@@ -90,19 +91,12 @@ for (const size of WIDTHS) {
       test('preview', async ({ page }) => {
         await setup(page, theme);
         const dialog = await ask(page);
-        if (size.width < 640) {
-          // phone: the gloss unfolds in the strip under its paragraph
-          const item = dialog.locator('[data-strip] .sc-strip-item').nth(2);
-          await item.click();
-          const body = dialog.locator('[data-strip-body]');
-          await expect(body).toBeVisible();
-          await body.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-        } else {
-          const src = dialog.locator('[data-group="sources"] .sc-src').first();
-          await src.scrollIntoViewIfNeeded();
-          await src.click();
-          await expect(dialog.locator('[data-preview]')).toBeVisible();
-        }
+        const src = dialog.locator('[data-group="sources"] .sc-src').first();
+        await src.scrollIntoViewIfNeeded();
+        await src.click();
+        const pv = dialog.locator('[data-preview]');
+        await expect(pv).toBeVisible();
+        await pv.evaluate((el) => el.scrollIntoView({ block: 'center' }));
         await shot(page, 'preview');
       });
 

@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Download, Info, LogIn, LogOut, Menu, Moon, MoreHorizontal, Plus, Sun, X } from 'lucide-react';
+import { ArrowLeft, Download, History, Info, LogIn, LogOut, Menu, MessageSquareText, Moon, MoreHorizontal, Plus, Send, Sun, X } from 'lucide-react';
+import Script from 'next/script';
 import { chatFontClasses } from './fonts';
 import { hasExportable } from './export';
-import { glossLetter } from './format';
+import { KindPill } from './Answer';
+import { SEFARIA_LINKER_SRC, flushSefariaQueue } from './sefaria';
 import { STARTERS } from './starters';
 import { Turn } from './Turn';
 import { useSadikChat } from './useSadikChat';
@@ -209,20 +211,14 @@ export default function SadikChat() {
 
   return (
     <>
+      <Script src={SEFARIA_LINKER_SRC} strategy="afterInteractive" onLoad={flushSefariaQueue} onReady={flushSefariaQueue} />
       <div className="sc sc-scrim" onClick={close} aria-hidden />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={DIALOG_LABEL}
-        className={`sc sc-panel ${chatFontClasses}`}
-        dir="rtl"
-        lang="he"
-      >
+      <div role="dialog" aria-modal="true" aria-label={DIALOG_LABEL} className={`sc sc-panel ${chatFontClasses}`} dir="rtl" lang="he">
         {signedIn && railOpen && <div className="sc-rail-scrim" onClick={() => setRailOpen(false)} aria-hidden />}
         {signedIn && (
           <nav className="sc-rail" aria-label="שיחות" data-open={railOpen} data-rail>
             <div className="sc-rail-top">
-              <button type="button" className="sc-btn sc-btn--outline" onClick={startNew}>
+              <button type="button" className="sc-btn sc-btn--soft" onClick={startNew}>
                 <Plus aria-hidden />
                 שיחה חדשה
               </button>
@@ -236,9 +232,12 @@ export default function SadikChat() {
                 <X aria-hidden />
               </button>
             </div>
-            <p className="sc-rail-title">מפתח השיחות</p>
+            <p className="sc-rail-title">
+              <History aria-hidden />
+              השיחות שלכם
+            </p>
             {chat.conversations.length ? (
-              <ul className="sc-rail-list">
+              <ol className="sc-rail-list">
                 {chat.conversations.map((c, i) => (
                   <li key={c.id}>
                     <button
@@ -252,8 +251,8 @@ export default function SadikChat() {
                         setRailOpen(false);
                       }}
                     >
-                      <span className="sc-rail-letter sc-letter" aria-hidden>
-                        {glossLetter(i + 1)}
+                      <span className="sc-rail-num" aria-hidden>
+                        {i + 1}
                       </span>
                       <span className="sc-rail-text">{c.title || 'שיחה ללא כותרת'}</span>
                       <span className="sc-rail-date" aria-hidden>
@@ -262,7 +261,7 @@ export default function SadikChat() {
                     </button>
                   </li>
                 ))}
-              </ul>
+              </ol>
             ) : (
               <p className="sc-rail-empty">עוד אין שיחות שמורות.</p>
             )}
@@ -289,13 +288,19 @@ export default function SadikChat() {
             </div>
             <div className="sc-tools">
               <Popover label="אודות" icon={<Info aria-hidden />} wideLabel testId="sc-info">
-                <p className="sc-disclosure" data-disclosure>
-                  {DISCLOSURE}
-                </p>
+                <div className="sc-info-head">
+                  <span className="sc-who-avatar" aria-hidden style={{ width: 40, height: 40 }}>
+                    <Info />
+                  </span>
+                  <p className="sc-disclosure" data-disclosure>
+                    {DISCLOSURE}
+                  </p>
+                </div>
                 <p className="sc-info-h">איך נבנות התשובות</p>
                 <ul className="sc-info-list">
                   <li>המערכת מחפשת בהרצאות, במאמרים ובתשובות של פרופ׳ צדיק, וכותבת תשובה רק מתוך מה שמצאה.</li>
-                  <li>כל טענה מסומנת באות (א, ב, ג), ובשוליים מופיע המקור שלה. ציטוטים נבדקים מול הטקסט המקורי לפני שהם מוצגים.</li>
+                  <li>כל טענה מסומנת במספר, ומתחת לתשובה מופיע המקור שלה. ציטוטים נבדקים מול הטקסט המקורי לפני שהם מוצגים.</li>
+                  <li>הפניות למקורות מקושרות לספריא: טקסט התשובה נשלח ל־sefaria.org כדי לזהות בו מקורות.</li>
                   <li>המערכת עלולה לטעות. לפני שמסתמכים על תשובה, כדאי לפתוח את המקור.</li>
                 </ul>
                 <p className="sc-info-h">מה נשמר</p>
@@ -316,14 +321,7 @@ export default function SadikChat() {
                   </Popover>
                 )}
                 {!signedIn && !empty && (
-                  <button
-                    type="button"
-                    className="sc-btn sc-btn--icon"
-                    aria-label="שיחה חדשה"
-                    title="שיחה חדשה"
-                    disabled={chat.busy}
-                    onClick={startNew}
-                  >
+                  <button type="button" className="sc-btn sc-btn--icon" aria-label="שיחה חדשה" title="שיחה חדשה" disabled={chat.busy} onClick={startNew}>
                     <Plus aria-hidden />
                   </button>
                 )}
@@ -350,9 +348,11 @@ export default function SadikChat() {
                 )}
               </Popover>
               {chat.auth === 'signed_out' && (
-                <button type="button" className="sc-btn sc-btn--outline" onClick={chat.signIn} data-sign-in>
+                <button type="button" className="sc-btn sc-btn--signin" onClick={chat.signIn} data-sign-in>
                   <LogIn aria-hidden className="sc-label-wide" />
-                  <span>התחברות<span className="sc-label-wide"> עם Google</span></span>
+                  <span>
+                    התחברות<span className="sc-label-wide"> עם Google</span>
+                  </span>
                 </button>
               )}
               {signedIn && (
@@ -369,38 +369,28 @@ export default function SadikChat() {
 
           <div ref={listRef} className="sc-scroll" aria-live="polite" aria-busy={chat.busy || chat.loadingConversation}>
             {empty ? (
-              <div className="sc-folio" data-empty>
-                <ul className="sc-folio-side sc-folio-side--start" aria-label="שאלות לדוגמה">
-                  {STARTERS.slice(0, 3).map((s, i) => (
-                    <li key={s.question}>
-                      <button type="button" className="sc-starter" data-starter={i} onClick={() => submit(s.question, i)} disabled={chat.quotaHit}>
-                        <span className="sc-starter-letter sc-letter" aria-hidden>{glossLetter(i + 1)}</span>
-                        <span className="sc-starter-topic">{s.topic}</span>
-                        <span className="sc-starter-q">{s.question}</span>
-                        <span className="sc-starter-go" aria-hidden>←</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-                <div className="sc-folio-main">
-                  <h3 className="sc-folio-title">על מה תרצו לשאול?</h3>
-                  <p className="sc-folio-lede">
-                    התשובות נכתבות מתוך הרצאותיו, מאמריו ותשובותיו של פרופ׳ שלום צדיק. כל טענה מסומנת באות
-                    {' '}
-                    <span className="sc-letter">א</span>, <span className="sc-letter">ב</span>, <span className="sc-letter">ג</span>
-                    {' '}
-                    ובשוליים מחכה המקור.
-                  </p>
-                  <p className="sc-folio-hint">בחרו שאלה מן השוליים, או כתבו שאלה משלכם למטה</p>
+              <div className="sc-empty" data-empty>
+                <div className="sc-intro">
+                  <span className="sc-intro-icon" aria-hidden>
+                    <MessageSquareText />
+                  </span>
+                  <div>
+                    <h3 className="sc-empty-title">על מה תרצו לשאול?</h3>
+                    <p className="sc-empty-lede">התשובות נכתבות מתוך הרצאותיו, מאמריו ותשובותיו של פרופ׳ שלום צדיק, וכל טענה מקושרת למקור שלה.</p>
+                  </div>
                 </div>
-                <ul className="sc-folio-side sc-folio-side--end" aria-label="עוד שאלות לדוגמה">
-                  {STARTERS.slice(3).map((s, j) => (
-                    <li key={s.question}>
-                      <button type="button" className="sc-starter" data-starter={j + 3} onClick={() => submit(s.question, j + 3)} disabled={chat.quotaHit}>
-                        <span className="sc-starter-letter sc-letter" aria-hidden>{glossLetter(j + 4)}</span>
-                        <span className="sc-starter-topic">{s.topic}</span>
-                        <span className="sc-starter-q">{s.question}</span>
-                        <span className="sc-starter-go" aria-hidden>←</span>
+                <h4 className="sc-section-title">שאלות לדוגמה</h4>
+                <ul className="sc-starters" aria-label="שאלות לדוגמה">
+                  {STARTERS.map((st, i) => (
+                    <li key={st.question}>
+                      <button type="button" className="sc-starter" data-starter={i} onClick={() => submit(st.question, i)} disabled={chat.quotaHit}>
+                        <span className="sc-starter-main">
+                          <KindPill type={st.type} label={st.topic} />
+                          <span className="sc-starter-q">{st.question}</span>
+                        </span>
+                        <span className="sc-starter-go" aria-hidden>
+                          <ArrowLeft />
+                        </span>
                       </button>
                     </li>
                   ))}
@@ -446,10 +436,11 @@ export default function SadikChat() {
                       }}
                       rows={1}
                       maxLength={2000}
-                      placeholder={empty ? 'למשל: הרמב״ם על ההשגחה' : 'למשל: ומה השיב קרשקש?'}
+                      placeholder={empty ? 'כתבו כאן את שאלתכם…' : 'למשל: ומה השיב קרשקש?'}
                     />
                     <button type="submit" className="sc-btn sc-btn--primary" disabled={chat.busy}>
                       שליחה
+                      <Send aria-hidden style={{ transform: 'scaleX(-1)' }} />
                     </button>
                   </div>
                 </>

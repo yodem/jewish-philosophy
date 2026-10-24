@@ -43,3 +43,22 @@ export function locatorText(label?: string | null): string | null {
   if (!label) return null;
   return /^\d/.test(label) ? `▶ ${label}` : label;
 }
+
+export type Tone = 'video' | 'series' | 'blog' | 'responsa' | 'writing' | 'term' | 'neutral';
+
+/** The site's content-type colour for each kind of source (DESIGN.md: וידאו blue, סדרה purple, בלוג green, שו״ת orange, כתב teal, מושג pink). */
+const TONE: Record<string, Tone> = {
+  video: 'video',
+  playlist: 'series',
+  blog: 'blog',
+  responsa: 'responsa',
+  comment: 'responsa',
+  writing: 'writing',
+  academic: 'writing',
+  article: 'writing',
+  term: 'term',
+};
+
+export function kindTone(type: SourceType): Tone {
+  return TONE[type] ?? 'neutral';
+}

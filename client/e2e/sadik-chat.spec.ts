@@ -51,6 +51,8 @@ async function ask(page: Page, text: string) {
 let ipSeq = 0;
 test.beforeEach(async ({ page }, info) => {
   await page.route('**/googletagmanager.com/**', (r) => r.abort());
+  // Never reach sefaria.org from tests: an empty stand-in for the linker (the linker tests install a recording stub).
+  await page.route('**/linker.v3.js', (r) => r.fulfill({ contentType: 'text/javascript', body: '' }));
   // Each test is its own client for the per-IP limiter (the e2e server trusts x-forwarded-for).
   ipSeq += 1;
   await page.setExtraHTTPHeaders({ 'x-forwarded-for': `10.${100 + info.workerIndex}.${Math.floor(ipSeq / 250)}.${ipSeq % 250}` });
@@ -67,6 +69,7 @@ test.describe('Sadik chat: panel and empty state', () => {
       await dialog.getByRole('button', { name: 'אודות' }).click();
       await expect(dialog.getByRole('dialog', { name: 'אודות' }).getByText(DISCLOSURE, { exact: true })).toBeVisible();
       await expect(dialog.getByText('איך נבנות התשובות')).toBeVisible();
+      await expect(dialog.getByText(/הפניות למקורות מקושרות לספריא/)).toBeVisible();
       await page.keyboard.press('Escape');
       await expect(dialog.getByText(DISCLOSURE)).toHaveCount(0);
       await expect(dialog).toBeVisible();
@@ -79,6 +82,7 @@ test.describe('Sadik chat: panel and empty state', () => {
     const dialog = await openChat(page);
     const starters = dialog.locator('[data-starter]');
     await expect(starters).toHaveCount(6);
+    await expect(starters.nth(0).locator('[data-kind]')).toHaveText('הרמב״ם');
     await starters.nth(1).click();
     await expect(dialog.locator('[data-question]')).toHaveText(QUESTION);
     await expect(dialog.locator('[data-answer]')).toContainText('הרמב״ם קובע כעיקרון');
@@ -113,7 +117,7 @@ test.describe('Sadik chat: panel and empty state', () => {
 });
 
 test.describe('Sadik chat: the answer page and its glosses', () => {
-  test('three groups, Hebrew letters matching the [n] markers, kinds and locators (through the mock bridge)', async ({ page }) => {
+  test('three groups, numbers matching the [n] markers, kinds and locators (through the mock bridge)', async ({ page }) => {
     await page.goto('/');
     const dialog = await openChat(page);
     await ask(page, QUESTION);
@@ -123,10 +127,14 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(dialog.locator('[data-group="quotes"] li')).toHaveCount(3);
     await expect(dialog.locator('[data-group="sources"] li')).toHaveCount(4);
     await expect(dialog.locator('[data-group="further"] li')).toHaveCount(3);
-    for (const [n, letter] of [[1, 'א'], [4, 'ד'], [7, 'ז']] as const) {
-      await expect(answer.locator(`[data-cite-marker="${n}"]`)).toHaveText(letter);
-      await expect(dialog.locator(`[data-n="${n}"] .sc-gloss-mark`)).toHaveText(letter);
+    for (const n of [1, 4, 7]) {
+      await expect(answer.locator(`[data-cite-marker="${n}"]`)).toHaveText(String(n));
+      await expect(dialog.locator(`[data-n="${n}"] .sc-num`)).toHaveText(String(n));
     }
+    // the site's content-type pills
+    await expect(dialog.locator('[data-n="4"] [data-kind]')).toHaveAttribute('data-tone', 'video');
+    await expect(dialog.locator('[data-n="5"] [data-kind]')).toHaveAttribute('data-tone', 'responsa');
+    await expect(dialog.locator('[data-n="7"] [data-kind]')).toHaveAttribute('data-tone', 'blog');
     const quote = dialog.locator('[data-n="1"]');
     await expect(quote.locator('blockquote')).toContainText('רשות כל אדם נתונה לו');
     await expect(quote).toContainText('הרמב״ם');
@@ -137,12 +145,12 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(dialog.locator('[data-group="further"] [data-locator]')).toHaveText('▶ 1:11:16');
   });
 
-  test('a letter in the text scrolls to its gloss, focuses and highlights it', async ({ page }) => {
+  test('a marker in the text scrolls to its source, focuses and highlights it', async ({ page }) => {
     await page.goto('/');
     const dialog = await openChat(page);
     await ask(page, QUESTION);
     const marker = dialog.locator('[data-cite-marker="6"]');
-    await expect(marker).toHaveAccessibleName(/הערה ו: קרשקש ושאלת ההכרח/);
+    await expect(marker).toHaveAccessibleName(/מקור 6: קרשקש ושאלת ההכרח/);
     await marker.click();
     const gloss = dialog.locator('[data-n="6"]');
     await expect(gloss).toBeFocused();
@@ -187,25 +195,21 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(page.locator(':focus')).toHaveText('לפתיחת המקור');
   });
 
-  test('on a phone each paragraph is followed by its gloss strip; a letter unfolds the gloss in place', async ({ page }) => {
+  test('on a phone the sources follow the answer in the same card; a marker scrolls to its source; previews unfold in place', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');
     const dialog = await openChat(page);
     await ask(page, QUESTION);
-    await expect(dialog.locator('[data-group="quotes"]')).toBeHidden();
-    await expect(dialog.locator('[data-strip]')).toHaveCount(3);
-    await expect(dialog.locator('[data-strip]').first().locator('[data-strip-n]')).toHaveCount(2);
+    await expect(dialog.locator('[data-page] [data-sources]')).toHaveCount(1);
     await dialog.locator('[data-cite-marker="3"]').click();
-    const body = dialog.locator('[data-strip-body]');
-    await expect(body).toBeVisible();
-    await expect(body.locator('blockquote')).toContainText('ידיעת האל אינה תכונה');
-    await expect(body.getByRole('link', { name: 'לפתיחת המקור' })).toHaveAttribute('href', /page=7/);
-    await expect(body).toBeFocused();
-    // the further-reading preview unfolds in place, not over the composer
-    await dialog.locator('[data-group="further"] .sc-src').first().click();
-    const preview = dialog.locator('[data-preview]');
+    const target = dialog.locator('[data-n="3"]');
+    await expect(target).toBeFocused();
+    await expect(target).toBeInViewport();
+    await target.locator('.sc-src').click();
+    const preview = target.locator('[data-preview]');
     await expect(preview).toBeVisible();
     expect(await preview.evaluate((el) => getComputedStyle(el).position)).toBe('static');
+    await expect(preview.getByRole('link', { name: 'לפתיחת המקור' })).toHaveAttribute('href', /page=7/);
   });
 
   test('on a phone the info opens as a bottom sheet inside the screen', async ({ page }) => {
@@ -267,7 +271,7 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(dialog.getByRole('textbox')).toBeVisible();
   });
 
-  test('markdown: paragraphs, bullets and bold as elements; no HTML passthrough; an uncited [n] stays a plain letter', async ({ page }) => {
+  test('markdown: paragraphs, bullets and bold as elements; no HTML passthrough; an uncited [n] stays a plain number', async ({ page }) => {
     const text = '**הרמב״ם** קובע [1].\nשורה שנייה.\n\n- נקודה [1]\n- <b>לא תגית</b> ו-[9]\n\nסיום';
     await mockChat(page, sse([{ event: 'final', data: { text, citations: [cite(1, 'responsa')], abstained: false, flags: [] } }]));
     await page.goto('/');
@@ -279,7 +283,7 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(answer.locator(':scope > ul > li')).toHaveCount(2);
     await expect(answer).toContainText('<b>לא תגית</b>');
     await expect(answer.locator('b')).toHaveCount(0);
-    await expect(answer.locator('[data-marker="9"]')).toHaveText('ט');
+    await expect(answer.locator('[data-marker="9"]')).toHaveText('9');
     await expect(answer.locator('button[data-cite-marker="9"]')).toHaveCount(0);
   });
 
@@ -296,6 +300,66 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     const dialog = await openChat(page);
     await ask(page, 'שאלה');
     await expect(dialog.locator('[data-answer] strong')).toHaveText('מודגש');
+  });
+});
+
+test.describe('Sefaria linker', () => {
+  const STUB = `window.sefaria = { link: function (o) { (window.__sefariaCalls = window.__sefariaCalls || []).push(o); } };`;
+  type Calls = { __sefariaCalls?: Record<string, unknown>[] };
+
+  test('loads only with the panel and links each final answer once, with the agreed options', async ({ page }) => {
+    let requested = 0;
+    await page.unroute('**/linker.v3.js');
+    await page.route('**/linker.v3.js', (r) => {
+      requested++;
+      return r.fulfill({ contentType: 'text/javascript', body: STUB });
+    });
+    await mockChat(
+      page,
+      sse([
+        { event: 'delta', data: { text: 'הרמב״ם ' } },
+        { event: 'delta', data: { text: 'קובע' } },
+        { event: 'final', data: FINAL },
+      ]),
+    );
+    await page.goto('/');
+    expect(requested).toBe(0); // not before the chat is opened
+    const dialog = await openChat(page);
+    await expect.poll(() => requested).toBe(1);
+    await ask(page, QUESTION);
+    await expect(dialog.locator('[data-answer]')).toContainText('הרמב״ם קובע כעיקרון');
+    await expect.poll(() => page.evaluate(() => ((window as unknown as Calls).__sefariaCalls ?? []).length)).toBe(1);
+    const call = (await page.evaluate(() => (window as unknown as Calls).__sefariaCalls!))[0];
+    expect(call).toMatchObject({ mode: 'popup-click', contentLang: 'hebrew', interfaceLang: 'hebrew', dynamic: true });
+    expect(call.whitelistSelector).toMatch(/^#sadik-m\d+-answer$/);
+    await expect(page.locator(call.whitelistSelector as string)).toContainText('הרמב״ם קובע כעיקרון');
+    for (const sel of ['.sc-composer', '.sc-rail', '.sc-head', '.sc-src', '.sc-link']) expect(call.excludeFromLinking).toContain(sel);
+    // a vote re-renders the card's actions, not the answer, and does not link again
+    await page.route('**/api/sadik-chat/feedback', (r) => r.fulfill({ contentType: 'application/json', body: '{"ok":true}' }));
+    await dialog.getByRole('button', { name: 'תשובה טובה' }).click();
+    await expect(dialog.getByRole('button', { name: 'תשובה טובה' })).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate(() => (window as unknown as Calls).__sefariaCalls!.length)).toBe(1);
+  });
+
+  test('an answer that finishes before the script loads is linked when it loads; without the linker nothing breaks', async ({ page }) => {
+    let release: () => void = () => {};
+    const gate = new Promise<void>((r) => (release = r));
+    await page.unroute('**/linker.v3.js');
+    await page.route('**/linker.v3.js', async (r) => {
+      await gate;
+      await r.fulfill({ contentType: 'text/javascript', body: STUB });
+    });
+    await mockChat(page, sse([{ event: 'final', data: FINAL }]));
+    const errors: string[] = [];
+    page.on('pageerror', (e) => errors.push(e.message));
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, QUESTION);
+    await expect(dialog.locator('[data-answer]')).toBeVisible();
+    expect(await page.evaluate(() => (window as unknown as Calls).__sefariaCalls)).toBeUndefined();
+    release();
+    await expect.poll(() => page.evaluate(() => ((window as unknown as Calls).__sefariaCalls ?? []).length)).toBe(1);
+    expect(errors).toEqual([]);
   });
 });
 

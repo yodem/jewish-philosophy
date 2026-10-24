@@ -28,6 +28,7 @@ async function signInAs(page: Page, uid = UID) {
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/googletagmanager.com/**', (r) => r.abort());
+  await page.route('**/linker.v3.js', (r) => r.fulfill({ contentType: 'text/javascript', body: '' }));
 });
 
 test('signed out: the header offers Google sign-in; it goes to Google with PKCE S256, state and scope openid', async ({ page }) => {
