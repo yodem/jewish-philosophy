@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { signIn as authSignIn, signOut as authSignOut } from 'next-auth/react';
 import { track } from './analytics';
-import { clearStore, loadStore, newConversationId, saveStore, titleFrom, upsert, type LocalStore } from './conversation';
+import { clearQuotaLock, clearStore, loadStore, msUntilUtcMidnight, newConversationId, quotaLockedToday, saveQuotaLock, saveStore, titleFrom, upsert, type LocalStore } from './conversation';
 import { download, toJson, toMarkdown } from './export';
 import { parseSSE } from './sse';
 import { parseConversationList, parseConversationTurns, parseSseEvent } from './validate';
@@ -68,7 +68,7 @@ export function useSadikChat(open: boolean): SadikChatState {
     setStore(loaded);
     setConversationId(current?.id ?? newConversationId());
     setMessages(current?.messages ?? []);
-    setQuotaHit(!!current?.messages.some((m) => m.role === 'bot' && m.quota));
+    setQuotaHit(quotaLockedToday());
     setHydrated(true);
   }, []);
 
@@ -84,6 +84,16 @@ export function useSadikChat(open: boolean): SadikChatState {
     saveStore(next);
     setStore(next);
   }, [messages, hydrated, busy, conversationId]);
+
+  // The lock ends at the next UTC midnight, even if the page stays open.
+  useEffect(() => {
+    if (!quotaHit) return;
+    const timer = setTimeout(() => {
+      clearQuotaLock();
+      setQuotaHit(false);
+    }, msUntilUtcMidnight() + 1000);
+    return () => clearTimeout(timer);
+  }, [quotaHit]);
 
   const refreshConversations = useCallback(async () => {
     try {
@@ -111,6 +121,7 @@ export function useSadikChat(open: boolean): SadikChatState {
         if (state === 'signed_in' || state === 'signed_out' || state === 'disabled') {
           setAuth(state);
           if (state === 'signed_in') {
+            clearQuotaLock();
             setQuotaHit(false);
             void refreshConversations();
           }
@@ -168,6 +179,7 @@ export function useSadikChat(open: boolean): SadikChatState {
           if (info?.reason === 'anon_daily_quota') {
             finished = true;
             track('quota_hit');
+            saveQuotaLock();
             setQuotaHit(true);
             patchBot(controller, (m) => ({ ...m, text: QUOTA_MESSAGE, citations: [], quota: true }));
             return;

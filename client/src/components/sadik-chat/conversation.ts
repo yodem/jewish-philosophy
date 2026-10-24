@@ -88,3 +88,44 @@ export function upsert(store: LocalStore, conversation: Conversation): LocalStor
   const others = store.conversations.filter((c) => c.id !== conversation.id);
   return { current: conversation.id, conversations: [conversation, ...others] };
 }
+
+/**
+ * The anonymous daily quota lock. The bridge's anon quota is one turn per UTC day, so the lock is stored with the UTC
+ * day it was set on ("YYYY-MM-DD") and counts only until that day ends. A restored quota message alone locks nothing.
+ */
+export const QUOTA_KEY = 'sadik-chat-quota';
+
+export function utcDay(now: number = Date.now()): string {
+  return new Date(now).toISOString().slice(0, 10);
+}
+
+/** True when a quota lock was stored today (UTC). */
+export function quotaLockedToday(now: number = Date.now()): boolean {
+  try {
+    return localStorage.getItem(QUOTA_KEY) === utcDay(now);
+  } catch {
+    return false;
+  }
+}
+
+export function saveQuotaLock(now: number = Date.now()): void {
+  try {
+    localStorage.setItem(QUOTA_KEY, utcDay(now));
+  } catch {
+    // storage unavailable: the lock holds for this page view only
+  }
+}
+
+export function clearQuotaLock(): void {
+  try {
+    localStorage.removeItem(QUOTA_KEY);
+  } catch {
+    // nothing to clear
+  }
+}
+
+/** Milliseconds until the next UTC midnight (when the quota resets). */
+export function msUntilUtcMidnight(now: number = Date.now()): number {
+  const d = new Date(now);
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1) - now;
+}

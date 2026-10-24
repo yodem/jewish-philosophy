@@ -784,4 +784,52 @@ test.describe('Sadik chat: review fixes (stale loads, quota expiry)', () => {
     expect(stored).not.toContain(QUESTION);
   });
 
+  test('a restored quota lock expires after the UTC day it was set on', async ({ page }) => {
+    await mockAuth(page, 'signed_out');
+    const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+    await page.addInitScript(
+      ([day, text]) => {
+        if (sessionStorage.getItem('seeded')) return;
+        sessionStorage.setItem('seeded', '1');
+        localStorage.setItem(
+          'sadik-chat-v2',
+          JSON.stringify({
+            current: 'c'.repeat(32),
+            conversations: [
+              { id: 'c'.repeat(32), title: 'q', updated: Date.now() - 86_400_000, messages: [{ role: 'user', text: 'q' }, { role: 'bot', text, citations: [], quota: true }] },
+            ],
+          }),
+        );
+        localStorage.setItem('sadik-chat-quota', day);
+      },
+      [yesterday, QUOTA_TEXT],
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await expect(dialog.getByText(QUOTA_TEXT).first()).toBeVisible();
+    await expect(dialog.getByRole('textbox')).toBeVisible();
+    await expect(dialog.locator('[data-composer-locked]')).toHaveCount(0);
+  });
+
+  test('a quota hit is stored with its UTC day: it survives a reload that day and is dropped by a new chat the next day', async ({ page }) => {
+    await mockAuth(page, 'signed_out');
+    await page.route('**/api/sadik-chat', (r) =>
+      r.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ reason: 'anon_daily_quota' }) }),
+    );
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, 'שאלה שנייה היום');
+    await expect(dialog.locator('[data-quota]')).toContainText(QUOTA_TEXT);
+    const today = new Date().toISOString().slice(0, 10);
+    expect(await page.evaluate(() => localStorage.getItem('sadik-chat-quota'))).toBe(today);
+    await page.reload();
+    await openChat(page);
+    await expect(page.locator('[data-composer-locked]')).toBeVisible();
+    // the UTC day rolls over: the stored day is now in the past
+    await page.evaluate(() => localStorage.setItem('sadik-chat-quota', '2000-01-01'));
+    await page.reload();
+    const again = await openChat(page);
+    await expect(again.getByRole('textbox')).toBeVisible();
+    await expect(again.locator('[data-composer-locked]')).toHaveCount(0);
+  });
 });
