@@ -1,21 +1,19 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createRateLimiters, guardRequest, proxyGuard } from '../_guards';
-import { FEEDBACK_TIMEOUT_MS } from '../_deadline';
+import { TURN_ID_RE, bridgeConfig, bridgeFetch, failureResponse, notConfigured } from '../_bridge';
+import { resolveUser } from '../_identity';
 
-const TURN_ID_RE = /^[\w.:-]{1,128}$/;
 const rateLimited = createRateLimiters(60, 30);
 
+/** POST {turn_id, value} → bridge POST /feedback {user, turn_id, value}; the bridge checks the turn belongs to `user`. */
 export async function POST(request: NextRequest) {
   const misconfigured = proxyGuard();
   if (misconfigured) return misconfigured;
   const { session, rejection } = guardRequest(request, rateLimited, { requireSession: true });
   if (rejection) return rejection;
 
-  const bridgeUrl = process.env.SADIK_BRIDGE_URL;
-  const token = process.env.SADIK_BRIDGE_TOKEN;
-  if (!bridgeUrl || !token) {
-    return NextResponse.json({ error: 'sadik chat is not configured' }, { status: 503 });
-  }
+  const config = bridgeConfig();
+  if (!config) return notConfigured();
 
   let body: { turn_id?: unknown; value?: unknown };
   try {
@@ -28,18 +26,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'invalid feedback' }, { status: 400 });
   }
 
+  const user = await resolveUser(session);
   let upstream: Response;
   try {
-    upstream = await fetch(new URL('/feedback', bridgeUrl), {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ turn_id, value, session: session.id }),
-      cache: 'no-store',
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(FEEDBACK_TIMEOUT_MS)]),
-    });
+    upstream = await bridgeFetch(config, '/feedback', { method: 'POST', body: { user, turn_id, value } }, request.signal);
   } catch (err) {
-    if ((err as Error).name === 'TimeoutError') return NextResponse.json({ error: 'bridge timed out' }, { status: 504 });
-    return NextResponse.json({ error: 'bridge unreachable' }, { status: 502 });
+    return failureResponse(err);
   }
   if (upstream.status === 404) return NextResponse.json({ error: 'unknown turn' }, { status: 404 });
   if (!upstream.ok) return NextResponse.json({ error: 'bridge error' }, { status: 502 });

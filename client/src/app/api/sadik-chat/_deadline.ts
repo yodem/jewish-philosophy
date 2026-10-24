@@ -15,14 +15,15 @@ export class BridgeTimeoutError extends Error {
  * headers must arrive within `headersMs`, and the whole stream must finish within
  * `totalMs`. A header timeout throws BridgeTimeoutError; a stream timeout ends
  * the returned body with a Hebrew SSE `error` event. `body` is null for a
- * non-ok response (the upstream body is cancelled).
+ * non-ok response; `errorJson` is then its small JSON body (e.g. the bridge's
+ * `{reason: "anon_daily_quota"}`), or null.
  */
 export async function fetchBridgeStream(
   url: URL | string,
   init: RequestInit,
   clientSignal: AbortSignal,
   { headersMs = HEADERS_TIMEOUT_MS, totalMs = STREAM_TIMEOUT_MS } = {},
-): Promise<{ response: Response; body: ReadableStream<Uint8Array> | null }> {
+): Promise<{ response: Response; body: ReadableStream<Uint8Array> | null; errorJson?: Record<string, unknown> | null }> {
   const deadline = new AbortController();
   let timedOut = false;
   const expire = () => {
@@ -47,9 +48,16 @@ export async function fetchBridgeStream(
   clearTimeout(headerTimer);
 
   if (!response.ok || !response.body) {
+    let errorJson: Record<string, unknown> | null = null;
+    try {
+      const text = response.body ? await response.text() : '';
+      const data: unknown = text.length <= 4096 ? JSON.parse(text) : null;
+      if (data && typeof data === 'object' && !Array.isArray(data)) errorJson = data as Record<string, unknown>;
+    } catch {
+      // not JSON: no detail
+    }
     clear();
-    void response.body?.cancel().catch(() => {});
-    return { response, body: null };
+    return { response, body: null, errorJson };
   }
 
   const reader = response.body.getReader();

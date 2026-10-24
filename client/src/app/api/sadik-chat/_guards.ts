@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import { isIP } from 'node:net';
 import { NextResponse, type NextRequest } from 'next/server';
 
 const RATE_WINDOW_MS = 60_000;
@@ -14,6 +15,15 @@ export function clientIp(headers: Headers, trustProxy = process.env.SADIK_TRUST_
   if (!trustProxy) return 'direct';
   const forwarded = headers.get('x-forwarded-for')?.split(',')[0]?.trim();
   return forwarded || headers.get('x-real-ip')?.trim() || 'direct';
+}
+
+/**
+ * The client IP to hand the bridge (`X-Shalom-Client-IP`, for the anonymous per-IP quota): only from a trusted proxy's
+ * forwarding header, only a syntactically valid IP, else null (the header is then omitted). Never a browser-chosen value.
+ */
+export function bridgeClientIp(headers: Headers, trustProxy = process.env.SADIK_TRUST_PROXY === '1'): string | null {
+  const ip = clientIp(headers, trustProxy);
+  return isIP(ip) ? ip : null;
 }
 
 /**
@@ -37,10 +47,22 @@ export function proxyGuard(env: Record<string, string | undefined> = process.env
 }
 
 const COOKIE = 'sadik_session';
+/** On HTTPS the cookie is `__Host-` prefixed: Secure, Path=/, no Domain, so a sibling host or plain HTTP cannot plant it. */
+const SECURE_COOKIE = `__Host-${COOKIE}`;
 
-/** The visitor's session: the valid sadik_session cookie, else a freshly minted id (fresh = true). */
+/** True for HTTPS requests and always on Vercel (its edge only serves HTTPS). */
+export function isSecureRequest(request: NextRequest, env: Record<string, string | undefined> = process.env): boolean {
+  if (env.VERCEL === '1') return true;
+  return (request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')) === 'https';
+}
+
+export function sessionCookieName(request: NextRequest): string {
+  return isSecureRequest(request) ? SECURE_COOKIE : COOKIE;
+}
+
+/** The visitor's session: the valid session cookie, else a freshly minted id (fresh = true). */
 export function resolveSession(request: NextRequest): { id: string; fresh: boolean } {
-  const value = request.cookies.get(COOKIE)?.value;
+  const value = request.cookies.get(sessionCookieName(request))?.value;
   if (value && SESSION_RE.test(value)) return { id: value, fresh: false };
   return { id: randomBytes(16).toString('hex'), fresh: true };
 }
@@ -48,8 +70,8 @@ export function resolveSession(request: NextRequest): { id: string; fresh: boole
 /** Set-Cookie on a response, so rejected requests still give a real browser its own session. */
 export function withSessionCookie<T extends Response>(response: T, request: NextRequest, session: { id: string; fresh: boolean }): T {
   if (!session.fresh) return response;
-  const secure = (request.headers.get('x-forwarded-proto') ?? request.nextUrl.protocol.replace(':', '')) === 'https';
-  const parts = [`${COOKIE}=${session.id}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${60 * 60 * 24 * 30}`];
+  const secure = isSecureRequest(request);
+  const parts = [`${secure ? SECURE_COOKIE : COOKIE}=${session.id}`, 'Path=/', 'HttpOnly', 'SameSite=Lax', `Max-Age=${60 * 60 * 24 * 30}`];
   if (secure) parts.push('Secure');
   response.headers.append('Set-Cookie', parts.join('; '));
   return response;
@@ -129,19 +151,22 @@ export function createRateLimiters(ipLimit: number, sessionLimit: number, capaci
   return { ip: ip.check, session: session.check, sizes: () => ({ ip: ip.size(), session: session.size() }) };
 }
 
-function crossOrigin(request: NextRequest): boolean {
+/**
+ * Same-origin check for state-changing POSTs. Fails closed: a request with neither `Sec-Fetch-Site` nor `Origin`
+ * (no browser sends that on a fetch POST) is treated as cross-origin, as is any Origin whose host differs from Host.
+ */
+export function crossOrigin(request: NextRequest): boolean {
   const site = request.headers.get('sec-fetch-site');
-  if (site && site !== 'same-origin') return true;
   const origin = request.headers.get('origin');
-  const host = request.headers.get('host');
+  if (site && site !== 'same-origin') return true;
   if (origin) {
     try {
-      if (new URL(origin).host !== host) return true;
+      if (new URL(origin).host !== request.headers.get('host')) return true;
     } catch {
       return true;
     }
   }
-  return false;
+  return !site && !origin;
 }
 
 export interface GuardResult {
