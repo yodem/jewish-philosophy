@@ -644,10 +644,13 @@ test.describe('chat and share routes speak the round-2 bridge contract', () => {
     const quota = await chatPost(post('/api/sadik-chat', { message: 'x', conversation_id: cid }));
     expect(quota.status).toBe(429);
     expect(await quota.json()).toEqual({ reason: 'anon_daily_quota' });
-    reply = { status: 429, type: 'application/json', body: JSON.stringify({ detail: 'הגעת למכסה' }) };
+    reply = { status: 429, type: 'application/json', body: JSON.stringify({ detail: 'הגעת למכסת ההודעות היומית שלך. נסו שוב מחר.' }) };
     const other = await chatPost(post('/api/sadik-chat', { message: 'x', conversation_id: cid }));
     expect(other.status).toBe(429);
-    expect(await other.json()).toEqual({ error: 'too many requests' });
+    expect(await other.json()).toEqual({ error: 'too many requests', message: 'הגעת למכסת ההודעות היומית שלך. נסו שוב מחר.' });
+    reply = { status: 429, type: 'application/json', body: JSON.stringify({ detail: 'not hebrew <script>' }) };
+    const odd = await chatPost(post('/api/sadik-chat', { message: 'x', conversation_id: cid }));
+    expect(await odd.json()).toEqual({ error: 'too many requests' });
   });
 
   test('share: {turn_id} → bridge {turn_id, kind, id} → {id}; a miss is 404', async () => {

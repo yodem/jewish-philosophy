@@ -152,14 +152,15 @@ export function useSadikChat(open: boolean): SadikChatState {
         });
         if (res.status === 429) {
           const data: unknown = await res.json().catch(() => null);
-          if ((data as { reason?: unknown } | null)?.reason === 'anon_daily_quota') {
+          const info = data as { reason?: unknown; message?: unknown } | null;
+          if (info?.reason === 'anon_daily_quota') {
             finished = true;
             track('quota_hit');
             setQuotaHit(true);
             patchBot((m) => ({ ...m, text: QUOTA_MESSAGE, citations: [], quota: true }));
             return;
           }
-          fail(RATE_ERROR);
+          fail(typeof info?.message === 'string' && info.message.length <= 200 ? info.message : RATE_ERROR);
           return;
         }
         if (!res.ok || !res.body) {

@@ -345,9 +345,11 @@ test.describe('Sadik chat: conversations', () => {
     await expect(dialog.getByRole('button', { name: 'שליחה', exact: true })).toBeDisabled();
   });
 
-  test('the quota through the real route and mock bridge; other 429s are a rate message', async ({ page }) => {
+  test('the quota through the real route and mock bridge; other 429s show the bridge message', async ({ page }) => {
     await page.goto('/');
     const dialog = await openChat(page);
+    await ask(page, 'RATE please');
+    await expect(dialog.getByRole('alert')).toContainText('יותר מדי הודעות בדקה');
     await ask(page, 'QUOTA please');
     await expect(dialog.locator('[data-quota]')).toContainText(QUOTA_TEXT);
     await expect(dialog.locator('[data-quota]')).toContainText('אפשר לשאול שוב מחר.'); // sign-in not configured in e2e

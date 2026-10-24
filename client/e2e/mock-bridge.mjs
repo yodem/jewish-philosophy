@@ -29,7 +29,7 @@ createServer((req, res) => {
 
     if (req.method === 'POST' && url.pathname === '/chat') {
       if (String(body?.message).includes('QUOTA')) return json(res, 429, { reason: 'anon_daily_quota' });
-      if (String(body?.message).includes('RATE')) return json(res, 429, { detail: 'too many' });
+      if (String(body?.message).includes('RATE')) return json(res, 429, { detail: 'יותר מדי הודעות בדקה. נסו שוב בעוד רגע.' });
       res.writeHead(200, { 'Content-Type': 'text/event-stream' });
       return res.end(sse([{ event: 'delta', data: { text: 'טיוטה' } }, { event: 'final', data: FINAL }]));
     }

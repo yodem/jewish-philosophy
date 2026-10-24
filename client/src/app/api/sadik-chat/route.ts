@@ -71,7 +71,12 @@ export async function POST(request: NextRequest) {
     if (upstream.status === 429 && errorJson?.reason === QUOTA_REASON) {
       return reply(NextResponse.json({ reason: QUOTA_REASON }, { status: 429 }));
     }
-    if (upstream.status === 429) return reply(NextResponse.json({ error: 'too many requests' }, { status: 429 }));
+    if (upstream.status === 429) {
+      // The bridge's own Hebrew wording for its per-user, daily and global caps (bridge text, never user text).
+      const detail = errorJson?.detail;
+      const message = typeof detail === 'string' && detail.length <= 200 && /[\u0590-\u05ff]/.test(detail) ? detail : undefined;
+      return reply(NextResponse.json({ error: 'too many requests', ...(message ? { message } : {}) }, { status: 429 }));
+    }
     if (upstream.status === 413) return reply(NextResponse.json({ error: 'message too long' }, { status: 413 }));
     if (upstream.status === 503) return reply(NextResponse.json({ error: 'busy' }, { status: 503 }));
     return reply(NextResponse.json({ error: 'bridge error' }, { status: 502 }));
