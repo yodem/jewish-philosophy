@@ -90,10 +90,19 @@ for (const size of WIDTHS) {
       test('preview', async ({ page }) => {
         await setup(page, theme);
         const dialog = await ask(page);
-        const src = dialog.locator('[data-group="sources"] .sc-src').first();
-        await src.scrollIntoViewIfNeeded();
-        await src.click();
-        await expect(dialog.locator('[data-preview]')).toBeVisible();
+        if (size.width < 640) {
+          // phone: the gloss unfolds in the strip under its paragraph
+          const item = dialog.locator('[data-strip] .sc-strip-item').nth(2);
+          await item.click();
+          const body = dialog.locator('[data-strip-body]');
+          await expect(body).toBeVisible();
+          await body.evaluate((el) => el.scrollIntoView({ block: 'center' }));
+        } else {
+          const src = dialog.locator('[data-group="sources"] .sc-src').first();
+          await src.scrollIntoViewIfNeeded();
+          await src.click();
+          await expect(dialog.locator('[data-preview]')).toBeVisible();
+        }
         await shot(page, 'preview');
       });
 

@@ -137,15 +137,23 @@ export function Turn({
         {question}
       </h3>
       {answer?.quota ? (
-        <div className="sc-quota" role="status" data-quota>
-          <p className="sc-quota-text">{answer.text}</p>
-          {auth === 'signed_out' ? (
-            <button type="button" className="sc-btn sc-btn--primary" onClick={onSignIn}>
-              התחברות עם Google
-            </button>
-          ) : (
-            <p className="sc-quota-sub">אפשר לשאול שוב מחר.</p>
-          )}
+        <div className="sc-slip-wrap" data-quota>
+          <div className="sc-slip" role="status">
+            <span className="sc-slip-mark sc-letter" aria-hidden>
+              א
+            </span>
+            <p className="sc-slip-text">{answer.text}</p>
+            {auth === 'signed_out' ? (
+              <>
+                <p className="sc-slip-sub">אחרי ההתחברות אפשר להמשיך לשאול, והשיחות נשמרות כדי שתוכלו לחזור אליהן.</p>
+                <button type="button" className="sc-btn sc-btn--primary" onClick={onSignIn}>
+                  התחברות עם Google
+                </button>
+              </>
+            ) : (
+              <p className="sc-slip-sub">אפשר לשאול שוב מחר.</p>
+            )}
+          </div>
         </div>
       ) : (
         <div className="sc-leaf">

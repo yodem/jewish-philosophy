@@ -180,6 +180,59 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await expect(page.locator(':focus')).toHaveText('לפתיחת המקור');
   });
 
+  test('the preview stays inside the conversation area: it flips above a source near the bottom', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 860 });
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, QUESTION);
+    const last = dialog.locator('[data-group="further"] .sc-src').last();
+    await last.evaluate((el) => el.scrollIntoView({ block: 'end' }));
+    await last.click();
+    const preview = dialog.locator('[data-preview]');
+    await expect(preview).toBeVisible();
+    await expect(preview).toHaveAttribute('data-side', 'top');
+    const area = (await dialog.locator('.sc-scroll').boundingBox())!;
+    const box = (await preview.boundingBox())!;
+    expect(box.y).toBeGreaterThanOrEqual(area.y - 1);
+    expect(box.y + box.height).toBeLessThanOrEqual(area.y + area.height + 1);
+  });
+
+  test('on a phone each paragraph is followed by its gloss strip; a letter unfolds the gloss in place', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await ask(page, QUESTION);
+    await expect(dialog.locator('[data-group="quotes"]')).toBeHidden();
+    await expect(dialog.locator('[data-strip]')).toHaveCount(3);
+    await expect(dialog.locator('[data-strip]').first().locator('[data-strip-n]')).toHaveCount(2);
+    await dialog.locator('[data-cite-marker="3"]').click();
+    const body = dialog.locator('[data-strip-body]');
+    await expect(body).toBeVisible();
+    await expect(body.locator('blockquote')).toContainText('ידיעת האל אינה תכונה');
+    await expect(body.getByRole('link', { name: 'לפתיחת המקור' })).toHaveAttribute('href', /page=7/);
+    await expect(body).toBeFocused();
+    // the further-reading preview unfolds in place, not over the composer
+    await dialog.locator('[data-group="further"] .sc-src').first().click();
+    const preview = dialog.locator('[data-preview]');
+    await expect(preview).toBeVisible();
+    expect(await preview.evaluate((el) => getComputedStyle(el).position)).toBe('static');
+  });
+
+  test('on a phone the info opens as a bottom sheet inside the screen', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await dialog.getByRole('button', { name: 'אודות' }).click();
+    const sheet = dialog.getByRole('dialog', { name: 'אודות' });
+    await expect(sheet.getByText(DISCLOSURE, { exact: true })).toBeVisible();
+    const box = (await sheet.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(375);
+    expect(box.y + box.height).toBeLessThanOrEqual(812 + 1);
+    await sheet.getByRole('button', { name: 'סגירה' }).click();
+    await expect(sheet).toHaveCount(0);
+  });
+
   test('a non-http source link is not rendered as a link; corpus HTML stays text', async ({ page }) => {
     await mockChat(
       page,
@@ -232,8 +285,8 @@ test.describe('Sadik chat: the answer page and its glosses', () => {
     await ask(page, 'שאלה');
     const answer = dialog.locator('[data-answer]');
     await expect(answer.locator('strong')).toHaveText('הרמב״ם');
-    await expect(answer.locator('p')).toHaveCount(2);
-    await expect(answer.locator('ul > li')).toHaveCount(2);
+    await expect(answer.locator(':scope > p')).toHaveCount(2);
+    await expect(answer.locator(':scope > ul > li')).toHaveCount(2);
     await expect(answer).toContainText('<b>לא תגית</b>');
     await expect(answer.locator('b')).toHaveCount(0);
     await expect(answer.locator('[data-marker="9"]')).toHaveText('ט');
@@ -341,8 +394,10 @@ test.describe('Sadik chat: conversations', () => {
     const prompt = dialog.locator('[data-quota]');
     await expect(prompt).toContainText(QUOTA_TEXT);
     await expect(prompt.getByRole('button', { name: 'התחברות עם Google' })).toBeVisible();
-    await expect(dialog.getByRole('textbox')).toBeDisabled();
-    await expect(dialog.getByRole('button', { name: 'שליחה', exact: true })).toBeDisabled();
+    // the field gives way to a sentence: the slip's button is the one action
+    await expect(dialog.getByRole('textbox')).toHaveCount(0);
+    await expect(dialog.getByRole('button', { name: 'שליחה', exact: true })).toHaveCount(0);
+    await expect(dialog.locator('[data-composer-locked]')).toHaveText('שאלות נוספות היום יתאפשרו אחרי התחברות.');
   });
 
   test('the quota through the real route and mock bridge; other 429s show the bridge message', async ({ page }) => {
@@ -354,7 +409,9 @@ test.describe('Sadik chat: conversations', () => {
     await expect(dialog.locator('[data-quota]')).toContainText(QUOTA_TEXT);
     await expect(dialog.locator('[data-quota]')).toContainText('אפשר לשאול שוב מחר.'); // sign-in not configured in e2e
     await dialog.getByRole('button', { name: 'שיחה חדשה' }).click();
-    await expect(dialog.getByRole('textbox')).toBeDisabled();
+    await expect(dialog.getByRole('textbox')).toHaveCount(0);
+    await expect(dialog.locator('[data-composer-locked]')).toHaveText('אפשר לשאול שוב מחר.');
+    await expect(dialog.locator('[data-starter="0"]')).toBeDisabled();
   });
 
   test('signed in: the rail lists conversations from history and opens one', async ({ page }) => {

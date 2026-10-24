@@ -1,10 +1,9 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { rubik } from '@/lib/fonts';
 import { SHARE_ID_RE, bridgeConfig, bridgeFetch } from '@/app/api/sadik-chat/_bridge';
 import { AnswerText, Glosses } from '@/components/sadik-chat/Answer';
-import { davidLibre } from '@/components/sadik-chat/fonts';
+import { chatFontClasses } from '@/components/sadik-chat/fonts';
 import { parseSharedAnswer } from '@/components/sadik-chat/validate';
 import '@/components/sadik-chat/sadik-chat.css';
 
@@ -37,7 +36,7 @@ async function SharedAnswerView({ params }: { params: Promise<{ id: string }> })
   const prefix = 'shared';
   const hasGlosses = shared.citations.length > 0 || shared.further_reading.length > 0;
   return (
-    <main className={`sc sc-sharepage ${rubik.variable} ${davidLibre.variable}`} dir="rtl" lang="he" data-shared-answer>
+    <main className={`sc sc-sharepage ${chatFontClasses}`} dir="rtl" lang="he" data-shared-answer>
       <div className="sc-sharepage-inner">
         <header className="sc-sharepage-head">
           <span className="sc-title">שאלו את פרופ׳ צדיק</span>
