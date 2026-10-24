@@ -741,3 +741,47 @@ test.describe('route guards (M4)', () => {
     expect(res.headers()['access-control-allow-origin']).toBeUndefined();
   });
 });
+
+test.describe('Sadik chat: review fixes (stale loads, quota expiry)', () => {
+  test('a conversation load that resolves during a new chat request does not replace or corrupt the new turn', async ({ page }) => {
+    await mockAuth(page, 'signed_in');
+    await page.route('**/api/sadik-chat/history', (r) =>
+      r.fulfill({ contentType: 'application/json', body: JSON.stringify([{ conversation_id: 'a'.repeat(32), title: QUESTION, last_ts: '2026-10-24T10:00:00Z', n_turns: 1 }]) }),
+    );
+    let releaseLoad!: () => void;
+    const loadGate = new Promise<void>((res) => (releaseLoad = res));
+    await page.route('**/api/sadik-chat/history/conversation', async (r) => {
+      await loadGate;
+      await r.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify([{ turn_id: FINAL.turn_id, ts: '2026-10-24T10:00:00Z', question: QUESTION, final: FINAL }]),
+      });
+    });
+    let releaseChat!: () => void;
+    const chatGate = new Promise<void>((res) => (releaseChat = res));
+    await page.route('**/api/sadik-chat', async (route) => {
+      await chatGate;
+      await route.fulfill({
+        status: 200,
+        contentType: 'text/event-stream',
+        body: sse([{ event: 'final', data: { ...FINAL, text: 'תשובה חדשה בלבד', citations: [], further_reading: [], turn_id: 'n'.repeat(16) } }]),
+      });
+    });
+    await page.setViewportSize({ width: 1280, height: 860 });
+    await page.goto('/');
+    const dialog = await openChat(page);
+    await dialog.getByRole('navigation', { name: 'שיחות' }).getByRole('button', { name: QUESTION }).click();
+    await ask(page, 'שאלה חדשה באמצע טעינה');
+    releaseLoad();
+    await page.waitForTimeout(300); // the stale load response has been handled
+    releaseChat();
+    await expect(dialog.locator('[data-answer]')).toContainText('תשובה חדשה בלבד');
+    await expect(dialog.locator('[data-question]')).toHaveCount(1);
+    await expect(dialog.locator('[data-question]')).toHaveText('שאלה חדשה באמצע טעינה');
+    await expect(dialog.getByText(FINAL.text.slice(0, 20))).toHaveCount(0);
+    const stored = await page.evaluate(() => localStorage.getItem('sadik-chat-v2'));
+    expect(stored).toContain('שאלה חדשה באמצע טעינה');
+    expect(stored).not.toContain(QUESTION);
+  });
+
+});

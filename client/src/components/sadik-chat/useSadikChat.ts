@@ -56,6 +56,8 @@ export function useSadikChat(open: boolean): SadikChatState {
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [loadingConversation, setLoadingConversation] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  /** The pending conversation load, if any: cancelled by send, select and new conversation, so a stale result never lands. */
+  const loadRef = useRef<AbortController | null>(null);
   const storeRef = useRef<LocalStore>(store);
 
   // Restore the open conversation from localStorage (validated on load).
@@ -120,7 +122,15 @@ export function useSadikChat(open: boolean): SadikChatState {
   }, [open, refreshConversations]);
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  const patchBot = useCallback((patch: (m: BotMessage) => BotMessage) => {
+  const cancelLoad = useCallback(() => {
+    loadRef.current?.abort();
+    loadRef.current = null;
+    setLoadingConversation(false);
+  }, []);
+
+  // A stream writes only while it is the current one: after a new conversation (or another send) its late events are dropped.
+  const patchBot = useCallback((controller: AbortController, patch: (m: BotMessage) => BotMessage) => {
+    if (abortRef.current !== controller || controller.signal.aborted) return;
     setMessages((prev) => {
       const last = prev[prev.length - 1];
       if (!last || last.role !== 'bot') return prev;
@@ -131,6 +141,7 @@ export function useSadikChat(open: boolean): SadikChatState {
   const send = useCallback(
     async (text: string, opts: { starterIndex?: number } = {}) => {
       if (busy || quotaHit) return;
+      cancelLoad();
       if (opts.starterIndex !== undefined) track('starter_click', { index: opts.starterIndex });
       const turnIndex = messages.filter((m) => m.role === 'user').length;
       track('message_send', { turn_index: turnIndex });
@@ -142,7 +153,7 @@ export function useSadikChat(open: boolean): SadikChatState {
       let finished = false;
       const fail = (message: string) => {
         finished = true;
-        patchBot((m) => ({ ...m, text: message, citations: [], error: true }));
+        patchBot(controller, (m) => ({ ...m, text: message, citations: [], error: true }));
       };
       try {
         const res = await fetch('/api/sadik-chat', {
@@ -158,7 +169,7 @@ export function useSadikChat(open: boolean): SadikChatState {
             finished = true;
             track('quota_hit');
             setQuotaHit(true);
-            patchBot((m) => ({ ...m, text: QUOTA_MESSAGE, citations: [], quota: true }));
+            patchBot(controller, (m) => ({ ...m, text: QUOTA_MESSAGE, citations: [], quota: true }));
             return;
           }
           fail(typeof info?.message === 'string' && info.message.length <= 200 ? info.message : RATE_ERROR);
@@ -178,7 +189,7 @@ export function useSadikChat(open: boolean): SadikChatState {
             const parsed = parseSseEvent(ev);
             if (!parsed) continue;
             if (parsed.kind === 'delta') {
-              patchBot((m) => ({ ...m, text: m.text + parsed.text }));
+              patchBot(controller, (m) => ({ ...m, text: m.text + parsed.text }));
             } else if (parsed.kind === 'final') {
               finished = true;
               const quotes = parsed.citations.filter((c) => c.quote).length;
@@ -188,7 +199,7 @@ export function useSadikChat(open: boolean): SadikChatState {
                 n_refs: parsed.citations.length - quotes,
                 n_further: parsed.further_reading.length,
               });
-              patchBot((m) => ({
+              patchBot(controller, (m) => ({
                 ...m,
                 text: parsed.text,
                 citations: parsed.citations,
@@ -206,11 +217,14 @@ export function useSadikChat(open: boolean): SadikChatState {
       } catch (err) {
         if ((err as Error).name !== 'AbortError') fail(GENERIC_ERROR);
       } finally {
-        setBusy(false);
-        if (auth === 'signed_in') void refreshConversations();
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+          setBusy(false);
+          if (auth === 'signed_in') void refreshConversations();
+        }
       }
     },
-    [busy, quotaHit, messages, conversationId, patchBot, auth, refreshConversations],
+    [busy, quotaHit, messages, conversationId, patchBot, auth, refreshConversations, cancelLoad],
   );
 
   // One vote per answer, optimistic: a failed POST puts the buttons back so the vote can be retried.
@@ -267,14 +281,18 @@ export function useSadikChat(open: boolean): SadikChatState {
 
   const newConversation = useCallback(() => {
     abortRef.current?.abort();
+    abortRef.current = null;
+    setBusy(false);
+    cancelLoad();
     track('new_conversation');
     setConversationId(newConversationId());
     setMessages([]);
-  }, []);
+  }, [cancelLoad]);
 
   const openConversation = useCallback(
     async (id: string) => {
       if (busy || id === conversationId) return;
+      cancelLoad();
       const local = store.conversations.find((c) => c.id === id);
       if (auth !== 'signed_in') {
         if (local) {
@@ -283,24 +301,31 @@ export function useSadikChat(open: boolean): SadikChatState {
         }
         return;
       }
+      const controller = new AbortController();
+      loadRef.current = controller;
       setLoadingConversation(true);
       try {
         const res = await fetch('/api/sadik-chat/history/conversation', {
           method: 'POST',
           headers: JSON_HEADERS,
           body: JSON.stringify({ conversation_id: id }),
+          signal: controller.signal,
         });
         if (!res.ok) return;
         const turns = parseConversationTurns(await res.json());
+        if (controller.signal.aborted) return; // superseded by a send, another select or a new conversation
         setConversationId(id);
         setMessages(turns);
       } catch {
         // stays on the current conversation
       } finally {
-        setLoadingConversation(false);
+        if (loadRef.current === controller) {
+          loadRef.current = null;
+          setLoadingConversation(false);
+        }
       }
     },
-    [busy, conversationId, store.conversations, auth],
+    [busy, conversationId, store.conversations, auth, cancelLoad],
   );
 
   const title = titleFrom(messages);
