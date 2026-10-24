@@ -141,3 +141,30 @@ test('the gate still redirects other Auth.js paths on a foreign host to the cano
   expect(res.status()).toBe(307);
   expect(res.headers().location).toBe(`${BASE}/api/auth/providers`);
 });
+
+test('sign-out discards in-flight work: a late answer neither shows nor restores the private conversation', async ({ page }) => {
+  await signInAs(page);
+  let releaseChat!: () => void;
+  const chatGate = new Promise<void>((res) => (releaseChat = res));
+  await page.route('**/api/sadik-chat', async (route) => {
+    await chatGate;
+    await route.fulfill({ status: 200, contentType: 'text/event-stream', body: `event: final\ndata: ${JSON.stringify(FINAL)}\n\n` });
+  });
+  let signOutSeen!: () => void;
+  const signOutRequested = new Promise<void>((res) => (signOutSeen = res));
+  await page.route('**/api/auth/signout', async (route) => {
+    signOutSeen();
+    await new Promise(() => {}); // keep the page here: the redirect after sign-out is not under test
+  });
+  await page.goto('/');
+  const dialog = await openChat(page);
+  await dialog.getByRole('textbox').fill('שאלה פרטית באמצע יציאה');
+  await dialog.getByRole('button', { name: 'שליחה', exact: true }).click();
+  await dialog.getByRole('button', { name: 'התנתקות' }).click();
+  await signOutRequested;
+  releaseChat();
+  await page.waitForTimeout(800);
+  await expect(dialog.locator('[data-answer]')).toHaveCount(0);
+  await expect(dialog.getByText('שאלה פרטית באמצע יציאה')).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('sadik-chat-v2'))).toBeNull();
+});

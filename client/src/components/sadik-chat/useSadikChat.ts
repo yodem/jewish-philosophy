@@ -59,6 +59,8 @@ export function useSadikChat(open: boolean): SadikChatState {
   /** The pending conversation load, if any: cancelled by send, select and new conversation, so a stale result never lands. */
   const loadRef = useRef<AbortController | null>(null);
   const storeRef = useRef<LocalStore>(store);
+  /** Set at sign-out: nothing is persisted or restored afterwards, whatever late responses arrive. */
+  const signedOutRef = useRef(false);
 
   // Restore the open conversation from localStorage (validated on load).
   useEffect(() => {
@@ -75,7 +77,7 @@ export function useSadikChat(open: boolean): SadikChatState {
   // Persist completed turns only: a half-streamed answer is not worth restoring. Saved synchronously in the effect
   // (not inside a state updater), so a reload right after a vote or an answer still finds it.
   useEffect(() => {
-    if (!hydrated || busy || !conversationId) return;
+    if (!hydrated || busy || !conversationId || signedOutRef.current) return;
     const prev = storeRef.current;
     const next = messages.length
       ? upsert(prev, { id: conversationId, title: titleFrom(messages), messages, updated: Date.now() })
@@ -98,7 +100,8 @@ export function useSadikChat(open: boolean): SadikChatState {
   const refreshConversations = useCallback(async () => {
     try {
       const res = await fetch('/api/sadik-chat/history', { method: 'POST', headers: JSON_HEADERS, body: '{}' });
-      if (res.ok) setConversations(parseConversationList(await res.json()));
+      const list = res.ok ? parseConversationList(await res.json()) : null;
+      if (list && !signedOutRef.current) setConversations(list);
     } catch {
       // the list is a convenience; the chat still works
     }
@@ -117,6 +120,7 @@ export function useSadikChat(open: boolean): SadikChatState {
       try {
         const res = await fetch('/api/sadik-chat/me', { cache: 'no-store' });
         const data: unknown = res.ok ? await res.json() : null;
+        if (signedOutRef.current) return;
         const state = (data as { auth?: unknown } | null)?.auth;
         if (state === 'signed_in' || state === 'signed_out' || state === 'disabled') {
           setAuth(state);
@@ -383,11 +387,22 @@ export function useSadikChat(open: boolean): SadikChatState {
     startSignIn();
   }, [startSignIn]);
 
-  // Sign-out also clears the conversations kept in this browser.
+  // Sign-out also clears the conversations kept in this browser. Persistence is switched off first and in-flight
+  // streams and loads are aborted, so a late response can neither show nor re-save a private conversation.
   const signOut = useCallback(() => {
+    signedOutRef.current = true;
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setBusy(false);
+    cancelLoad();
+    const empty: LocalStore = { current: null, conversations: [] };
+    storeRef.current = empty;
+    setStore(empty);
+    setMessages([]);
+    setConversations([]);
     clearStore();
     void authSignOut({ redirectTo: window.location.pathname });
-  }, []);
+  }, [cancelLoad]);
 
   return {
     auth,
