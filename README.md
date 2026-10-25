@@ -80,6 +80,16 @@ The platform manages several content types:
    ```env
    NEXT_PUBLIC_STRAPI_BASE_URL=http://localhost:1337
    # Add other environment variables as needed
+
+   # Sadik AI chat (server-only; never NEXT_PUBLIC_). Placeholders only: real values live in Vercel / your shell.
+   SADIK_BRIDGE_URL=https://your-bridge.example.ts.net   # http allowed locally only
+   SADIK_BRIDGE_TOKEN=replace-with-openssl-rand-hex-32
+   SADIK_TRUST_PROXY=1                                   # only behind a proxy that overwrites x-forwarded-for (Vercel)
+   # Google sign-in (optional; the sign-in button is hidden unless all three are set)
+   AUTH_SECRET=replace-with-openssl-rand-base64-32
+   AUTH_GOOGLE_ID=replace-with-google-oauth-client-id
+   AUTH_GOOGLE_SECRET=replace-with-google-oauth-client-secret
+   AUTH_URL=https://your-branch-alias.vercel.app        # the one URL registered as the Google redirect origin
    ```
    
    **Backend** (`server/.env`):
@@ -156,6 +166,9 @@ The frontend is deployed on Vercel with automatic deployments from the main bran
 
 **Environment Variables for Production:**
 - `NEXT_PUBLIC_STRAPI_BASE_URL` - Your production Strapi URL
+- Sadik AI chat (server-only): `SADIK_BRIDGE_URL` (https), `SADIK_BRIDGE_TOKEN`, `SADIK_TRUST_PROXY=1`
+- Google sign-in for the chat (optional, server-only): `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_URL`
+  (the Google OAuth client's single redirect URI is `${AUTH_URL}/api/auth/callback/google`)
 
 ### Backend (Strapi Cloud)
 The backend is deployed on Strapi Cloud.

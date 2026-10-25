@@ -10,6 +10,7 @@ import { JsonLd, Schema } from '@/lib/json-ld';
 import LayoutClient from './LayoutClient';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { rubik } from '@/lib/fonts';
+import { GA_LOCATION_SCRIPT } from '@/lib/ga-location';
 
 // Icon attribution (source-only): <a href="https://www.flaticon.com/free-icons/judaism" title="Judaism icons">Judaism icons created by Freepik - Flaticon</a>
 export const metadata: Metadata = {
@@ -141,6 +142,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         {/* Anti-flash: apply dark class before first paint to prevent theme flicker */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var s=localStorage.getItem('theme');var d=window.matchMedia('(prefers-color-scheme: dark)').matches;if(s==='dark'||(s!=='light'&&d)){document.documentElement.classList.add('dark')}}catch(e){}})()` }} />
+
+        {/* GA4: sanitise page_location before the GA config runs (no shared-answer ids or Vercel share tokens) */}
+        <script dangerouslySetInnerHTML={{ __html: GA_LOCATION_SCRIPT }} />
 
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
