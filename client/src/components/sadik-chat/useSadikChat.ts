@@ -124,11 +124,12 @@ export function useSadikChat(open: boolean): SadikChatState {
         const state = (data as { auth?: unknown } | null)?.auth;
         if (state === 'signed_in' || state === 'signed_out' || state === 'disabled') {
           setAuth(state);
-          if (state === 'signed_in') {
+          // Signed in, or sign-in is off: a stored lock can only be stale (the bridge stays the authority).
+          if (state === 'signed_in' || state === 'disabled') {
             clearQuotaLock();
             setQuotaHit(false);
-            void refreshConversations();
           }
+          if (state === 'signed_in') void refreshConversations();
         }
       } catch {
         // stays "disabled": sign-in is hidden
