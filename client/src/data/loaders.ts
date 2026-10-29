@@ -308,7 +308,7 @@ export async function getAllBlogs(): Promise<Blog[]> {
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = allBlogsQuery;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } });
   
   return res.data
 }
@@ -342,7 +342,7 @@ export async function getBlogsPaginated(page: number = 1, pageSize: number = 12)
   const path = "/api/blogs";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 60 * 60 * 24 } }); // 24h
+  const res = await fetchAPI(url.href, { method: "GET", next: { revalidate: 0 } });
   
   return res.data || [];
 }
