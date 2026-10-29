@@ -18,7 +18,6 @@ dotenv.config();
 // Fixed audience ID
 const AUDIENCE_ID = 'e5d7ecb0-d089-49a1-908e-6423de637cf9';
 const DRY_RUN = process.env.DRY_RUN === 'true' || process.argv.includes('--dry-run');
-const DEBATES_PLAYLIST_SLUG = 'PLK70rcL51I3Q';
 
 // Types for our content
 interface ContentItem {
@@ -58,19 +57,6 @@ class BroadcastSender {
     this.siteUrl = process.env.FRONTEND_URL || 'https://religousphilosophy.com/';
     this.strapiUrl = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
     this.strapiApiToken = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
-  }
-
-  private sukkotGreetingHtml(): string {
-    return `
-          <div style="background: linear-gradient(135deg, #166534 0%, #15803d 50%, #ca8a04 100%); border-radius: 12px; padding: 24px; margin: 0 0 30px 0; text-align: center; color: white;">
-            <p style="margin: 0; font-size: 32px; line-height: 1;">🌿🍋</p>
-            <h2 style="color: white; margin: 10px 0 8px 0; font-size: 26px;">חג סוכות שמח</h2>
-            <p style="margin: 0; font-size: 16px; line-height: 1.7; color: #ecfccb;">
-              מאחלים לכם חג שמח, מלא אורחים, שמחה ולימוד.<br>
-              פרופ' שלום צדיק וצוות פילוסופיה דתית
-            </p>
-          </div>
-    `;
   }
 
   /**
@@ -239,7 +225,6 @@ class BroadcastSender {
           
           <!-- Content -->
           <div style="background: white; padding: 40px 30px; text-align: center;">
-            ${this.sukkotGreetingHtml()}
             <h2 style="color: #333; margin-top: 0; font-size: 24px;">🌟 חודש שקט</h2>
             <p style="font-size: 16px; line-height: 1.8; color: #555;">
               החודש לא פורסמו תכנים חדשים באתר. אנחנו עובדים על תכנים מרתקים לחודש הבא!
@@ -302,7 +287,6 @@ class BroadcastSender {
         
         <!-- Content -->
         <div style="background: white; padding: 40px 30px;">
-          ${this.sukkotGreetingHtml()}
           <h2 style="color: #333; margin-top: 0; font-size: 24px; text-align: center;">
             🌟 תכנים חדשים החודש (${totalItems})
           </h2>
@@ -310,18 +294,6 @@ class BroadcastSender {
           <p style="font-size: 16px; line-height: 1.8; color: #555; margin-bottom: 25px; text-align: center;">
             החודש פורסמו ${totalItems} תכנים חדשים באתר שלנו. הנה מה שחדש:
           </p>
-          ${content.videos.some((item) => item.playlistSlug === DEBATES_PLAYLIST_SLUG) ? `
-          <div style="background: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 20px; margin: 0 0 25px 0; text-align: center;">
-            <h3 style="color: #166534; margin: 0 0 8px 0; font-size: 18px;">חדש בסדרת דיבייטים</h3>
-            <p style="margin: 0 0 14px 0; color: #365314; font-size: 15px; line-height: 1.6;">
-              העלינו דיונים חדשים עם פרופ' שלום צדיק — כולל שיחה על הרמב״ם, דיבייט על דת ומוסר, ושני פרקים עם אסתי שושן.
-            </p>
-            <a href="${this.siteUrl.replace(/\/$/, '')}/playlists/${DEBATES_PLAYLIST_SLUG}"
-               style="background: #166534; color: white; text-decoration: none; padding: 12px 28px; border-radius: 25px; font-weight: bold; display: inline-block;">
-              צפו בסדרת הדיבייטים
-            </a>
-          </div>
-          ` : ''}
           
           ${generateContentSection(content.blogs, 'מאמרים ובלוגים', '📝', 'blog')}
           ${generateContentSection(content.writings, 'כתבים', '✍️', 'writings')}
@@ -418,8 +390,8 @@ class BroadcastSender {
                       content.videos.length + content.terms.length + content.responsas.length;
 
     const subject = totalItems > 0 
-      ? `🌿 חג סוכות שמח | עדכון חודשי: ${totalItems} תכנים חדשים באתר פילוסופיה דתית`
-      : `🌿 חג סוכות שמח | עדכון חודשי מפילוסופיה דתית`;
+      ? `📰 עדכון חודשי: ${totalItems} תכנים חדשים באתר פילוסופיה דתית`
+      : `📰 עדכון חודשי מפילוסופיה דתית`;
 
     const htmlContent = this.generateEmailTemplate(content);
 
@@ -430,9 +402,6 @@ class BroadcastSender {
     console.log(`   📈 Content items: ${totalItems}`);
     if (DRY_RUN) {
       console.log('🧪 DRY RUN — email will not be sent');
-      const debateVideos = content.videos.filter((item) => item.playlistSlug === DEBATES_PLAYLIST_SLUG);
-      console.log(`   🎥 Debate videos in digest: ${debateVideos.length}`);
-      debateVideos.forEach((item) => console.log(`      - ${item.title}`));
       return;
     }
 
