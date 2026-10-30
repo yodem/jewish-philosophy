@@ -74,6 +74,7 @@ export async function fetchAPI(
     const response = await fetch(url, {
       ...requestInit,
       next: { ...requestInit?.next },
+      ...(next?.revalidate === 0 ? { cache: "no-store" } : {}),
     });
     const contentType = response.headers.get("content-type");
     const isJson = contentType && contentType.includes("application/json");
