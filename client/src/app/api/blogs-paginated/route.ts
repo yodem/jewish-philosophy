@@ -14,7 +14,11 @@ export async function GET(request: NextRequest) {
     );
 
     const blogs = await getBlogsPaginated(page, pageSize);
-    return NextResponse.json(blogs);
+    return NextResponse.json(blogs, {
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    });
   } catch (error) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json(

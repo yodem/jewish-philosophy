@@ -17,6 +17,7 @@ dotenv.config();
 
 // Fixed audience ID
 const AUDIENCE_ID = 'e5d7ecb0-d089-49a1-908e-6423de637cf9';
+const DRY_RUN = process.env.DRY_RUN === 'true' || process.argv.includes('--dry-run');
 
 // Types for our content
 interface ContentItem {
@@ -47,12 +48,12 @@ class BroadcastSender {
   private strapiApiToken: string | undefined;
 
   constructor() {
-    if (!process.env.RESEND_API_KEY) {
+    if (!process.env.RESEND_API_KEY && !DRY_RUN) {
       throw new Error('RESEND_API_KEY environment variable is required');
     }
     
-    this.resend = new Resend(process.env.RESEND_API_KEY);
-    this.fromEmail = process.env.RESEND_DEFAULT_FROM_EMAIL || 'onboarding@resend.dev';
+    this.resend = new Resend(process.env.RESEND_API_KEY || 'dry-run');
+    this.fromEmail = process.env.RESEND_DEFAULT_FROM_EMAIL || 'noreply@religousphilosophy.com';
     this.siteUrl = process.env.FRONTEND_URL || 'https://religousphilosophy.com/';
     this.strapiUrl = process.env.STRAPI_BASE_URL || 'http://localhost:1337';
     this.strapiApiToken = process.env.STRAPI_API_TOKEN || process.env.NEXT_PUBLIC_STRAPI_API_TOKEN;
@@ -399,6 +400,10 @@ class BroadcastSender {
     console.log(`   📧 From: ${this.fromEmail}`);
     console.log(`   📝 Subject: ${subject}`);
     console.log(`   📈 Content items: ${totalItems}`);
+    if (DRY_RUN) {
+      console.log('🧪 DRY RUN — email will not be sent');
+      return;
+    }
 
     // Try broadcasts API first, fallback to individual emails
     try {

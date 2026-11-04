@@ -5,7 +5,7 @@ import { getStrapiMediaEntryUrl, resolveStrapiAssetUrl } from '@/lib/strapi-medi
 import { generateOGImageResponse } from '@/lib/og-image-generator';
 
 export const contentType = 'image/png';
-export const revalidate = 86400; // Cache for 24 hours
+export const revalidate = 0;
 export const size = { width: 1200, height: 630 };
 export const alt = 'Blog OpenGraph image';
 

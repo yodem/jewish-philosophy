@@ -60,10 +60,19 @@ function GridSkeleton() {
   );
 }
 
-export default async function BlogListPage() {
+async function BlogListContent() {
   const blogs = await getBlogsPaginated(1, 10);
   const [firstBlog, ...restBlogs] = blogs;
 
+  return (
+    <>
+      {firstBlog && <FeaturedPostHero blog={firstBlog} />}
+      <BlogPageClient initialBlogs={restBlogs} />
+    </>
+  );
+}
+
+export default function BlogListPage() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-12">
       <Breadcrumbs
@@ -73,16 +82,15 @@ export default async function BlogListPage() {
         ]}
       />
 
-      {/* Featured Post Hero */}
-      {firstBlog && (
-        <Suspense fallback={<HeroSkeleton />}>
-          <FeaturedPostHero blog={firstBlog} />
-        </Suspense>
-      )}
-
-      {/* Blog Grid with infinite scroll */}
-      <Suspense fallback={<GridSkeleton />}>
-        <BlogPageClient initialBlogs={restBlogs} />
+      <Suspense
+        fallback={
+          <>
+            <HeroSkeleton />
+            <GridSkeleton />
+          </>
+        }
+      >
+        <BlogListContent />
       </Suspense>
     </div>
   );
