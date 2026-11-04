@@ -33,10 +33,18 @@ Output goes to `$BACKUP_OUT_DIR/<YYYY-MM-DD_HH-MM-SS>/`. The last line is `BACKU
 ## Cron (daily)
 
 ```cron
-15 4 * * * cd /path/to/repo/backup && ./backup-strapi.sh >> /var/log/strapi-backup.log 2>&1 || echo "strapi backup failed" | logger -t strapi-backup
+15 4 * * * /path/to/backup/backup-strapi.sh >> /path/to/backup.log 2>&1
+15 7 * * * /usr/bin/python3 -I /path/to/backup/check-backup-fresh.py >> /path/to/backup.log 2>&1
 ```
 
-Keep credentials in `backup/.env` (git-ignored) rather than the crontab. Monitor on the exit code or the last log line.
+Keep credentials in `backup/.env` (git-ignored) rather than the crontab.
+
+## Stale-backup alert
+
+`check-backup-fresh.py` reads the same `.env`. It emails `ALERT_EMAIL_TO` through Resend when the latest
+run did not finish OK, no OK run exists, or the newest OK run is older than `BACKUP_MAX_AGE_HOURS` (26).
+Use a **send-only** Resend key. Run it with `--test` once to prove delivery. Exit 1 means an alert was
+needed but could not be sent. Offline test: `python3 -I backup/tests/test_check_fresh.py`.
 
 ## Reading a backup to restore
 
