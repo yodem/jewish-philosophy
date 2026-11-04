@@ -11,15 +11,15 @@ This platform provides educational content on Jewish philosophy, including artic
 
 ```
 jewish-philosophy/
-├── client/          # Next.js 15.4.4 Frontend (App Router)
-├── server/          # Strapi v5.17.0 CMS Backend
+├── client/          # Next.js 16 Frontend (App Router)
+├── server/          # Strapi v5.46.1 CMS Backend
 └── README.md
 ```
 
 ## 🚀 Technology Stack
 
 ### Frontend (`/client`)
-- **Framework**: Next.js 15.4.4 with App Router
+- **Framework**: Next.js 16 with App Router
 - **React**: v19.0.0 with latest features
 - **Styling**: Tailwind CSS v4 (PostCSS setup, no config file)
 - **UI Components**: Radix UI primitives + custom components
@@ -29,7 +29,7 @@ jewish-philosophy/
 - **Analytics**: Vercel Analytics
 
 ### Backend (`/server`)
-- **CMS**: Strapi 5.17.0
+- **CMS**: Strapi 5.46.1
 - **Database**: SQLite with better-sqlite3
 - **Email**: Resend provider
 - **Node.js**: 18.0.0 - 22.x.x supported
@@ -136,7 +136,6 @@ pnpm dev          # Start development server with Turbopack
 pnpm build        # Build for production
 pnpm start        # Start production server
 pnpm lint         # Run ESLint
-pnpm type-check   # Run TypeScript checks
 ```
 
 ### Backend Commands
