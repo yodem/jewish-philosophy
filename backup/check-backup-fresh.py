@@ -112,13 +112,26 @@ def telegram_creds():
                     line = line[7:]
                 if "=" in line and not line.startswith("#"):
                     k, v = line.split("=", 1)
-                    if k.strip() in values and v.strip():
-                        values[k.strip()] = v.strip().strip('"').strip("'")
+                    v = v.strip()
+                    if v[:1] in ('"', "'") and v[1:].find(v[0]) >= 0:
+                        v = v[1:1 + v[1:].find(v[0])]          # quoted value: keep what is inside
+                    else:
+                        v = v.split(" #", 1)[0].strip()       # unquoted: drop an inline comment
+                    if k.strip() in values and v:
+                        values[k.strip()] = v
     return values[tok_var], values[chat_var]
+
+
+TG_TOKEN_RE = re.compile(r"^\d+:[A-Za-z0-9_-]+$")
+TG_CHAT_RE = re.compile(r"^-?\d+$|^@[A-Za-z0-9_]{5,}$")
 
 
 def send_telegram(subject, text):
     token, chat = telegram_creds()
+    # validate before the token goes into a URL, so a malformed value cannot surface in an error
+    if not TG_TOKEN_RE.match(token) or not TG_CHAT_RE.match(chat):
+        print("ERROR: Telegram token or chat id is malformed", file=sys.stderr)
+        return False
     base = os.environ.get("TELEGRAM_API_BASE", "https://api.telegram.org")
     # plain text, no parse_mode: a stray _ or ` would make Telegram reject the message
     data = urllib.parse.urlencode({"chat_id": chat, "text": f"{subject}\n\n{text}"}).encode()
@@ -127,9 +140,9 @@ def send_telegram(subject, text):
               {"Content-Type": "application/x-www-form-urlencoded"})
         return True
     except urllib.error.HTTPError as e:
-        print(f"ERROR: Telegram returned HTTP {e.code}", file=sys.stderr)  # URL holds the token: never print it
-    except (urllib.error.URLError, OSError) as e:
-        print(f"ERROR: could not reach Telegram ({type(e).__name__})", file=sys.stderr)
+        print(f"ERROR: Telegram returned HTTP {e.code}", file=sys.stderr)
+    except Exception as e:  # noqa: BLE001 - the URL holds the token; never let a traceback print it
+        print(f"ERROR: Telegram send failed ({type(e).__name__})", file=sys.stderr)
     return False
 
 

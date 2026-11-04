@@ -69,7 +69,8 @@ def case(name, setup, chans, expect_rc, expect_sent, expect_text, *args, status=
     got = sorted(c for c, _, _ in sent)
     assert got == sorted(expect_sent), f"{name}: sent {got} != {expect_sent}\n{output}"
     assert expect_text in output, f"{name}: {expect_text!r} not in output\n{output}"
-    assert "re_test" not in output and TG_TOKEN not in output, f"{name}: secret printed"
+    assert "re_test" not in output and TG_TOKEN not in output and "123:abc" not in output, f"{name}: secret printed"
+    assert "Traceback" not in output, f"{name}: traceback printed\n{output}"
     for c, a, payload in sent:
         if c == "email":
             assert a == "Bearer re_test" and payload["to"] == ["me@example.com"], name
@@ -89,6 +90,13 @@ case("no runs", [], [TG], 0, ["telegram"], "no backup runs found")
 case("no channel configured -> exit 1", [(30, "ok")], [], 1, [], "no alert channel configured")
 case("telegram HTTP error -> exit 1, token not printed", [(30, "ok")], [TG], 1, ["telegram"],
      "Telegram returned HTTP 500", status=500)
+bad_file = os.path.join(iso, "bad.env")
+with open(bad_file, "w") as f:
+    f.write("WIKI_TG_TOKEN=123:abc def\nWIKI_TG_CHAT=4242 # my chat\n")
+case("malformed token -> exit 1, no traceback", [(30, "ok")], [dict(TG, TELEGRAM_ENV_FILE=bad_file)], 1, [],
+     "malformed")
+case("unreachable Telegram -> exit 1, no traceback", [(30, "ok")],
+     [dict(TG, TELEGRAM_API_BASE="http://127.0.0.1:1")], 1, [], "Telegram send failed")
 case("--test sends on every channel", [(2, "ok")], [EMAIL, TG], 0, ["email", "telegram"], "TEST ALERT SENT", "--test")
 srv.shutdown()
 print("ALL OK")
