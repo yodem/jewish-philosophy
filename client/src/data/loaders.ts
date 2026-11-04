@@ -1,7 +1,8 @@
 import { assertNoStrapiError, fetchAPI } from "@/utils/fetchApi";
 import { BASE_URL } from "../../consts";
 import qs from "qs";
-import { Blog, Writing, Term } from "@/types";
+import { sortPlaylistsByLatestActivity } from "@/lib/playlist-activity";
+import { Blog, Playlist, Writing, Term } from "@/types";
 
 const playlistPopulate = {
   videos: {
@@ -111,24 +112,9 @@ export async function getAllPlaylists() {
   return res.data
 }
 
-/** Fetches all playlists for sitemap (paginates beyond 100 limit, includes videos) */
-export async function getAllPlaylistsForSitemap() {
-  const pageSize = 100;
-  let page = 1;
-  let allPlaylists: Awaited<ReturnType<typeof getPlaylistsPaginated>> = [];
-  let hasMore = true;
+const PLAYLISTS_REVALIDATE_SECONDS = 60 * 60; // 1h; daily YouTube sync + /api/revalidate also refresh
 
-  while (hasMore) {
-    const playlists = await getPlaylistsPaginated(page, pageSize);
-    allPlaylists = allPlaylists.concat(playlists);
-    hasMore = playlists.length === pageSize;
-    page++;
-  }
-
-  return allPlaylists;
-}
-
-export async function getPlaylistsPaginated(page: number = 1, pageSize: number = 12) {
+async function fetchPlaylistsPage(page: number, pageSize: number) {
   const query = qs.stringify({
     populate: {
       videos: {
@@ -137,7 +123,7 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
             $ne: 'Private video'
           }
         },
-        populate: '*'
+        populate: '*',
       }
     },
     pagination: {
@@ -148,13 +134,35 @@ export async function getPlaylistsPaginated(page: number = 1, pageSize: number =
   const path = "/api/playlists";
   const url = new URL(path, BASE_URL);
   url.search = query;
-  // Prefer on-demand revalidation via /api/revalidate webhook over short TTL.
   const res = await fetchAPI(url.href, {
     method: "GET",
-    next: { revalidate: 60 * 60 * 24 * 7, tags: ["playlists"] },
+    next: { revalidate: PLAYLISTS_REVALIDATE_SECONDS, tags: ["playlists"] },
   });
-  
-  return res.data || [];
+
+  return (res.data || []) as Playlist[];
+}
+
+/** Fetches all playlists (paginates beyond 100 limit, includes videos) */
+export async function getAllPlaylistsForSitemap() {
+  const pageSize = 100;
+  let page = 1;
+  let allPlaylists: Playlist[] = [];
+
+  while (true) {
+    const playlists = await fetchPlaylistsPage(page, pageSize);
+    allPlaylists = allPlaylists.concat(playlists);
+    if (playlists.length < pageSize) break;
+    page++;
+  }
+
+  return allPlaylists;
+}
+
+export async function getPlaylistsPaginated(page: number = 1, pageSize: number = 12) {
+  const allPlaylists = await getAllPlaylistsForSitemap();
+  const visible = allPlaylists.filter((playlist) => !playlist.slug?.startsWith("--"));
+  const sorted = sortPlaylistsByLatestActivity(visible);
+  return sorted.slice((page - 1) * pageSize, page * pageSize);
 }
 
 export async function getPlaylistBySlug(slug: string) {

@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       if (slug) {
         revalidatePath(`/playlists/${slug}`);
       }
+      revalidatePath("/");
       revalidatePath("/playlists");
       revalidatePath("/api/playlists-paginated");
       revalidateTag("playlists", "max");
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
       if (playlistSlug) {
         revalidatePath(`/playlists/${playlistSlug}`);
       }
+      revalidatePath("/");
       revalidatePath("/playlists");
       revalidateTag("playlists", "max");
     } else if (model.includes("blog")) {

@@ -41,7 +41,7 @@ Populates Strapi with YouTube data.
 ```bash
 # Run from server directory
 cd server
-npx tsx src/youtube-populate.ts
+pnpm youtube-populate
 ```
 
 **What it does:**
@@ -49,6 +49,14 @@ npx tsx src/youtube-populate.ts
 2. Creates/updates playlists in Strapi
 3. Creates/updates videos with playlist relations
 4. Verifies all relations are properly set
+
+### youtube-sync.ts
+Daily YouTube import for your **local/dev machine** (not Strapi Cloud). Runs populate, then revalidates the Vercel homepage/playlist cache. See `README-youtube-sync.md`.
+
+```bash
+cd server
+pnpm youtube-sync
+```
 
 ### analyze-videos.ts
 Analyzes YouTube videos using AI and updates them with descriptions and categories.

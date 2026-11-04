@@ -66,6 +66,9 @@ export interface Video {
   slug: string;
   playlist: number | Playlist;
   categories?: Category[];
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
 }
 
 export interface Playlist {

@@ -7,6 +7,7 @@ import {
   getWritingsPaginated,
 } from "@/data/loaders";
 import { formatDate } from "@/lib/date-utils";
+import { latestPlaylistActivityDate } from "@/lib/playlist-activity";
 import type { Playlist, Blog, Responsa, Writing } from "@/types";
 
 interface ContentSection {
@@ -80,24 +81,27 @@ export default async function HomeContentGrid() {
         {/* Playlists */}
         <ContentCard section={SECTIONS[0]}>
           <ul className="mb-8 space-y-4">
-            {(playlists as Playlist[]).map((playlist) => (
-              <li key={playlist.id}>
-                <Link
-                  href={`/playlists/${playlist.slug}`}
-                  className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-video"
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="size-1.5 shrink-0 rounded-full bg-ct-video mt-2" />
-                    <span className="font-medium leading-tight">{playlist.title}</span>
-                  </div>
-                  {playlist.publishedAt && (
-                    <div className="text-xs text-muted-foreground mr-4 pr-0.5">
-                      {formatDate(playlist.publishedAt)}
+            {(playlists as Playlist[]).map((playlist) => {
+              const activityDate = latestPlaylistActivityDate(playlist);
+              return (
+                <li key={playlist.id}>
+                  <Link
+                    href={`/playlists/${playlist.slug}`}
+                    className="flex flex-col gap-1 text-foreground/80 transition-colors hover:text-ct-video"
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="size-1.5 shrink-0 rounded-full bg-ct-video mt-2" />
+                      <span className="font-medium leading-tight">{playlist.title}</span>
                     </div>
-                  )}
-                </Link>
-              </li>
-            ))}
+                    {activityDate && (
+                      <div className="text-xs text-muted-foreground mr-4 pr-0.5">
+                        {formatDate(activityDate)}
+                      </div>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </ContentCard>
 

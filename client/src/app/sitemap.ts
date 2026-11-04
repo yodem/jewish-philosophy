@@ -8,6 +8,7 @@ import {
 } from '@/data/loaders';
 import { Blog, Playlist, Writing, Video, Responsa, Term } from '@/types';
 import { getStrapiMediaEntryUrl } from '@/lib/strapi-media';
+import { latestPlaylistActivityDate } from '@/lib/playlist-activity';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Validate environment variables
@@ -137,7 +138,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter((playlist: Playlist) => !playlist.slug.startsWith('--'))
       .map((playlist: Playlist) => ({
         url: formatUrl(`/playlists/${playlist.slug}`),
-        lastModified: new Date(playlist.updatedAt || playlist.createdAt),
+        lastModified: new Date(latestPlaylistActivityDate(playlist) || playlist.updatedAt || playlist.createdAt),
         changeFrequency: 'weekly',
         priority: 0.6,
         images: [
@@ -152,7 +153,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .flatMap((playlist: Playlist) =>
         (playlist.videos || []).map((video: Video) => ({
           url: formatUrl(`/playlists/${playlist.slug}/${video.slug}`),
-          lastModified: new Date(playlist.updatedAt || playlist.createdAt),
+          lastModified: new Date(video.publishedAt || latestPlaylistActivityDate(playlist) || playlist.updatedAt || playlist.createdAt),
           changeFrequency: 'weekly',
           priority: 0.8,
           images: [
