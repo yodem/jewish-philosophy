@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
-"""Alert by email (Resend) when the Strapi backup is stale or the last run failed.
+"""Alert by Telegram and/or email (Resend) when the Strapi backup is stale or the last run failed.
 
 Run from cron a couple of hours after backup-strapi.sh. Exit codes:
-  0  backup is fresh, or an alert was sent successfully
-  1  an alert was needed but sending failed
+  0  backup is fresh, or the alert reached every configured channel
+  1  an alert was needed but a channel failed, or no channel is configured
   2  bad configuration
 
 Env (or a .env next to this script, same file the backup uses):
   BACKUP_OUT_DIR       where backup-strapi.sh writes timestamped runs (required)
   BACKUP_MAX_AGE_HOURS default 26
-  RESEND_API_KEY       a send-only Resend key (required to alert)
-  ALERT_EMAIL_TO       recipient (required to alert)
+
+  Telegram channel (enabled when a token and chat id are found):
+  TELEGRAM_ENV_FILE    a chmod-600 file to read the bot credentials from at send time, so the
+                       token is never copied (e.g. ~/.claude/sync-and-update.env)
+  TELEGRAM_TOKEN_VAR   name of the token variable in that file/env, default TELEGRAM_BOT_TOKEN
+  TELEGRAM_CHAT_VAR    name of the chat-id variable, default TELEGRAM_CHAT_ID
+  TELEGRAM_API_BASE    default https://api.telegram.org (override for tests)
+
+  Email channel (enabled when RESEND_API_KEY and ALERT_EMAIL_TO are set):
+  RESEND_API_KEY       a send-only Resend key
+  ALERT_EMAIL_TO       recipient
   ALERT_EMAIL_FROM     verified sender, default noreply@religousphilosophy.com
   RESEND_API_URL       default https://api.resend.com/emails (override for tests)
 
-Flags: --test sends one email regardless of state, to prove delivery works.
+Flags: --test sends one message on every configured channel regardless of state.
 """
 import datetime as dt
 import json
@@ -23,6 +32,7 @@ import re
 import socket
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -81,32 +91,86 @@ def assess(out_dir, max_age_h, now):
     return problems
 
 
-def send(subject, text):
-    key = os.environ.get("RESEND_API_KEY", "")
-    to = os.environ.get("ALERT_EMAIL_TO", "")
-    if not key or not to:
-        print("ERROR: RESEND_API_KEY and ALERT_EMAIL_TO are required to send an alert", file=sys.stderr)
-        return False
+def _post(url, data, headers):
+    req = urllib.request.Request(url, data=data, method="POST",
+                                 headers={"User-Agent": "strapi-backup-alert/2", **headers})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        resp.read()
+
+
+def telegram_creds():
+    """Token and chat id from TELEGRAM_ENV_FILE (read now, never copied) or the environment."""
+    tok_var = os.environ.get("TELEGRAM_TOKEN_VAR", "TELEGRAM_BOT_TOKEN")
+    chat_var = os.environ.get("TELEGRAM_CHAT_VAR", "TELEGRAM_CHAT_ID")
+    values = {tok_var: os.environ.get(tok_var, ""), chat_var: os.environ.get(chat_var, "")}
+    path = os.path.expanduser(os.environ.get("TELEGRAM_ENV_FILE", ""))
+    if path and os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("export "):
+                    line = line[7:]
+                if "=" in line and not line.startswith("#"):
+                    k, v = line.split("=", 1)
+                    if k.strip() in values and v.strip():
+                        values[k.strip()] = v.strip().strip('"').strip("'")
+    return values[tok_var], values[chat_var]
+
+
+def send_telegram(subject, text):
+    token, chat = telegram_creds()
+    base = os.environ.get("TELEGRAM_API_BASE", "https://api.telegram.org")
+    # plain text, no parse_mode: a stray _ or ` would make Telegram reject the message
+    data = urllib.parse.urlencode({"chat_id": chat, "text": f"{subject}\n\n{text}"}).encode()
+    try:
+        _post(f"{base}/bot{token}/sendMessage", data,
+              {"Content-Type": "application/x-www-form-urlencoded"})
+        return True
+    except urllib.error.HTTPError as e:
+        print(f"ERROR: Telegram returned HTTP {e.code}", file=sys.stderr)  # URL holds the token: never print it
+    except (urllib.error.URLError, OSError) as e:
+        print(f"ERROR: could not reach Telegram ({type(e).__name__})", file=sys.stderr)
+    return False
+
+
+def send_email(subject, text):
     body = json.dumps({
         "from": os.environ.get("ALERT_EMAIL_FROM", "noreply@religousphilosophy.com"),
-        "to": [to],
+        "to": [os.environ["ALERT_EMAIL_TO"]],
         "subject": subject,
         "text": text,
     }).encode()
-    req = urllib.request.Request(
-        os.environ.get("RESEND_API_URL", "https://api.resend.com/emails"),
-        data=body, method="POST",
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json",
-                 "User-Agent": "strapi-backup-alert/1"})
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            resp.read()
+        _post(os.environ.get("RESEND_API_URL", "https://api.resend.com/emails"), body,
+              {"Authorization": f"Bearer {os.environ['RESEND_API_KEY']}", "Content-Type": "application/json"})
         return True
     except urllib.error.HTTPError as e:
         print(f"ERROR: Resend returned HTTP {e.code}: {e.read()[:300]!r}", file=sys.stderr)
     except (urllib.error.URLError, OSError) as e:
         print(f"ERROR: could not reach Resend: {e}", file=sys.stderr)
     return False
+
+
+def channels():
+    found = []
+    token, chat = telegram_creds()
+    if token and chat:
+        found.append(("telegram", send_telegram))
+    if os.environ.get("RESEND_API_KEY") and os.environ.get("ALERT_EMAIL_TO"):
+        found.append(("email", send_email))
+    return found
+
+
+def send(subject, text):
+    """Send on every configured channel. True only if there is at least one and all succeed."""
+    chans = channels()
+    if not chans:
+        print("ERROR: no alert channel configured (Telegram creds or RESEND_API_KEY + ALERT_EMAIL_TO)",
+              file=sys.stderr)
+        return False
+    results = {name: fn(subject, text) for name, fn in chans}
+    print("channels:", ", ".join(f"{n}={'ok' if r else 'FAILED'}" for n, r in results.items()))
+    return all(results.values())
 
 
 def main():
@@ -124,7 +188,7 @@ def main():
     host = socket.gethostname()
     if "--test" in sys.argv[1:]:
         ok = send(f"[backup] test alert from {host}",
-                  f"Test of the Strapi backup alert on {host}.\nBackup dir: {out_dir}\n")
+                  f"Test of the religousphilosophy.com backup alert on {host}.\nBackup dir: {out_dir}\n")
         print("TEST ALERT SENT" if ok else "TEST ALERT FAILED")
         return 0 if ok else 1
 

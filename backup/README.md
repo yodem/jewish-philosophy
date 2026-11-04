@@ -41,10 +41,16 @@ Keep credentials in `backup/.env` (git-ignored) rather than the crontab.
 
 ## Stale-backup alert
 
-`check-backup-fresh.py` reads the same `.env`. It emails `ALERT_EMAIL_TO` through Resend when the latest
-run did not finish OK, no OK run exists, or the newest OK run is older than `BACKUP_MAX_AGE_HOURS` (26).
-Use a **send-only** Resend key. Run it with `--test` once to prove delivery. Exit 1 means an alert was
-needed but could not be sent. Offline test: `python3 -I backup/tests/test_check_fresh.py`.
+`check-backup-fresh.py` reads the same `.env`. It alerts when the latest run did not finish OK, no OK
+run exists, or the newest OK run is older than `BACKUP_MAX_AGE_HOURS` (26). Channels, each enabled when
+configured, all used when several are:
+
+- **Telegram:** set `TELEGRAM_ENV_FILE` to an existing chmod-600 creds file and name its variables with
+  `TELEGRAM_TOKEN_VAR` / `TELEGRAM_CHAT_VAR`; the token is read at send time and never copied or printed.
+- **Email:** `RESEND_API_KEY` (send-only) and `ALERT_EMAIL_TO` via Resend.
+
+Run it with `--test` once to prove delivery. Exit 1 means an alert was needed but a channel failed or
+none is configured. Offline test: `python3 -I backup/tests/test_check_fresh.py`.
 
 ## Reading a backup to restore
 
