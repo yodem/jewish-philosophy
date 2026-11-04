@@ -92,6 +92,21 @@ def fail(msg):
     print(f"  ERROR: {msg}", flush=True)
 
 
+class _SameHostRedirects(urllib.request.HTTPRedirectHandler):
+    """Never forward the Authorization header to a different host after a redirect."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None and urllib.parse.urlparse(newurl).netloc != urllib.parse.urlparse(req.full_url).netloc:
+            for store in (new.headers, new.unredirected_hdrs):
+                for k in [k for k in store if k.lower() == "authorization"]:
+                    del store[k]
+        return new
+
+
+OPENER = urllib.request.build_opener(_SameHostRedirects)
+
+
 def open_url(url, auth):
     """GET with timeout and retries. Returns bytes. Raises last error."""
     headers = {"User-Agent": "strapi-backup/2"}
@@ -101,7 +116,7 @@ def open_url(url, auth):
     for attempt in range(1, RETRIES + 1):
         try:
             req = urllib.request.Request(url, headers=headers)
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as resp:
+            with OPENER.open(req, timeout=TIMEOUT) as resp:
                 return resp.read()
         except urllib.error.HTTPError as e:
             last = e
@@ -176,27 +191,30 @@ for t in COLLECTIONS:
         counts[t][label] = len(items)
     print(f"{t}: published={counts[t]['published']} draft={counts[t]['draft']}", flush=True)
 
+warnings = []
 print("--- Single types ---", flush=True)
 for t in SINGLES:
-    try:
-        body = fetch_json(f"{t}?populate=*")
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            # Strapi answers 404 for a single type with no content yet; verify it is that and not a wrong endpoint
-            counts[t] = {"published": 0, "draft": None, "note": "404 (no content)"}
-            print(f"{t}: 404 (single type has no content)", flush=True)
+    counts[t] = {}
+    for label, status, fname in (("published", None, f"{t}.json"), ("draft", "draft", f"{t}.draft.json")):
+        q = f"{t}?populate=*" + (f"&status={status}" if status else "")
+        try:
+            body = fetch_json(q)
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                # Strapi answers 404 for a single type with no content yet
+                counts[t][label] = 0
+                continue
+            fail(f"{t} ({label}): {describe(e)}")
+            counts[t][label] = None
             continue
-        fail(f"{t}: {describe(e)}")
-        counts[t] = {"published": None}
-        continue
-    except Exception as e:
-        fail(f"{t}: {describe(e)}")
-        counts[t] = {"published": None}
-        continue
-    write_json(os.path.join(RUN, f"{t}.json"), body)
-    saved_files.append(f"{t}.json")
-    counts[t] = {"published": 1}
-    print(f"{t}: saved", flush=True)
+        except Exception as e:
+            fail(f"{t} ({label}): {describe(e)}")
+            counts[t][label] = None
+            continue
+        write_json(os.path.join(RUN, fname), body)
+        saved_files.append(fname)
+        counts[t][label] = 1
+    print(f"{t}: published={counts[t]['published']} draft={counts[t]['draft']}", flush=True)
 
 # ---- media mirror ----
 print("--- Media ---", flush=True)
@@ -218,6 +236,38 @@ media_urls = set()
 for fname in saved_files:
     with open(os.path.join(RUN, fname), encoding="utf-8") as f:
         collect_media(json.load(f), media_urls)
+walk_count = len(media_urls)
+
+# Media library listing (catches unattached uploads). Strapi returns a plain array
+# and ignores pagination params; handle a {data, meta} shape too, in case it changes.
+library_count = None
+try:
+    files, page = [], 1
+    while True:
+        body = fetch_json("upload/files" if page == 1 else f"upload/files?pagination[page]={page}&pagination[pageSize]={PAGE_SIZE}")
+        if isinstance(body, list):
+            files = body
+            break
+        if not isinstance(body, dict) or not isinstance(body.get("data"), list):
+            raise ValueError("unexpected response shape")
+        files.extend(body["data"])
+        pc = ((body.get("meta") or {}).get("pagination") or {}).get("pageCount")
+        if pc is None or page >= pc:
+            break
+        page += 1
+    write_json(os.path.join(RUN, "upload-files.json"), files)
+    collect_media(files, media_urls)
+    library_count = len(files)
+    print(f"upload library: {library_count} files listed", flush=True)
+except urllib.error.HTTPError as e:
+    if e.code == 403:
+        msg = "GET /api/upload/files is 403 for this token; media taken from content walk only (grant the token upload 'find' permission)"
+        warnings.append(msg)
+        print(f"  WARNING: {msg}", flush=True)
+    else:
+        fail(f"upload/files: {describe(e)}")
+except Exception as e:
+    fail(f"upload/files: {describe(e)}")
 
 media_root = os.path.realpath(os.path.join(OUT, "media"))
 new_files = existing = failed_media = 0
@@ -234,7 +284,7 @@ for url in sorted(media_urls):
         existing += 1
         continue
     try:
-        data = open_url(full, parsed.netloc == base_host)
+        data = open_url(full, False)  # media downloads never carry the token
         if not data:
             raise ValueError("empty response")
     except Exception as e:
@@ -261,6 +311,8 @@ write_json(os.path.join(RUN, "_metadata.json"), {
     "counts": counts,
     "media": {"referenced": len(media_urls), "downloaded_new": new_files,
               "already_present": existing, "failed": failed_media, "total_on_disk": media_total},
+    "media_sources": {"content_walk_urls": walk_count, "upload_library_files": library_count},
+    "warnings": warnings,
     "errors": errors,
 })
 
