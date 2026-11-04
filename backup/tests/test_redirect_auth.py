@@ -3,7 +3,7 @@
 Server A (127.0.0.1) 302-redirects every request to server B (localhost, a different host).
 B records the headers it receives. Run: python3 -I backup/tests/test_redirect_auth.py
 """
-import http.server, json, os, subprocess, sys, tempfile, threading
+import http.server, json, os, shutil, subprocess, sys, tempfile, threading
 
 TOKEN = "SECRET-TEST-TOKEN-123"
 SCRIPT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "backup-strapi.sh")
@@ -46,9 +46,16 @@ def serve(handler):
 b = serve(B)
 a = serve(make_a(b.server_address[1]))
 out = tempfile.mkdtemp()
-env = dict(os.environ, STRAPI_BASE_URL=f"http://127.0.0.1:{a.server_address[1]}",
-           STRAPI_API_TOKEN=TOKEN, BACKUP_OUT_DIR=out)
-proc = subprocess.run(["bash", SCRIPT], env=env, capture_output=True, text=True, timeout=300)
+# Run an isolated copy: the script sources a .env next to itself, which could hold real
+# credentials or output settings. The temp dir has no .env, and the env is built from scratch.
+isolated = tempfile.mkdtemp()
+script_copy = os.path.join(isolated, "backup-strapi.sh")
+shutil.copy(SCRIPT, script_copy)
+assert not os.path.exists(os.path.join(isolated, ".env"))
+env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": isolated,
+       "STRAPI_BASE_URL": f"http://127.0.0.1:{a.server_address[1]}",
+       "STRAPI_API_TOKEN": TOKEN, "BACKUP_OUT_DIR": out}
+proc = subprocess.run(["bash", script_copy], env=env, cwd=isolated, capture_output=True, text=True, timeout=300)
 
 assert received, "redirect was never followed, test is vacuous:\n" + proc.stdout + proc.stderr
 leaked = [p for p, h in received if "authorization" in h]

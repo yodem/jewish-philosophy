@@ -95,9 +95,19 @@ def fail(msg):
 class _SameHostRedirects(urllib.request.HTTPRedirectHandler):
     """Never forward the Authorization header to a different host after a redirect."""
 
+    @staticmethod
+    def _origin(url):
+        u = urllib.parse.urlparse(url)
+        port = u.port or {"http": 80, "https": 443}.get(u.scheme)
+        return (u.scheme, (u.hostname or "").lower(), port)
+
     def redirect_request(self, req, fp, code, msg, headers, newurl):
+        old_o, new_o = self._origin(req.full_url), self._origin(newurl)
+        if old_o[0] == "https" and new_o[0] != "https":
+            raise urllib.error.HTTPError(newurl, code, "refusing HTTPS-to-HTTP redirect", headers, fp)
         new = super().redirect_request(req, fp, code, msg, headers, newurl)
-        if new is not None and urllib.parse.urlparse(newurl).netloc != urllib.parse.urlparse(req.full_url).netloc:
+        # keep Authorization only for the same scheme + hostname + effective port
+        if new is not None and new_o != old_o:
             for store in (new.headers, new.unredirected_hdrs):
                 for k in [k for k in store if k.lower() == "authorization"]:
                     del store[k]
