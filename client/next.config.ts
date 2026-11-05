@@ -109,6 +109,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Shared chat answers: never indexed, never cached (revocation is immediate), no Referer leaves the page.
+        source: '/sadik/share/:id*',
+        headers: [
+          { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+          { key: 'Referrer-Policy', value: 'no-referrer' },
+          { key: 'Cache-Control', value: 'no-store' },
+        ],
+      },
+      {
         source: '/:path*',
         headers: [
           {
